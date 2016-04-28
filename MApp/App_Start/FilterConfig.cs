@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace MApp.App_Start
+namespace MApp.Web.App_Start
 {
     public class FilterConfig
     {

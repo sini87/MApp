@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 
-namespace MApp
+namespace MApp.Web.App_Start
 {
     public class RouteConfig
     {

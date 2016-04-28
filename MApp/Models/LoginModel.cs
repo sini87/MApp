@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace MApp.Models
+namespace MApp.Web.Models
 {
     public class LoginModel
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace MApp.Controllers
+namespace MApp.Web.Controllers
 {
     [Authorize]
     public class HomeController : Controller

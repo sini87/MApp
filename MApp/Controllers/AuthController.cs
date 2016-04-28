@@ -1,4 +1,4 @@
-﻿using MApp.Models;
+﻿using MApp.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Security.Claims;
 using System.Web;
 using System.Web.Mvc;
 
-namespace MApp.Controllers
+namespace MApp.Web.Controllers
 {
     [AllowAnonymous]
     public class AuthController : Controller

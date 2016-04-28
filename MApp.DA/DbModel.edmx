@@ -1,0 +1,2403 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="ApplicationDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="AccessRight">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="IssueId" />
+          </Key>
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="IssueId" Type="int" Nullable="false" />
+          <Property Name="Right" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="ActivityIndex" Type="float" />
+          <Property Name="SelfAssessmentValue" Type="float" />
+          <Property Name="SelfAssesmentDescr" Type="varchar" MaxLength="500" />
+        </EntityType>
+        <EntityType Name="Alternative">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IssueId" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="150" />
+          <Property Name="Reason" Type="varchar" MaxLength="100" />
+          <Property Name="Rating" Type="float" />
+        </EntityType>
+        <EntityType Name="Comment">
+          <Key>
+            <PropertyRef Name="DateTime" />
+            <PropertyRef Name="IssueId" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="DateTime" Type="date" Nullable="false" />
+          <Property Name="IssueId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Type" Type="nchar" MaxLength="20" />
+          <Property Name="Text" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Anonymous" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Criterion">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nchar" MaxLength="50" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="200" />
+          <Property Name="Issue" Type="int" Nullable="false" />
+          <Property Name="Weight" Type="float" />
+          <Property Name="WeightPC" Type="float" />
+        </EntityType>
+        <EntityType Name="CriterionWeight">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="CriterionId" />
+          </Key>
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="CriterionId" Type="int" Nullable="false" />
+          <Property Name="Weight" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Decision">
+          <Key>
+            <PropertyRef Name="IssueId" />
+          </Key>
+          <Property Name="IssueId" Type="int" Nullable="false" />
+          <Property Name="AlternativeId" Type="int" />
+          <Property Name="Explanation" Type="varchar" MaxLength="8000" />
+        </EntityType>
+        <EntityType Name="Group">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nchar" MaxLength="30" />
+        </EntityType>
+        <EntityType Name="HAccessRight">
+          <Key>
+            <PropertyRef Name="ChangeDate" />
+            <PropertyRef Name="IssueId" />
+          </Key>
+          <Property Name="ChangeDate" Type="date" Nullable="false" />
+          <Property Name="IssueId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Action" Type="nchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="HAlternative">
+          <Key>
+            <PropertyRef Name="ChangeDate" />
+            <PropertyRef Name="AlternativeId" />
+          </Key>
+          <Property Name="ChangeDate" Type="date" Nullable="false" />
+          <Property Name="AlternativeId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Action" Type="nchar" MaxLength="50" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="150" />
+          <Property Name="Reason" Type="varchar" MaxLength="100" />
+          <Property Name="Rating" Type="float" />
+        </EntityType>
+        <EntityType Name="HCriterion">
+          <Key>
+            <PropertyRef Name="ChangeDate" />
+            <PropertyRef Name="CriterionId" />
+          </Key>
+          <Property Name="ChangeDate" Type="date" Nullable="false" />
+          <Property Name="CriterionId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Action" Type="nchar" MaxLength="50" Nullable="false" />
+          <Property Name="Name" Type="nchar" MaxLength="50" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="200" />
+          <Property Name="Issue" Type="int" Nullable="false" />
+          <Property Name="Weight" Type="float" />
+          <Property Name="WeightPC" Type="float" />
+        </EntityType>
+        <EntityType Name="HDecision">
+          <Key>
+            <PropertyRef Name="ChangeDate" />
+            <PropertyRef Name="IssueId" />
+          </Key>
+          <Property Name="ChangeDate" Type="date" Nullable="false" />
+          <Property Name="IssueId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Action" Type="nchar" MaxLength="50" Nullable="false" />
+          <Property Name="AlternativeId" Type="int" />
+          <Property Name="Explanation" Type="varchar" MaxLength="8000" />
+        </EntityType>
+        <EntityType Name="HIssue">
+          <Key>
+            <PropertyRef Name="ChangeDate" />
+            <PropertyRef Name="IssueId" />
+          </Key>
+          <Property Name="ChangeDate" Type="date" Nullable="false" />
+          <Property Name="IssueId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Action" Type="nchar" MaxLength="50" Nullable="false" />
+          <Property Name="Title" Type="nchar" MaxLength="50" Nullable="false" />
+          <Property Name="Status" Type="nchar" MaxLength="15" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="8000" />
+          <Property Name="Setting" Type="nchar" MaxLength="15" />
+          <Property Name="AnonymousPosting" Type="nchar" MaxLength="15" />
+          <Property Name="Parent" Type="int" />
+          <Property Name="DependsOn" Type="int" />
+          <Property Name="GroupThink" Type="nchar" MaxLength="20" />
+          <Property Name="ReviewRating" Type="float" />
+        </EntityType>
+        <EntityType Name="HReview">
+          <Key>
+            <PropertyRef Name="ChangeDate" />
+            <PropertyRef Name="IssueId" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="ChangeDate" Type="date" Nullable="false" />
+          <Property Name="IssueId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Action" Type="nchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="HTagIssue">
+          <Key>
+            <PropertyRef Name="ChangeDate" />
+            <PropertyRef Name="TagId" />
+            <PropertyRef Name="IssueId" />
+          </Key>
+          <Property Name="ChangeDate" Type="date" Nullable="false" />
+          <Property Name="TagId" Type="int" Nullable="false" />
+          <Property Name="IssueId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Action" Type="nchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="InformationRead">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TName" Type="nchar" MaxLength="40" Nullable="false" />
+          <Property Name="Condition" Type="nchar" MaxLength="100" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Read" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Issue">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Title" Type="nchar" MaxLength="50" Nullable="false" />
+          <Property Name="Status" Type="nchar" MaxLength="15" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="8000" />
+          <Property Name="Setting" Type="nchar" MaxLength="15" />
+          <Property Name="AnonymousPosting" Type="nchar" MaxLength="15" />
+          <Property Name="Parent" Type="int" />
+          <Property Name="DependsOn" Type="int" />
+          <Property Name="GroupThink" Type="nchar" MaxLength="20" />
+          <Property Name="ReviewRating" Type="float" />
+        </EntityType>
+        <EntityType Name="Notification">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IssueId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Type" Type="nchar" MaxLength="20" Nullable="false" />
+          <Property Name="Text" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="PairwiseComparisonAC">
+          <Key>
+            <PropertyRef Name="AlternativeLeft" />
+            <PropertyRef Name="AlternativeRight" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="AlternativeLeft" Type="int" Nullable="false" />
+          <Property Name="AlternativeRight" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Value" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PairwiseComparisonCC">
+          <Key>
+            <PropertyRef Name="CriterionLeft" />
+            <PropertyRef Name="CriterionRight" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="CriterionLeft" Type="int" Nullable="false" />
+          <Property Name="CriterionRight" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Value" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Property">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nchar" MaxLength="40" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Rating">
+          <Key>
+            <PropertyRef Name="CriterionId" />
+            <PropertyRef Name="AlternativeId" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="CriterionId" Type="int" Nullable="false" />
+          <Property Name="AlternativeId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Value" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Review">
+          <Key>
+            <PropertyRef Name="IssueId" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="IssueId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Rating" Type="int" Nullable="false" />
+          <Property Name="Explanation" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="Tag">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="20" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TagIssue">
+          <Key>
+            <PropertyRef Name="TagId" />
+            <PropertyRef Name="IssueId" />
+          </Key>
+          <Property Name="TagId" Type="int" Nullable="false" />
+          <Property Name="IssueId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Email" Type="nchar" MaxLength="50" Nullable="false" />
+          <Property Name="FirstName" Type="nchar" MaxLength="30" Nullable="false" />
+          <Property Name="LastName" Type="nchar" MaxLength="30" Nullable="false" />
+          <Property Name="PasswordHash" Type="nchar" MaxLength="30" Nullable="false" />
+          <Property Name="SecretQuestion" Type="nchar" MaxLength="50" />
+          <Property Name="Answer" Type="nchar" MaxLength="50" />
+          <Property Name="StakeholderDescription" Type="nchar" MaxLength="30" />
+        </EntityType>
+        <EntityType Name="UserGroup">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="GroupId" />
+          </Key>
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="GroupId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserProperty">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="PropertyId" />
+          </Key>
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="PropertyId" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_AccessRight_Issue">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="AccessRight" Type="Self.AccessRight" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AccessRight">
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AccessRight_User">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="AccessRight" Type="Self.AccessRight" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AccessRight">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Alternative_Issue">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Alternative" Type="Self.Alternative" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Alternative">
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Comment_Issue">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Comment" Type="Self.Comment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Comment">
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Comment_User">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Comment" Type="Self.Comment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Comment">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CriterionWeight_Criterion">
+          <End Role="Criterion" Type="Self.Criterion" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="CriterionWeight" Type="Self.CriterionWeight" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Criterion">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CriterionWeight">
+              <PropertyRef Name="CriterionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CriterionWeight_User">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="CriterionWeight" Type="Self.CriterionWeight" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CriterionWeight">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Decision_Issue">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Decision" Type="Self.Decision" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Decision">
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HAccessRight_AccessRight">
+          <End Role="AccessRight" Type="Self.AccessRight" Multiplicity="1" />
+          <End Role="HAccessRight" Type="Self.HAccessRight" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AccessRight">
+              <PropertyRef Name="UserId" />
+              <PropertyRef Name="IssueId" />
+            </Principal>
+            <Dependent Role="HAccessRight">
+              <PropertyRef Name="UserId" />
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HAlternative_Alternative">
+          <End Role="Alternative" Type="Self.Alternative" Multiplicity="1" />
+          <End Role="HAlternative" Type="Self.HAlternative" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Alternative">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HAlternative">
+              <PropertyRef Name="AlternativeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HAlternative_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="HAlternative" Type="Self.HAlternative" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HAlternative">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HCriterion_Criterion">
+          <End Role="Criterion" Type="Self.Criterion" Multiplicity="1" />
+          <End Role="HCriterion" Type="Self.HCriterion" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Criterion">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HCriterion">
+              <PropertyRef Name="CriterionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HCriterion_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="HCriterion" Type="Self.HCriterion" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HCriterion">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HDecision_Decision">
+          <End Role="Decision" Type="Self.Decision" Multiplicity="1" />
+          <End Role="HDecision" Type="Self.HDecision" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Decision">
+              <PropertyRef Name="IssueId" />
+            </Principal>
+            <Dependent Role="HDecision">
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HDecision_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="HDecision" Type="Self.HDecision" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HDecision">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HIssue_Issue">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="1" />
+          <End Role="HIssue" Type="Self.HIssue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HIssue">
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HIssue_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="HIssue" Type="Self.HIssue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HIssue">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HReview_Review">
+          <End Role="Review" Type="Self.Review" Multiplicity="1" />
+          <End Role="HReview" Type="Self.HReview" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Review">
+              <PropertyRef Name="IssueId" />
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="HReview">
+              <PropertyRef Name="IssueId" />
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HTagIssue_TagIssue">
+          <End Role="TagIssue" Type="Self.TagIssue" Multiplicity="1" />
+          <End Role="HTagIssue" Type="Self.HTagIssue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TagIssue">
+              <PropertyRef Name="TagId" />
+              <PropertyRef Name="IssueId" />
+            </Principal>
+            <Dependent Role="HTagIssue">
+              <PropertyRef Name="TagId" />
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HTagIssue_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="HTagIssue" Type="Self.HTagIssue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HTagIssue">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Issue_DependsOn">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="0..1" />
+          <End Role="Issue1" Type="Self.Issue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Issue1">
+              <PropertyRef Name="DependsOn" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Issue_Parent">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="0..1" />
+          <End Role="Issue1" Type="Self.Issue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Issue1">
+              <PropertyRef Name="Parent" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Notification_Issue">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Notification" Type="Self.Notification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Notification">
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Notification_User">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Notification" Type="Self.Notification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Notification">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PairwiseComparisonAC_AlternativeRight">
+          <End Role="Alternative" Type="Self.Alternative" Multiplicity="1" />
+          <End Role="PairwiseComparisonAC" Type="Self.PairwiseComparisonAC" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Alternative">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PairwiseComparisonAC">
+              <PropertyRef Name="AlternativeRight" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PairwiseComparisonAC_AltertaniveLeft">
+          <End Role="Alternative" Type="Self.Alternative" Multiplicity="1" />
+          <End Role="PairwiseComparisonAC" Type="Self.PairwiseComparisonAC" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Alternative">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PairwiseComparisonAC">
+              <PropertyRef Name="AlternativeLeft" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PairwiseComparisonAC_User">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PairwiseComparisonAC" Type="Self.PairwiseComparisonAC" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PairwiseComparisonAC">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PairwiseComparisonCC_CriterionLeft">
+          <End Role="Criterion" Type="Self.Criterion" Multiplicity="1" />
+          <End Role="PairwiseComparisonCC" Type="Self.PairwiseComparisonCC" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Criterion">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PairwiseComparisonCC">
+              <PropertyRef Name="CriterionLeft" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PairwiseComparisonCC_CriterionRight">
+          <End Role="Criterion" Type="Self.Criterion" Multiplicity="1" />
+          <End Role="PairwiseComparisonCC" Type="Self.PairwiseComparisonCC" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Criterion">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PairwiseComparisonCC">
+              <PropertyRef Name="CriterionRight" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PairwiseComparisonCC_User">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PairwiseComparisonCC" Type="Self.PairwiseComparisonCC" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PairwiseComparisonCC">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Rating_Alternative">
+          <End Role="Alternative" Type="Self.Alternative" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Rating" Type="Self.Rating" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Alternative">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Rating">
+              <PropertyRef Name="AlternativeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Rating_Criterion">
+          <End Role="Criterion" Type="Self.Criterion" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Rating" Type="Self.Rating" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Criterion">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Rating">
+              <PropertyRef Name="CriterionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Rating_User">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Rating" Type="Self.Rating" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Rating">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Review_Issue">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Review" Type="Self.Review" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Review">
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Review_User">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Review" Type="Self.Review" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Review">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TagIssue_Issue">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TagIssue" Type="Self.TagIssue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TagIssue">
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TagIssue_Tag">
+          <End Role="Tag" Type="Self.Tag" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TagIssue" Type="Self.TagIssue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tag">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TagIssue">
+              <PropertyRef Name="TagId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserGroup_Group">
+          <End Role="Group" Type="Self.Group" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserGroup" Type="Self.UserGroup" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserGroup">
+              <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserGroup_User">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserGroup" Type="Self.UserGroup" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserGroup">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserProperty_Property">
+          <End Role="Property" Type="Self.Property" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserProperty" Type="Self.UserProperty" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Property">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserProperty">
+              <PropertyRef Name="PropertyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserProperty_User">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserProperty" Type="Self.UserProperty" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserProperty">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ApplicationDBModelStoreContainer">
+          <EntitySet Name="AccessRight" EntityType="Self.AccessRight" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="Alternative" EntityType="Self.Alternative" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="Comment" EntityType="Self.Comment" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="Criterion" EntityType="Self.Criterion" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="CriterionWeight" EntityType="Self.CriterionWeight" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="Decision" EntityType="Self.Decision" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="Group" EntityType="Self.Group" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="HAccessRight" EntityType="Self.HAccessRight" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="HAlternative" EntityType="Self.HAlternative" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="HCriterion" EntityType="Self.HCriterion" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="HDecision" EntityType="Self.HDecision" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="HIssue" EntityType="Self.HIssue" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="HReview" EntityType="Self.HReview" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="HTagIssue" EntityType="Self.HTagIssue" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="InformationRead" EntityType="Self.InformationRead" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="Issue" EntityType="Self.Issue" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="Notification" EntityType="Self.Notification" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="PairwiseComparisonAC" EntityType="Self.PairwiseComparisonAC" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="PairwiseComparisonCC" EntityType="Self.PairwiseComparisonCC" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="Property" EntityType="Self.Property" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="Rating" EntityType="Self.Rating" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="Review" EntityType="Self.Review" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="Tag" EntityType="Self.Tag" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="TagIssue" EntityType="Self.TagIssue" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="User" EntityType="Self.User" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="UserGroup" EntityType="Self.UserGroup" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="UserProperty" EntityType="Self.UserProperty" Schema="appSchema" store:Type="Tables" />
+          <AssociationSet Name="FK_AccessRight_Issue" Association="Self.FK_AccessRight_Issue">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="AccessRight" EntitySet="AccessRight" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AccessRight_User" Association="Self.FK_AccessRight_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="AccessRight" EntitySet="AccessRight" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Alternative_Issue" Association="Self.FK_Alternative_Issue">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="Alternative" EntitySet="Alternative" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Comment_Issue" Association="Self.FK_Comment_Issue">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="Comment" EntitySet="Comment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Comment_User" Association="Self.FK_Comment_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Comment" EntitySet="Comment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CriterionWeight_Criterion" Association="Self.FK_CriterionWeight_Criterion">
+            <End Role="Criterion" EntitySet="Criterion" />
+            <End Role="CriterionWeight" EntitySet="CriterionWeight" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CriterionWeight_User" Association="Self.FK_CriterionWeight_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="CriterionWeight" EntitySet="CriterionWeight" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Decision_Issue" Association="Self.FK_Decision_Issue">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="Decision" EntitySet="Decision" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HAccessRight_AccessRight" Association="Self.FK_HAccessRight_AccessRight">
+            <End Role="AccessRight" EntitySet="AccessRight" />
+            <End Role="HAccessRight" EntitySet="HAccessRight" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HAlternative_Alternative" Association="Self.FK_HAlternative_Alternative">
+            <End Role="Alternative" EntitySet="Alternative" />
+            <End Role="HAlternative" EntitySet="HAlternative" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HAlternative_User" Association="Self.FK_HAlternative_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="HAlternative" EntitySet="HAlternative" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HCriterion_Criterion" Association="Self.FK_HCriterion_Criterion">
+            <End Role="Criterion" EntitySet="Criterion" />
+            <End Role="HCriterion" EntitySet="HCriterion" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HCriterion_User" Association="Self.FK_HCriterion_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="HCriterion" EntitySet="HCriterion" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HDecision_Decision" Association="Self.FK_HDecision_Decision">
+            <End Role="Decision" EntitySet="Decision" />
+            <End Role="HDecision" EntitySet="HDecision" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HDecision_User" Association="Self.FK_HDecision_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="HDecision" EntitySet="HDecision" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HIssue_Issue" Association="Self.FK_HIssue_Issue">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="HIssue" EntitySet="HIssue" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HIssue_User" Association="Self.FK_HIssue_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="HIssue" EntitySet="HIssue" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HReview_Review" Association="Self.FK_HReview_Review">
+            <End Role="Review" EntitySet="Review" />
+            <End Role="HReview" EntitySet="HReview" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HTagIssue_TagIssue" Association="Self.FK_HTagIssue_TagIssue">
+            <End Role="TagIssue" EntitySet="TagIssue" />
+            <End Role="HTagIssue" EntitySet="HTagIssue" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HTagIssue_User" Association="Self.FK_HTagIssue_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="HTagIssue" EntitySet="HTagIssue" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Issue_DependsOn" Association="Self.FK_Issue_DependsOn">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="Issue1" EntitySet="Issue" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Issue_Parent" Association="Self.FK_Issue_Parent">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="Issue1" EntitySet="Issue" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Notification_Issue" Association="Self.FK_Notification_Issue">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="Notification" EntitySet="Notification" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Notification_User" Association="Self.FK_Notification_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Notification" EntitySet="Notification" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PairwiseComparisonAC_AlternativeRight" Association="Self.FK_PairwiseComparisonAC_AlternativeRight">
+            <End Role="Alternative" EntitySet="Alternative" />
+            <End Role="PairwiseComparisonAC" EntitySet="PairwiseComparisonAC" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PairwiseComparisonAC_AltertaniveLeft" Association="Self.FK_PairwiseComparisonAC_AltertaniveLeft">
+            <End Role="Alternative" EntitySet="Alternative" />
+            <End Role="PairwiseComparisonAC" EntitySet="PairwiseComparisonAC" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PairwiseComparisonAC_User" Association="Self.FK_PairwiseComparisonAC_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="PairwiseComparisonAC" EntitySet="PairwiseComparisonAC" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PairwiseComparisonCC_CriterionLeft" Association="Self.FK_PairwiseComparisonCC_CriterionLeft">
+            <End Role="Criterion" EntitySet="Criterion" />
+            <End Role="PairwiseComparisonCC" EntitySet="PairwiseComparisonCC" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PairwiseComparisonCC_CriterionRight" Association="Self.FK_PairwiseComparisonCC_CriterionRight">
+            <End Role="Criterion" EntitySet="Criterion" />
+            <End Role="PairwiseComparisonCC" EntitySet="PairwiseComparisonCC" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PairwiseComparisonCC_User" Association="Self.FK_PairwiseComparisonCC_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="PairwiseComparisonCC" EntitySet="PairwiseComparisonCC" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Rating_Alternative" Association="Self.FK_Rating_Alternative">
+            <End Role="Alternative" EntitySet="Alternative" />
+            <End Role="Rating" EntitySet="Rating" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Rating_Criterion" Association="Self.FK_Rating_Criterion">
+            <End Role="Criterion" EntitySet="Criterion" />
+            <End Role="Rating" EntitySet="Rating" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Rating_User" Association="Self.FK_Rating_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Rating" EntitySet="Rating" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Review_Issue" Association="Self.FK_Review_Issue">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="Review" EntitySet="Review" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Review_User" Association="Self.FK_Review_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Review" EntitySet="Review" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TagIssue_Issue" Association="Self.FK_TagIssue_Issue">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="TagIssue" EntitySet="TagIssue" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TagIssue_Tag" Association="Self.FK_TagIssue_Tag">
+            <End Role="Tag" EntitySet="Tag" />
+            <End Role="TagIssue" EntitySet="TagIssue" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserGroup_Group" Association="Self.FK_UserGroup_Group">
+            <End Role="Group" EntitySet="Group" />
+            <End Role="UserGroup" EntitySet="UserGroup" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserGroup_User" Association="Self.FK_UserGroup_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="UserGroup" EntitySet="UserGroup" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserProperty_Property" Association="Self.FK_UserProperty_Property">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="UserProperty" EntitySet="UserProperty" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserProperty_User" Association="Self.FK_UserProperty_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="UserProperty" EntitySet="UserProperty" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ApplicationDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="AccessRight">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="IssueId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="IssueId" Type="Int32" Nullable="false" />
+          <Property Name="Right" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="ActivityIndex" Type="Double" />
+          <Property Name="SelfAssessmentValue" Type="Double" />
+          <Property Name="SelfAssesmentDescr" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Issue" Relationship="Self.FK_AccessRight_Issue" FromRole="AccessRight" ToRole="Issue" />
+          <NavigationProperty Name="User" Relationship="Self.FK_AccessRight_User" FromRole="AccessRight" ToRole="User" />
+          <NavigationProperty Name="HAccessRight" Relationship="Self.FK_HAccessRight_AccessRight" FromRole="AccessRight" ToRole="HAccessRight" />
+        </EntityType>
+        <EntityType Name="Alternative">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IssueId" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="Reason" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Rating" Type="Double" />
+          <NavigationProperty Name="Issue" Relationship="Self.FK_Alternative_Issue" FromRole="Alternative" ToRole="Issue" />
+          <NavigationProperty Name="HAlternative" Relationship="Self.FK_HAlternative_Alternative" FromRole="Alternative" ToRole="HAlternative" />
+          <NavigationProperty Name="PairwiseComparisonAC" Relationship="Self.FK_PairwiseComparisonAC_AlternativeRight" FromRole="Alternative" ToRole="PairwiseComparisonAC" />
+          <NavigationProperty Name="PairwiseComparisonAC1" Relationship="Self.FK_PairwiseComparisonAC_AltertaniveLeft" FromRole="Alternative" ToRole="PairwiseComparisonAC" />
+          <NavigationProperty Name="Rating1" Relationship="Self.FK_Rating_Alternative" FromRole="Alternative" ToRole="Rating" />
+        </EntityType>
+        <EntityType Name="Comment">
+          <Key>
+            <PropertyRef Name="DateTime" />
+            <PropertyRef Name="IssueId" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="DateTime" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="IssueId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Type" Type="String" MaxLength="20" FixedLength="true" Unicode="true" />
+          <Property Name="Text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Anonymous" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Issue" Relationship="Self.FK_Comment_Issue" FromRole="Comment" ToRole="Issue" />
+          <NavigationProperty Name="User" Relationship="Self.FK_Comment_User" FromRole="Comment" ToRole="User" />
+        </EntityType>
+        <EntityType Name="Criterion">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="Issue" Type="Int32" Nullable="false" />
+          <Property Name="Weight" Type="Double" />
+          <Property Name="WeightPC" Type="Double" />
+          <NavigationProperty Name="CriterionWeight" Relationship="Self.FK_CriterionWeight_Criterion" FromRole="Criterion" ToRole="CriterionWeight" />
+          <NavigationProperty Name="HCriterion" Relationship="Self.FK_HCriterion_Criterion" FromRole="Criterion" ToRole="HCriterion" />
+          <NavigationProperty Name="PairwiseComparisonCC" Relationship="Self.FK_PairwiseComparisonCC_CriterionLeft" FromRole="Criterion" ToRole="PairwiseComparisonCC" />
+          <NavigationProperty Name="PairwiseComparisonCC1" Relationship="Self.FK_PairwiseComparisonCC_CriterionRight" FromRole="Criterion" ToRole="PairwiseComparisonCC" />
+          <NavigationProperty Name="Rating" Relationship="Self.FK_Rating_Criterion" FromRole="Criterion" ToRole="Rating" />
+        </EntityType>
+        <EntityType Name="CriterionWeight">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="CriterionId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="CriterionId" Type="Int32" Nullable="false" />
+          <Property Name="Weight" Type="Double" Nullable="false" />
+          <NavigationProperty Name="Criterion" Relationship="Self.FK_CriterionWeight_Criterion" FromRole="CriterionWeight" ToRole="Criterion" />
+          <NavigationProperty Name="User" Relationship="Self.FK_CriterionWeight_User" FromRole="CriterionWeight" ToRole="User" />
+        </EntityType>
+        <EntityType Name="Decision">
+          <Key>
+            <PropertyRef Name="IssueId" />
+          </Key>
+          <Property Name="IssueId" Type="Int32" Nullable="false" />
+          <Property Name="AlternativeId" Type="Int32" />
+          <Property Name="Explanation" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Issue" Relationship="Self.FK_Decision_Issue" FromRole="Decision" ToRole="Issue" />
+          <NavigationProperty Name="HDecision" Relationship="Self.FK_HDecision_Decision" FromRole="Decision" ToRole="HDecision" />
+        </EntityType>
+        <EntityType Name="Group">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="30" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="User" Relationship="Self.UserGroup" FromRole="Group" ToRole="User" />
+        </EntityType>
+        <EntityType Name="HAccessRight">
+          <Key>
+            <PropertyRef Name="ChangeDate" />
+            <PropertyRef Name="IssueId" />
+          </Key>
+          <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="IssueId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="AccessRight" Relationship="Self.FK_HAccessRight_AccessRight" FromRole="HAccessRight" ToRole="AccessRight" />
+        </EntityType>
+        <EntityType Name="HAlternative">
+          <Key>
+            <PropertyRef Name="ChangeDate" />
+            <PropertyRef Name="AlternativeId" />
+          </Key>
+          <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="AlternativeId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="Reason" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Rating" Type="Double" />
+          <NavigationProperty Name="Alternative" Relationship="Self.FK_HAlternative_Alternative" FromRole="HAlternative" ToRole="Alternative" />
+          <NavigationProperty Name="User" Relationship="Self.FK_HAlternative_User" FromRole="HAlternative" ToRole="User" />
+        </EntityType>
+        <EntityType Name="HCriterion">
+          <Key>
+            <PropertyRef Name="ChangeDate" />
+            <PropertyRef Name="CriterionId" />
+          </Key>
+          <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="CriterionId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="Issue" Type="Int32" Nullable="false" />
+          <Property Name="Weight" Type="Double" />
+          <Property Name="WeightPC" Type="Double" />
+          <NavigationProperty Name="Criterion" Relationship="Self.FK_HCriterion_Criterion" FromRole="HCriterion" ToRole="Criterion" />
+          <NavigationProperty Name="User" Relationship="Self.FK_HCriterion_User" FromRole="HCriterion" ToRole="User" />
+        </EntityType>
+        <EntityType Name="HDecision">
+          <Key>
+            <PropertyRef Name="ChangeDate" />
+            <PropertyRef Name="IssueId" />
+          </Key>
+          <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="IssueId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="AlternativeId" Type="Int32" />
+          <Property Name="Explanation" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Decision" Relationship="Self.FK_HDecision_Decision" FromRole="HDecision" ToRole="Decision" />
+          <NavigationProperty Name="User" Relationship="Self.FK_HDecision_User" FromRole="HDecision" ToRole="User" />
+        </EntityType>
+        <EntityType Name="HIssue">
+          <Key>
+            <PropertyRef Name="ChangeDate" />
+            <PropertyRef Name="IssueId" />
+          </Key>
+          <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="IssueId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Title" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Status" Type="String" MaxLength="15" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="Setting" Type="String" MaxLength="15" FixedLength="true" Unicode="true" />
+          <Property Name="AnonymousPosting" Type="String" MaxLength="15" FixedLength="true" Unicode="true" />
+          <Property Name="Parent" Type="Int32" />
+          <Property Name="DependsOn" Type="Int32" />
+          <Property Name="GroupThink" Type="String" MaxLength="20" FixedLength="true" Unicode="true" />
+          <Property Name="ReviewRating" Type="Double" />
+          <NavigationProperty Name="Issue" Relationship="Self.FK_HIssue_Issue" FromRole="HIssue" ToRole="Issue" />
+          <NavigationProperty Name="User" Relationship="Self.FK_HIssue_User" FromRole="HIssue" ToRole="User" />
+        </EntityType>
+        <EntityType Name="HReview">
+          <Key>
+            <PropertyRef Name="ChangeDate" />
+            <PropertyRef Name="IssueId" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="IssueId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Review" Relationship="Self.FK_HReview_Review" FromRole="HReview" ToRole="Review" />
+        </EntityType>
+        <EntityType Name="HTagIssue">
+          <Key>
+            <PropertyRef Name="ChangeDate" />
+            <PropertyRef Name="TagId" />
+            <PropertyRef Name="IssueId" />
+          </Key>
+          <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="TagId" Type="Int32" Nullable="false" />
+          <Property Name="IssueId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="TagIssue" Relationship="Self.FK_HTagIssue_TagIssue" FromRole="HTagIssue" ToRole="TagIssue" />
+          <NavigationProperty Name="User" Relationship="Self.FK_HTagIssue_User" FromRole="HTagIssue" ToRole="User" />
+        </EntityType>
+        <EntityType Name="InformationRead">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TName" Type="String" MaxLength="40" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Condition" Type="String" MaxLength="100" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Read" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Issue">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Title" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Status" Type="String" MaxLength="15" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="Setting" Type="String" MaxLength="15" FixedLength="true" Unicode="true" />
+          <Property Name="AnonymousPosting" Type="String" MaxLength="15" FixedLength="true" Unicode="true" />
+          <Property Name="Parent" Type="Int32" />
+          <Property Name="DependsOn" Type="Int32" />
+          <Property Name="GroupThink" Type="String" MaxLength="20" FixedLength="true" Unicode="true" />
+          <Property Name="ReviewRating" Type="Double" />
+          <NavigationProperty Name="AccessRight" Relationship="Self.FK_AccessRight_Issue" FromRole="Issue" ToRole="AccessRight" />
+          <NavigationProperty Name="Alternative" Relationship="Self.FK_Alternative_Issue" FromRole="Issue" ToRole="Alternative" />
+          <NavigationProperty Name="Comment" Relationship="Self.FK_Comment_Issue" FromRole="Issue" ToRole="Comment" />
+          <NavigationProperty Name="Decision" Relationship="Self.FK_Decision_Issue" FromRole="Issue" ToRole="Decision" />
+          <NavigationProperty Name="HIssue" Relationship="Self.FK_HIssue_Issue" FromRole="Issue" ToRole="HIssue" />
+          <NavigationProperty Name="Issue1" Relationship="Self.FK_Issue_DependsOn" FromRole="Issue" ToRole="Issue1" />
+          <NavigationProperty Name="Issue2" Relationship="Self.FK_Issue_DependsOn" FromRole="Issue1" ToRole="Issue" />
+          <NavigationProperty Name="Issue11" Relationship="Self.FK_Issue_Parent" FromRole="Issue" ToRole="Issue1" />
+          <NavigationProperty Name="Issue3" Relationship="Self.FK_Issue_Parent" FromRole="Issue1" ToRole="Issue" />
+          <NavigationProperty Name="Notification" Relationship="Self.FK_Notification_Issue" FromRole="Issue" ToRole="Notification" />
+          <NavigationProperty Name="Review" Relationship="Self.FK_Review_Issue" FromRole="Issue" ToRole="Review" />
+          <NavigationProperty Name="TagIssue" Relationship="Self.FK_TagIssue_Issue" FromRole="Issue" ToRole="TagIssue" />
+        </EntityType>
+        <EntityType Name="Notification">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IssueId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Type" Type="String" MaxLength="20" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Issue" Relationship="Self.FK_Notification_Issue" FromRole="Notification" ToRole="Issue" />
+          <NavigationProperty Name="User" Relationship="Self.FK_Notification_User" FromRole="Notification" ToRole="User" />
+        </EntityType>
+        <EntityType Name="PairwiseComparisonAC">
+          <Key>
+            <PropertyRef Name="AlternativeLeft" />
+            <PropertyRef Name="AlternativeRight" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="AlternativeLeft" Type="Int32" Nullable="false" />
+          <Property Name="AlternativeRight" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Value" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Alternative" Relationship="Self.FK_PairwiseComparisonAC_AlternativeRight" FromRole="PairwiseComparisonAC" ToRole="Alternative" />
+          <NavigationProperty Name="Alternative1" Relationship="Self.FK_PairwiseComparisonAC_AltertaniveLeft" FromRole="PairwiseComparisonAC" ToRole="Alternative" />
+          <NavigationProperty Name="User" Relationship="Self.FK_PairwiseComparisonAC_User" FromRole="PairwiseComparisonAC" ToRole="User" />
+        </EntityType>
+        <EntityType Name="PairwiseComparisonCC">
+          <Key>
+            <PropertyRef Name="CriterionLeft" />
+            <PropertyRef Name="CriterionRight" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="CriterionLeft" Type="Int32" Nullable="false" />
+          <Property Name="CriterionRight" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Value" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Criterion" Relationship="Self.FK_PairwiseComparisonCC_CriterionLeft" FromRole="PairwiseComparisonCC" ToRole="Criterion" />
+          <NavigationProperty Name="Criterion1" Relationship="Self.FK_PairwiseComparisonCC_CriterionRight" FromRole="PairwiseComparisonCC" ToRole="Criterion" />
+          <NavigationProperty Name="User" Relationship="Self.FK_PairwiseComparisonCC_User" FromRole="PairwiseComparisonCC" ToRole="User" />
+        </EntityType>
+        <EntityType Name="Property">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="40" FixedLength="true" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="Self.UserProperty" FromRole="Property" ToRole="User" />
+        </EntityType>
+        <EntityType Name="Rating">
+          <Key>
+            <PropertyRef Name="CriterionId" />
+            <PropertyRef Name="AlternativeId" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="CriterionId" Type="Int32" Nullable="false" />
+          <Property Name="AlternativeId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Value" Type="Double" Nullable="false" />
+          <NavigationProperty Name="Alternative" Relationship="Self.FK_Rating_Alternative" FromRole="Rating" ToRole="Alternative" />
+          <NavigationProperty Name="Criterion" Relationship="Self.FK_Rating_Criterion" FromRole="Rating" ToRole="Criterion" />
+          <NavigationProperty Name="User" Relationship="Self.FK_Rating_User" FromRole="Rating" ToRole="User" />
+        </EntityType>
+        <EntityType Name="Review">
+          <Key>
+            <PropertyRef Name="IssueId" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="IssueId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Rating" Type="Int32" Nullable="false" />
+          <Property Name="Explanation" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="HReview" Relationship="Self.FK_HReview_Review" FromRole="Review" ToRole="HReview" />
+          <NavigationProperty Name="Issue" Relationship="Self.FK_Review_Issue" FromRole="Review" ToRole="Issue" />
+          <NavigationProperty Name="User" Relationship="Self.FK_Review_User" FromRole="Review" ToRole="User" />
+        </EntityType>
+        <EntityType Name="Tag">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="TagIssue" Relationship="Self.FK_TagIssue_Tag" FromRole="Tag" ToRole="TagIssue" />
+        </EntityType>
+        <EntityType Name="TagIssue">
+          <Key>
+            <PropertyRef Name="TagId" />
+            <PropertyRef Name="IssueId" />
+          </Key>
+          <Property Name="TagId" Type="Int32" Nullable="false" />
+          <Property Name="IssueId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="HTagIssue" Relationship="Self.FK_HTagIssue_TagIssue" FromRole="TagIssue" ToRole="HTagIssue" />
+          <NavigationProperty Name="Issue" Relationship="Self.FK_TagIssue_Issue" FromRole="TagIssue" ToRole="Issue" />
+          <NavigationProperty Name="Tag" Relationship="Self.FK_TagIssue_Tag" FromRole="TagIssue" ToRole="Tag" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="FirstName" Type="String" MaxLength="30" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="30" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="PasswordHash" Type="String" MaxLength="30" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="SecretQuestion" Type="String" MaxLength="50" FixedLength="true" Unicode="true" />
+          <Property Name="Answer" Type="String" MaxLength="50" FixedLength="true" Unicode="true" />
+          <Property Name="StakeholderDescription" Type="String" MaxLength="30" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="AccessRight" Relationship="Self.FK_AccessRight_User" FromRole="User" ToRole="AccessRight" />
+          <NavigationProperty Name="Comment" Relationship="Self.FK_Comment_User" FromRole="User" ToRole="Comment" />
+          <NavigationProperty Name="CriterionWeight" Relationship="Self.FK_CriterionWeight_User" FromRole="User" ToRole="CriterionWeight" />
+          <NavigationProperty Name="HAlternative" Relationship="Self.FK_HAlternative_User" FromRole="User" ToRole="HAlternative" />
+          <NavigationProperty Name="HCriterion" Relationship="Self.FK_HCriterion_User" FromRole="User" ToRole="HCriterion" />
+          <NavigationProperty Name="HDecision" Relationship="Self.FK_HDecision_User" FromRole="User" ToRole="HDecision" />
+          <NavigationProperty Name="HIssue" Relationship="Self.FK_HIssue_User" FromRole="User" ToRole="HIssue" />
+          <NavigationProperty Name="HTagIssue" Relationship="Self.FK_HTagIssue_User" FromRole="User" ToRole="HTagIssue" />
+          <NavigationProperty Name="Notification" Relationship="Self.FK_Notification_User" FromRole="User" ToRole="Notification" />
+          <NavigationProperty Name="PairwiseComparisonAC" Relationship="Self.FK_PairwiseComparisonAC_User" FromRole="User" ToRole="PairwiseComparisonAC" />
+          <NavigationProperty Name="PairwiseComparisonCC" Relationship="Self.FK_PairwiseComparisonCC_User" FromRole="User" ToRole="PairwiseComparisonCC" />
+          <NavigationProperty Name="Rating" Relationship="Self.FK_Rating_User" FromRole="User" ToRole="Rating" />
+          <NavigationProperty Name="Review" Relationship="Self.FK_Review_User" FromRole="User" ToRole="Review" />
+          <NavigationProperty Name="Group" Relationship="Self.UserGroup" FromRole="User" ToRole="Group" />
+          <NavigationProperty Name="Property" Relationship="Self.UserProperty" FromRole="User" ToRole="Property" />
+        </EntityType>
+        <Association Name="FK_AccessRight_Issue">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="AccessRight" Type="Self.AccessRight" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AccessRight">
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AccessRight_User">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="AccessRight" Type="Self.AccessRight" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AccessRight">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HAccessRight_AccessRight">
+          <End Role="AccessRight" Type="Self.AccessRight" Multiplicity="1" />
+          <End Role="HAccessRight" Type="Self.HAccessRight" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AccessRight">
+              <PropertyRef Name="UserId" />
+              <PropertyRef Name="IssueId" />
+            </Principal>
+            <Dependent Role="HAccessRight">
+              <PropertyRef Name="UserId" />
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Alternative_Issue">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Alternative" Type="Self.Alternative" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Alternative">
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HAlternative_Alternative">
+          <End Role="Alternative" Type="Self.Alternative" Multiplicity="1" />
+          <End Role="HAlternative" Type="Self.HAlternative" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Alternative">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HAlternative">
+              <PropertyRef Name="AlternativeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PairwiseComparisonAC_AlternativeRight">
+          <End Role="Alternative" Type="Self.Alternative" Multiplicity="1" />
+          <End Role="PairwiseComparisonAC" Type="Self.PairwiseComparisonAC" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Alternative">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PairwiseComparisonAC">
+              <PropertyRef Name="AlternativeRight" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PairwiseComparisonAC_AltertaniveLeft">
+          <End Role="Alternative" Type="Self.Alternative" Multiplicity="1" />
+          <End Role="PairwiseComparisonAC" Type="Self.PairwiseComparisonAC" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Alternative">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PairwiseComparisonAC">
+              <PropertyRef Name="AlternativeLeft" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Rating_Alternative">
+          <End Role="Alternative" Type="Self.Alternative" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Rating" Type="Self.Rating" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Alternative">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Rating">
+              <PropertyRef Name="AlternativeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Comment_Issue">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Comment" Type="Self.Comment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Comment">
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Comment_User">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Comment" Type="Self.Comment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Comment">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CriterionWeight_Criterion">
+          <End Role="Criterion" Type="Self.Criterion" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="CriterionWeight" Type="Self.CriterionWeight" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Criterion">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CriterionWeight">
+              <PropertyRef Name="CriterionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HCriterion_Criterion">
+          <End Role="Criterion" Type="Self.Criterion" Multiplicity="1" />
+          <End Role="HCriterion" Type="Self.HCriterion" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Criterion">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HCriterion">
+              <PropertyRef Name="CriterionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PairwiseComparisonCC_CriterionLeft">
+          <End Role="Criterion" Type="Self.Criterion" Multiplicity="1" />
+          <End Role="PairwiseComparisonCC" Type="Self.PairwiseComparisonCC" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Criterion">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PairwiseComparisonCC">
+              <PropertyRef Name="CriterionLeft" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PairwiseComparisonCC_CriterionRight">
+          <End Role="Criterion" Type="Self.Criterion" Multiplicity="1" />
+          <End Role="PairwiseComparisonCC" Type="Self.PairwiseComparisonCC" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Criterion">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PairwiseComparisonCC">
+              <PropertyRef Name="CriterionRight" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Rating_Criterion">
+          <End Role="Criterion" Type="Self.Criterion" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Rating" Type="Self.Rating" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Criterion">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Rating">
+              <PropertyRef Name="CriterionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CriterionWeight_User">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="CriterionWeight" Type="Self.CriterionWeight" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CriterionWeight">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Decision_Issue">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Decision" Type="Self.Decision" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Decision">
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HDecision_Decision">
+          <End Role="Decision" Type="Self.Decision" Multiplicity="1" />
+          <End Role="HDecision" Type="Self.HDecision" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Decision">
+              <PropertyRef Name="IssueId" />
+            </Principal>
+            <Dependent Role="HDecision">
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HAlternative_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="HAlternative" Type="Self.HAlternative" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HAlternative">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HCriterion_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="HCriterion" Type="Self.HCriterion" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HCriterion">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HDecision_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="HDecision" Type="Self.HDecision" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HDecision">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HIssue_Issue">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="1" />
+          <End Role="HIssue" Type="Self.HIssue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HIssue">
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HIssue_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="HIssue" Type="Self.HIssue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HIssue">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HReview_Review">
+          <End Role="Review" Type="Self.Review" Multiplicity="1" />
+          <End Role="HReview" Type="Self.HReview" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Review">
+              <PropertyRef Name="IssueId" />
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="HReview">
+              <PropertyRef Name="IssueId" />
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HTagIssue_TagIssue">
+          <End Role="TagIssue" Type="Self.TagIssue" Multiplicity="1" />
+          <End Role="HTagIssue" Type="Self.HTagIssue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TagIssue">
+              <PropertyRef Name="TagId" />
+              <PropertyRef Name="IssueId" />
+            </Principal>
+            <Dependent Role="HTagIssue">
+              <PropertyRef Name="TagId" />
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HTagIssue_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="HTagIssue" Type="Self.HTagIssue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="HTagIssue">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Issue_DependsOn">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="0..1" />
+          <End Role="Issue1" Type="Self.Issue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Issue1">
+              <PropertyRef Name="DependsOn" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Issue_Parent">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="0..1" />
+          <End Role="Issue1" Type="Self.Issue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Issue1">
+              <PropertyRef Name="Parent" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Notification_Issue">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Notification" Type="Self.Notification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Notification">
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Review_Issue">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Review" Type="Self.Review" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Review">
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TagIssue_Issue">
+          <End Role="Issue" Type="Self.Issue" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TagIssue" Type="Self.TagIssue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Issue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TagIssue">
+              <PropertyRef Name="IssueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Notification_User">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Notification" Type="Self.Notification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Notification">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PairwiseComparisonAC_User">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PairwiseComparisonAC" Type="Self.PairwiseComparisonAC" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PairwiseComparisonAC">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PairwiseComparisonCC_User">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PairwiseComparisonCC" Type="Self.PairwiseComparisonCC" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PairwiseComparisonCC">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Rating_User">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Rating" Type="Self.Rating" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Rating">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Review_User">
+          <End Role="User" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Review" Type="Self.Review" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Review">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TagIssue_Tag">
+          <End Role="Tag" Type="Self.Tag" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TagIssue" Type="Self.TagIssue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tag">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TagIssue">
+              <PropertyRef Name="TagId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="UserGroup">
+          <End Role="Group" Type="Self.Group" Multiplicity="*" />
+          <End Role="User" Type="Self.User" Multiplicity="*" />
+        </Association>
+        <Association Name="UserProperty">
+          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <End Role="User" Type="Self.User" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="ApplicationDBEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="AccessRight" EntityType="Self.AccessRight" />
+          <EntitySet Name="Alternative" EntityType="Self.Alternative" />
+          <EntitySet Name="Comment" EntityType="Self.Comment" />
+          <EntitySet Name="Criterion" EntityType="Self.Criterion" />
+          <EntitySet Name="CriterionWeight" EntityType="Self.CriterionWeight" />
+          <EntitySet Name="Decision" EntityType="Self.Decision" />
+          <EntitySet Name="Group" EntityType="Self.Group" />
+          <EntitySet Name="HAccessRight" EntityType="Self.HAccessRight" />
+          <EntitySet Name="HAlternative" EntityType="Self.HAlternative" />
+          <EntitySet Name="HCriterion" EntityType="Self.HCriterion" />
+          <EntitySet Name="HDecision" EntityType="Self.HDecision" />
+          <EntitySet Name="HIssue" EntityType="Self.HIssue" />
+          <EntitySet Name="HReview" EntityType="Self.HReview" />
+          <EntitySet Name="HTagIssue" EntityType="Self.HTagIssue" />
+          <EntitySet Name="InformationRead" EntityType="Self.InformationRead" />
+          <EntitySet Name="Issue" EntityType="Self.Issue" />
+          <EntitySet Name="Notification" EntityType="Self.Notification" />
+          <EntitySet Name="PairwiseComparisonAC" EntityType="Self.PairwiseComparisonAC" />
+          <EntitySet Name="PairwiseComparisonCC" EntityType="Self.PairwiseComparisonCC" />
+          <EntitySet Name="Property" EntityType="Self.Property" />
+          <EntitySet Name="Rating" EntityType="Self.Rating" />
+          <EntitySet Name="Review" EntityType="Self.Review" />
+          <EntitySet Name="Tag" EntityType="Self.Tag" />
+          <EntitySet Name="TagIssue" EntityType="Self.TagIssue" />
+          <EntitySet Name="User" EntityType="Self.User" />
+          <AssociationSet Name="FK_AccessRight_Issue" Association="Self.FK_AccessRight_Issue">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="AccessRight" EntitySet="AccessRight" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AccessRight_User" Association="Self.FK_AccessRight_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="AccessRight" EntitySet="AccessRight" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HAccessRight_AccessRight" Association="Self.FK_HAccessRight_AccessRight">
+            <End Role="AccessRight" EntitySet="AccessRight" />
+            <End Role="HAccessRight" EntitySet="HAccessRight" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Alternative_Issue" Association="Self.FK_Alternative_Issue">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="Alternative" EntitySet="Alternative" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HAlternative_Alternative" Association="Self.FK_HAlternative_Alternative">
+            <End Role="Alternative" EntitySet="Alternative" />
+            <End Role="HAlternative" EntitySet="HAlternative" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PairwiseComparisonAC_AlternativeRight" Association="Self.FK_PairwiseComparisonAC_AlternativeRight">
+            <End Role="Alternative" EntitySet="Alternative" />
+            <End Role="PairwiseComparisonAC" EntitySet="PairwiseComparisonAC" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PairwiseComparisonAC_AltertaniveLeft" Association="Self.FK_PairwiseComparisonAC_AltertaniveLeft">
+            <End Role="Alternative" EntitySet="Alternative" />
+            <End Role="PairwiseComparisonAC" EntitySet="PairwiseComparisonAC" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Rating_Alternative" Association="Self.FK_Rating_Alternative">
+            <End Role="Alternative" EntitySet="Alternative" />
+            <End Role="Rating" EntitySet="Rating" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Comment_Issue" Association="Self.FK_Comment_Issue">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="Comment" EntitySet="Comment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Comment_User" Association="Self.FK_Comment_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Comment" EntitySet="Comment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CriterionWeight_Criterion" Association="Self.FK_CriterionWeight_Criterion">
+            <End Role="Criterion" EntitySet="Criterion" />
+            <End Role="CriterionWeight" EntitySet="CriterionWeight" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HCriterion_Criterion" Association="Self.FK_HCriterion_Criterion">
+            <End Role="Criterion" EntitySet="Criterion" />
+            <End Role="HCriterion" EntitySet="HCriterion" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PairwiseComparisonCC_CriterionLeft" Association="Self.FK_PairwiseComparisonCC_CriterionLeft">
+            <End Role="Criterion" EntitySet="Criterion" />
+            <End Role="PairwiseComparisonCC" EntitySet="PairwiseComparisonCC" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PairwiseComparisonCC_CriterionRight" Association="Self.FK_PairwiseComparisonCC_CriterionRight">
+            <End Role="Criterion" EntitySet="Criterion" />
+            <End Role="PairwiseComparisonCC" EntitySet="PairwiseComparisonCC" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Rating_Criterion" Association="Self.FK_Rating_Criterion">
+            <End Role="Criterion" EntitySet="Criterion" />
+            <End Role="Rating" EntitySet="Rating" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CriterionWeight_User" Association="Self.FK_CriterionWeight_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="CriterionWeight" EntitySet="CriterionWeight" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Decision_Issue" Association="Self.FK_Decision_Issue">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="Decision" EntitySet="Decision" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HDecision_Decision" Association="Self.FK_HDecision_Decision">
+            <End Role="Decision" EntitySet="Decision" />
+            <End Role="HDecision" EntitySet="HDecision" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HAlternative_User" Association="Self.FK_HAlternative_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="HAlternative" EntitySet="HAlternative" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HCriterion_User" Association="Self.FK_HCriterion_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="HCriterion" EntitySet="HCriterion" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HDecision_User" Association="Self.FK_HDecision_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="HDecision" EntitySet="HDecision" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HIssue_Issue" Association="Self.FK_HIssue_Issue">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="HIssue" EntitySet="HIssue" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HIssue_User" Association="Self.FK_HIssue_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="HIssue" EntitySet="HIssue" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HReview_Review" Association="Self.FK_HReview_Review">
+            <End Role="Review" EntitySet="Review" />
+            <End Role="HReview" EntitySet="HReview" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HTagIssue_TagIssue" Association="Self.FK_HTagIssue_TagIssue">
+            <End Role="TagIssue" EntitySet="TagIssue" />
+            <End Role="HTagIssue" EntitySet="HTagIssue" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HTagIssue_User" Association="Self.FK_HTagIssue_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="HTagIssue" EntitySet="HTagIssue" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Issue_DependsOn" Association="Self.FK_Issue_DependsOn">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="Issue1" EntitySet="Issue" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Issue_Parent" Association="Self.FK_Issue_Parent">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="Issue1" EntitySet="Issue" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Notification_Issue" Association="Self.FK_Notification_Issue">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="Notification" EntitySet="Notification" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Review_Issue" Association="Self.FK_Review_Issue">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="Review" EntitySet="Review" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TagIssue_Issue" Association="Self.FK_TagIssue_Issue">
+            <End Role="Issue" EntitySet="Issue" />
+            <End Role="TagIssue" EntitySet="TagIssue" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Notification_User" Association="Self.FK_Notification_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Notification" EntitySet="Notification" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PairwiseComparisonAC_User" Association="Self.FK_PairwiseComparisonAC_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="PairwiseComparisonAC" EntitySet="PairwiseComparisonAC" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PairwiseComparisonCC_User" Association="Self.FK_PairwiseComparisonCC_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="PairwiseComparisonCC" EntitySet="PairwiseComparisonCC" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Rating_User" Association="Self.FK_Rating_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Rating" EntitySet="Rating" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Review_User" Association="Self.FK_Review_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Review" EntitySet="Review" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TagIssue_Tag" Association="Self.FK_TagIssue_Tag">
+            <End Role="Tag" EntitySet="Tag" />
+            <End Role="TagIssue" EntitySet="TagIssue" />
+          </AssociationSet>
+          <AssociationSet Name="UserGroup" Association="Self.UserGroup">
+            <End Role="Group" EntitySet="Group" />
+            <End Role="User" EntitySet="User" />
+          </AssociationSet>
+          <AssociationSet Name="UserProperty" Association="Self.UserProperty">
+            <End Role="Property" EntitySet="Property" />
+            <End Role="User" EntitySet="User" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ApplicationDBModelStoreContainer" CdmEntityContainer="ApplicationDBEntities">
+          <EntitySetMapping Name="AccessRight">
+            <EntityTypeMapping TypeName="ApplicationDBModel.AccessRight">
+              <MappingFragment StoreEntitySet="AccessRight">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="IssueId" ColumnName="IssueId" />
+                <ScalarProperty Name="Right" ColumnName="Right" />
+                <ScalarProperty Name="ActivityIndex" ColumnName="ActivityIndex" />
+                <ScalarProperty Name="SelfAssessmentValue" ColumnName="SelfAssessmentValue" />
+                <ScalarProperty Name="SelfAssesmentDescr" ColumnName="SelfAssesmentDescr" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Alternative">
+            <EntityTypeMapping TypeName="ApplicationDBModel.Alternative">
+              <MappingFragment StoreEntitySet="Alternative">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="IssueId" ColumnName="IssueId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Reason" ColumnName="Reason" />
+                <ScalarProperty Name="Rating" ColumnName="Rating" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Comment">
+            <EntityTypeMapping TypeName="ApplicationDBModel.Comment">
+              <MappingFragment StoreEntitySet="Comment">
+                <ScalarProperty Name="DateTime" ColumnName="DateTime" />
+                <ScalarProperty Name="IssueId" ColumnName="IssueId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Text" ColumnName="Text" />
+                <ScalarProperty Name="Anonymous" ColumnName="Anonymous" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Criterion">
+            <EntityTypeMapping TypeName="ApplicationDBModel.Criterion">
+              <MappingFragment StoreEntitySet="Criterion">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Issue" ColumnName="Issue" />
+                <ScalarProperty Name="Weight" ColumnName="Weight" />
+                <ScalarProperty Name="WeightPC" ColumnName="WeightPC" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CriterionWeight">
+            <EntityTypeMapping TypeName="ApplicationDBModel.CriterionWeight">
+              <MappingFragment StoreEntitySet="CriterionWeight">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="CriterionId" ColumnName="CriterionId" />
+                <ScalarProperty Name="Weight" ColumnName="Weight" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Decision">
+            <EntityTypeMapping TypeName="ApplicationDBModel.Decision">
+              <MappingFragment StoreEntitySet="Decision">
+                <ScalarProperty Name="IssueId" ColumnName="IssueId" />
+                <ScalarProperty Name="AlternativeId" ColumnName="AlternativeId" />
+                <ScalarProperty Name="Explanation" ColumnName="Explanation" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Group">
+            <EntityTypeMapping TypeName="ApplicationDBModel.Group">
+              <MappingFragment StoreEntitySet="Group">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HAccessRight">
+            <EntityTypeMapping TypeName="ApplicationDBModel.HAccessRight">
+              <MappingFragment StoreEntitySet="HAccessRight">
+                <ScalarProperty Name="ChangeDate" ColumnName="ChangeDate" />
+                <ScalarProperty Name="IssueId" ColumnName="IssueId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HAlternative">
+            <EntityTypeMapping TypeName="ApplicationDBModel.HAlternative">
+              <MappingFragment StoreEntitySet="HAlternative">
+                <ScalarProperty Name="ChangeDate" ColumnName="ChangeDate" />
+                <ScalarProperty Name="AlternativeId" ColumnName="AlternativeId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Reason" ColumnName="Reason" />
+                <ScalarProperty Name="Rating" ColumnName="Rating" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HCriterion">
+            <EntityTypeMapping TypeName="ApplicationDBModel.HCriterion">
+              <MappingFragment StoreEntitySet="HCriterion">
+                <ScalarProperty Name="ChangeDate" ColumnName="ChangeDate" />
+                <ScalarProperty Name="CriterionId" ColumnName="CriterionId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Issue" ColumnName="Issue" />
+                <ScalarProperty Name="Weight" ColumnName="Weight" />
+                <ScalarProperty Name="WeightPC" ColumnName="WeightPC" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HDecision">
+            <EntityTypeMapping TypeName="ApplicationDBModel.HDecision">
+              <MappingFragment StoreEntitySet="HDecision">
+                <ScalarProperty Name="ChangeDate" ColumnName="ChangeDate" />
+                <ScalarProperty Name="IssueId" ColumnName="IssueId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="AlternativeId" ColumnName="AlternativeId" />
+                <ScalarProperty Name="Explanation" ColumnName="Explanation" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HIssue">
+            <EntityTypeMapping TypeName="ApplicationDBModel.HIssue">
+              <MappingFragment StoreEntitySet="HIssue">
+                <ScalarProperty Name="ChangeDate" ColumnName="ChangeDate" />
+                <ScalarProperty Name="IssueId" ColumnName="IssueId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Setting" ColumnName="Setting" />
+                <ScalarProperty Name="AnonymousPosting" ColumnName="AnonymousPosting" />
+                <ScalarProperty Name="Parent" ColumnName="Parent" />
+                <ScalarProperty Name="DependsOn" ColumnName="DependsOn" />
+                <ScalarProperty Name="GroupThink" ColumnName="GroupThink" />
+                <ScalarProperty Name="ReviewRating" ColumnName="ReviewRating" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HReview">
+            <EntityTypeMapping TypeName="ApplicationDBModel.HReview">
+              <MappingFragment StoreEntitySet="HReview">
+                <ScalarProperty Name="ChangeDate" ColumnName="ChangeDate" />
+                <ScalarProperty Name="IssueId" ColumnName="IssueId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HTagIssue">
+            <EntityTypeMapping TypeName="ApplicationDBModel.HTagIssue">
+              <MappingFragment StoreEntitySet="HTagIssue">
+                <ScalarProperty Name="ChangeDate" ColumnName="ChangeDate" />
+                <ScalarProperty Name="TagId" ColumnName="TagId" />
+                <ScalarProperty Name="IssueId" ColumnName="IssueId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InformationRead">
+            <EntityTypeMapping TypeName="ApplicationDBModel.InformationRead">
+              <MappingFragment StoreEntitySet="InformationRead">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="TName" ColumnName="TName" />
+                <ScalarProperty Name="Condition" ColumnName="Condition" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Read" ColumnName="Read" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Issue">
+            <EntityTypeMapping TypeName="ApplicationDBModel.Issue">
+              <MappingFragment StoreEntitySet="Issue">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Setting" ColumnName="Setting" />
+                <ScalarProperty Name="AnonymousPosting" ColumnName="AnonymousPosting" />
+                <ScalarProperty Name="Parent" ColumnName="Parent" />
+                <ScalarProperty Name="DependsOn" ColumnName="DependsOn" />
+                <ScalarProperty Name="GroupThink" ColumnName="GroupThink" />
+                <ScalarProperty Name="ReviewRating" ColumnName="ReviewRating" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Notification">
+            <EntityTypeMapping TypeName="ApplicationDBModel.Notification">
+              <MappingFragment StoreEntitySet="Notification">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="IssueId" ColumnName="IssueId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Text" ColumnName="Text" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PairwiseComparisonAC">
+            <EntityTypeMapping TypeName="ApplicationDBModel.PairwiseComparisonAC">
+              <MappingFragment StoreEntitySet="PairwiseComparisonAC">
+                <ScalarProperty Name="AlternativeLeft" ColumnName="AlternativeLeft" />
+                <ScalarProperty Name="AlternativeRight" ColumnName="AlternativeRight" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PairwiseComparisonCC">
+            <EntityTypeMapping TypeName="ApplicationDBModel.PairwiseComparisonCC">
+              <MappingFragment StoreEntitySet="PairwiseComparisonCC">
+                <ScalarProperty Name="CriterionLeft" ColumnName="CriterionLeft" />
+                <ScalarProperty Name="CriterionRight" ColumnName="CriterionRight" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Property">
+            <EntityTypeMapping TypeName="ApplicationDBModel.Property">
+              <MappingFragment StoreEntitySet="Property">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Rating">
+            <EntityTypeMapping TypeName="ApplicationDBModel.Rating">
+              <MappingFragment StoreEntitySet="Rating">
+                <ScalarProperty Name="CriterionId" ColumnName="CriterionId" />
+                <ScalarProperty Name="AlternativeId" ColumnName="AlternativeId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Review">
+            <EntityTypeMapping TypeName="ApplicationDBModel.Review">
+              <MappingFragment StoreEntitySet="Review">
+                <ScalarProperty Name="IssueId" ColumnName="IssueId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Rating" ColumnName="Rating" />
+                <ScalarProperty Name="Explanation" ColumnName="Explanation" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tag">
+            <EntityTypeMapping TypeName="ApplicationDBModel.Tag">
+              <MappingFragment StoreEntitySet="Tag">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TagIssue">
+            <EntityTypeMapping TypeName="ApplicationDBModel.TagIssue">
+              <MappingFragment StoreEntitySet="TagIssue">
+                <ScalarProperty Name="TagId" ColumnName="TagId" />
+                <ScalarProperty Name="IssueId" ColumnName="IssueId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="User">
+            <EntityTypeMapping TypeName="ApplicationDBModel.User">
+              <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="SecretQuestion" ColumnName="SecretQuestion" />
+                <ScalarProperty Name="Answer" ColumnName="Answer" />
+                <ScalarProperty Name="StakeholderDescription" ColumnName="StakeholderDescription" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="UserGroup" TypeName="ApplicationDBModel.UserGroup" StoreEntitySet="UserGroup">
+            <EndProperty Name="Group">
+              <ScalarProperty Name="Id" ColumnName="GroupId" />
+            </EndProperty>
+            <EndProperty Name="User">
+              <ScalarProperty Name="Id" ColumnName="UserId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="UserProperty" TypeName="ApplicationDBModel.UserProperty" StoreEntitySet="UserProperty">
+            <EndProperty Name="Property">
+              <ScalarProperty Name="Id" ColumnName="PropertyId" />
+            </EndProperty>
+            <EndProperty Name="User">
+              <ScalarProperty Name="Id" ColumnName="UserId" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

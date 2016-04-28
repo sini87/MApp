@@ -1,4 +1,6 @@
-﻿using MApp.Web.Models;
+﻿using MApp.DA;
+using MApp.DA.Repository;
+using MApp.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,13 +14,9 @@ namespace MApp.Web.Controllers
     public class AuthController : Controller
     {
         [HttpGet]
-        public ActionResult Login(string returnUrl)
+        public ActionResult Login()
         {
-            var model = new LoginModel
-            {
-                ReturnUrl = returnUrl
-            };
-            return View(model);
+            return View();
         }
 
         [HttpPost]
@@ -29,11 +27,13 @@ namespace MApp.Web.Controllers
                 return View(model); //returns the view with the input so that the user doesnt have to retype it again
             }
 
-            if (model.Email == "sinisa.zubic@gmx.at" && model.Password == "passme")
+            MApp.DA.User user = UserOp.Login(model.Email, model.Password);
+
+            if (user != null)
             {
                 var identity = new ClaimsIdentity(new[] {
-                        new Claim(ClaimTypes.Name, "Sinisa Zubic"),
-                        new Claim(ClaimTypes.SerialNumber, "1")
+                        new Claim(ClaimTypes.Name, user.FirstName.TrimStart() + " " + user.LastName.TrimEnd()),
+                        new Claim(ClaimTypes.SerialNumber, user.Id.ToString())
                     }, "ApplicationCookie");
 
                 var ctx = Request.GetOwinContext();
@@ -57,14 +57,27 @@ namespace MApp.Web.Controllers
             return RedirectToAction("Login", "Auth");
         }
 
-
-        private string GetRedirectUrl(string returnUrl)
+        [HttpGet]
+        public ActionResult Registration()
         {
-            if (string.IsNullOrEmpty(returnUrl) || !Url.IsLocalUrl(returnUrl))
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Registration(RegistrationModel model)
+        {
+            if (ModelState.IsValid)
             {
-                return Url.Action("index", "home");
+                if (UserOp.Register(model.Email, model.FirstName, model.LastName, model.Password, model.SecretQuestion, model.Answer, model.StakeholderDescription))
+                {
+                    LoginModel lm = new LoginModel();
+                    lm.Email = model.Email;
+                    lm.Password = model.Password;
+                    return Login(lm);
+                }
             }
-            return returnUrl;
+            ModelState.AddModelError("", "Email already exists");
+            return View(model);
         }
     }
 }

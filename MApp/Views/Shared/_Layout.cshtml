@@ -17,14 +17,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @if (@User.Identity.IsAuthenticated)
-                {
-                    @Html.ActionLink("Hello " + @User.Identity.Name + "!", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-                }
-                else
-                {
-                    @Html.ActionLink("Login", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-                }
+               
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
@@ -41,6 +34,20 @@
                         </li>
                     }
                 </ul>
+                <ul class="nav navbar-nav navbar-left">
+                    @if (@User.Identity.IsAuthenticated)
+                    {
+                        <li>
+                            @Html.ActionLink("Hello " + @User.Identity.Name + "!", "Index", "Home", new { area = "" }, new { @class = "nav navbar-nav navbar-left" })
+                        </li>
+                    }
+                    else
+                    {
+                        <li>
+                            @Html.ActionLink("Login", "Index", "Home", new { area = "" }, new { @class = "nav navbar-nav navbar-left" })
+                        </li>                            
+                    }
+                </ul>
             </div>
 
         </div>
@@ -50,7 +57,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            <p>&copy; @DateTime.Now.Year - MApp</p>
         </footer>
     </div>
 

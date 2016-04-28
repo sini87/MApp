@@ -1,0 +1,16 @@
+﻿@model MApp.Web.Models.RegistrationModel
+@{
+    ViewBag.Title = "Registration";
+}
+
+<h2>Registration</h2>
+
+@Html.ValidationSummary(true, "", new { @style = "color: red" })
+
+@using (Html.BeginForm())
+{
+    @Html.EditorForModel()
+    <p>
+        <button type="submit">Sign up</button>
+    </p>
+}

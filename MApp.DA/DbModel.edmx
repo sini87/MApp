@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="ApplicationDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="ApplicationDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AccessRight">
           <Key>
             <PropertyRef Name="UserId" />
@@ -16,6 +16,8 @@
           <Property Name="ActivityIndex" Type="float" />
           <Property Name="SelfAssessmentValue" Type="float" />
           <Property Name="SelfAssesmentDescr" Type="varchar" MaxLength="500" />
+          <Property Name="MailNotification" Type="bit" Nullable="false" />
+          <Property Name="NotificationLevel" Type="varchar" MaxLength="30" />
         </EntityType>
         <EntityType Name="Alternative">
           <Key>
@@ -37,7 +39,7 @@
           <Property Name="DateTime" Type="date" Nullable="false" />
           <Property Name="IssueId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="Type" Type="nchar" MaxLength="20" />
+          <Property Name="Type" Type="varchar" MaxLength="20" />
           <Property Name="Text" Type="nvarchar(max)" Nullable="false" />
           <Property Name="Anonymous" Type="bit" Nullable="false" />
         </EntityType>
@@ -46,7 +48,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="nchar" MaxLength="50" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="200" />
           <Property Name="Issue" Type="int" Nullable="false" />
           <Property Name="Weight" Type="float" />
@@ -74,7 +76,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="nchar" MaxLength="30" />
+          <Property Name="Name" Type="varchar" MaxLength="30" />
         </EntityType>
         <EntityType Name="HAccessRight">
           <Key>
@@ -84,7 +86,7 @@
           <Property Name="ChangeDate" Type="date" Nullable="false" />
           <Property Name="IssueId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="Action" Type="nchar" MaxLength="50" Nullable="false" />
+          <Property Name="Action" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="HAlternative">
           <Key>
@@ -94,7 +96,7 @@
           <Property Name="ChangeDate" Type="date" Nullable="false" />
           <Property Name="AlternativeId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="Action" Type="nchar" MaxLength="50" Nullable="false" />
+          <Property Name="Action" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="30" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="150" />
           <Property Name="Reason" Type="varchar" MaxLength="100" />
@@ -108,8 +110,8 @@
           <Property Name="ChangeDate" Type="date" Nullable="false" />
           <Property Name="CriterionId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="Action" Type="nchar" MaxLength="50" Nullable="false" />
-          <Property Name="Name" Type="nchar" MaxLength="50" Nullable="false" />
+          <Property Name="Action" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="200" />
           <Property Name="Issue" Type="int" Nullable="false" />
           <Property Name="Weight" Type="float" />
@@ -123,7 +125,7 @@
           <Property Name="ChangeDate" Type="date" Nullable="false" />
           <Property Name="IssueId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="Action" Type="nchar" MaxLength="50" Nullable="false" />
+          <Property Name="Action" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="AlternativeId" Type="int" />
           <Property Name="Explanation" Type="varchar" MaxLength="8000" />
         </EntityType>
@@ -135,15 +137,15 @@
           <Property Name="ChangeDate" Type="date" Nullable="false" />
           <Property Name="IssueId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="Action" Type="nchar" MaxLength="50" Nullable="false" />
-          <Property Name="Title" Type="nchar" MaxLength="50" Nullable="false" />
-          <Property Name="Status" Type="nchar" MaxLength="15" Nullable="false" />
+          <Property Name="Action" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Title" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Status" Type="varchar" MaxLength="15" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="8000" />
-          <Property Name="Setting" Type="nchar" MaxLength="15" />
-          <Property Name="AnonymousPosting" Type="nchar" MaxLength="15" />
+          <Property Name="Setting" Type="varchar" MaxLength="15" />
+          <Property Name="AnonymousPosting" Type="varchar" MaxLength="15" />
           <Property Name="Parent" Type="int" />
           <Property Name="DependsOn" Type="int" />
-          <Property Name="GroupThink" Type="nchar" MaxLength="20" />
+          <Property Name="GroupThink" Type="varchar" MaxLength="20" />
           <Property Name="ReviewRating" Type="float" />
         </EntityType>
         <EntityType Name="HReview">
@@ -155,7 +157,7 @@
           <Property Name="ChangeDate" Type="date" Nullable="false" />
           <Property Name="IssueId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="Action" Type="nchar" MaxLength="50" Nullable="false" />
+          <Property Name="Action" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="HTagIssue">
           <Key>
@@ -167,15 +169,15 @@
           <Property Name="TagId" Type="int" Nullable="false" />
           <Property Name="IssueId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="Action" Type="nchar" MaxLength="50" Nullable="false" />
+          <Property Name="Action" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="InformationRead">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="TName" Type="nchar" MaxLength="40" Nullable="false" />
-          <Property Name="Condition" Type="nchar" MaxLength="100" Nullable="false" />
+          <Property Name="TName" Type="varchar" MaxLength="40" Nullable="false" />
+          <Property Name="Condition" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="Read" Type="bit" Nullable="false" />
         </EntityType>
@@ -184,14 +186,14 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Title" Type="nchar" MaxLength="50" Nullable="false" />
-          <Property Name="Status" Type="nchar" MaxLength="15" Nullable="false" />
+          <Property Name="Title" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Status" Type="varchar" MaxLength="15" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="8000" />
-          <Property Name="Setting" Type="nchar" MaxLength="15" />
-          <Property Name="AnonymousPosting" Type="nchar" MaxLength="15" />
+          <Property Name="Setting" Type="varchar" MaxLength="15" />
+          <Property Name="AnonymousPosting" Type="varchar" MaxLength="15" />
           <Property Name="Parent" Type="int" />
           <Property Name="DependsOn" Type="int" />
-          <Property Name="GroupThink" Type="nchar" MaxLength="20" />
+          <Property Name="GroupThink" Type="varchar" MaxLength="20" />
           <Property Name="ReviewRating" Type="float" />
         </EntityType>
         <EntityType Name="Notification">
@@ -201,7 +203,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="IssueId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="Type" Type="nchar" MaxLength="20" Nullable="false" />
+          <Property Name="Type" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="Text" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="PairwiseComparisonAC">
@@ -231,7 +233,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="nchar" MaxLength="40" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="40" Nullable="false" />
         </EntityType>
         <EntityType Name="Rating">
           <Key>
@@ -274,13 +276,13 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Email" Type="nchar" MaxLength="50" Nullable="false" />
-          <Property Name="FirstName" Type="nchar" MaxLength="30" Nullable="false" />
-          <Property Name="LastName" Type="nchar" MaxLength="30" Nullable="false" />
-          <Property Name="PasswordHash" Type="nchar" MaxLength="30" Nullable="false" />
-          <Property Name="SecretQuestion" Type="nchar" MaxLength="50" />
-          <Property Name="Answer" Type="nchar" MaxLength="50" />
-          <Property Name="StakeholderDescription" Type="nchar" MaxLength="30" />
+          <Property Name="Email" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="FirstName" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="LastName" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="PasswordHash" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="SecretQuestion" Type="varchar" MaxLength="50" />
+          <Property Name="Answer" Type="varchar" MaxLength="50" />
+          <Property Name="StakeholderDescription" Type="varchar" MaxLength="30" />
         </EntityType>
         <EntityType Name="UserGroup">
           <Key>
@@ -1035,8 +1037,7 @@
             <End Role="UserProperty" EntitySet="UserProperty" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ApplicationDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -1054,6 +1055,8 @@
           <NavigationProperty Name="Issue" Relationship="Self.FK_AccessRight_Issue" FromRole="AccessRight" ToRole="Issue" />
           <NavigationProperty Name="User" Relationship="Self.FK_AccessRight_User" FromRole="AccessRight" ToRole="User" />
           <NavigationProperty Name="HAccessRight" Relationship="Self.FK_HAccessRight_AccessRight" FromRole="AccessRight" ToRole="HAccessRight" />
+          <Property Name="MailNotification" Type="Boolean" Nullable="false" />
+          <Property Name="NotificationLevel" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="Alternative">
           <Key>
@@ -1080,7 +1083,7 @@
           <Property Name="DateTime" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="IssueId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Type" Type="String" MaxLength="20" FixedLength="true" Unicode="true" />
+          <Property Name="Type" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="Text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Anonymous" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Issue" Relationship="Self.FK_Comment_Issue" FromRole="Comment" ToRole="Issue" />
@@ -1091,7 +1094,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Description" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
           <Property Name="Issue" Type="Int32" Nullable="false" />
           <Property Name="Weight" Type="Double" />
@@ -1128,7 +1131,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" MaxLength="30" FixedLength="true" Unicode="true" />
+          <Property Name="Name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="User" Relationship="Self.UserGroup" FromRole="Group" ToRole="User" />
         </EntityType>
         <EntityType Name="HAccessRight">
@@ -1139,7 +1142,7 @@
           <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="IssueId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Action" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="AccessRight" Relationship="Self.FK_HAccessRight_AccessRight" FromRole="HAccessRight" ToRole="AccessRight" />
         </EntityType>
         <EntityType Name="HAlternative">
@@ -1150,7 +1153,7 @@
           <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="AlternativeId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Action" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Description" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
           <Property Name="Reason" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
@@ -1166,8 +1169,8 @@
           <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="CriterionId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Action" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Description" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
           <Property Name="Issue" Type="Int32" Nullable="false" />
           <Property Name="Weight" Type="Double" />
@@ -1183,7 +1186,7 @@
           <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="IssueId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Action" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="AlternativeId" Type="Int32" />
           <Property Name="Explanation" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Decision" Relationship="Self.FK_HDecision_Decision" FromRole="HDecision" ToRole="Decision" />
@@ -1197,15 +1200,15 @@
           <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="IssueId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Action" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="Title" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="Status" Type="String" MaxLength="15" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Status" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Description" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
-          <Property Name="Setting" Type="String" MaxLength="15" FixedLength="true" Unicode="true" />
-          <Property Name="AnonymousPosting" Type="String" MaxLength="15" FixedLength="true" Unicode="true" />
+          <Property Name="Setting" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="AnonymousPosting" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
           <Property Name="Parent" Type="Int32" />
           <Property Name="DependsOn" Type="Int32" />
-          <Property Name="GroupThink" Type="String" MaxLength="20" FixedLength="true" Unicode="true" />
+          <Property Name="GroupThink" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="ReviewRating" Type="Double" />
           <NavigationProperty Name="Issue" Relationship="Self.FK_HIssue_Issue" FromRole="HIssue" ToRole="Issue" />
           <NavigationProperty Name="User" Relationship="Self.FK_HIssue_User" FromRole="HIssue" ToRole="User" />
@@ -1219,7 +1222,7 @@
           <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="IssueId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Action" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="Review" Relationship="Self.FK_HReview_Review" FromRole="HReview" ToRole="Review" />
         </EntityType>
         <EntityType Name="HTagIssue">
@@ -1232,7 +1235,7 @@
           <Property Name="TagId" Type="Int32" Nullable="false" />
           <Property Name="IssueId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Action" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="TagIssue" Relationship="Self.FK_HTagIssue_TagIssue" FromRole="HTagIssue" ToRole="TagIssue" />
           <NavigationProperty Name="User" Relationship="Self.FK_HTagIssue_User" FromRole="HTagIssue" ToRole="User" />
         </EntityType>
@@ -1241,8 +1244,8 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="TName" Type="String" MaxLength="40" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="Condition" Type="String" MaxLength="100" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="TName" Type="String" MaxLength="40" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Condition" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
           <Property Name="Read" Type="Boolean" Nullable="false" />
         </EntityType>
@@ -1251,14 +1254,14 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Title" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="Status" Type="String" MaxLength="15" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Status" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Description" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
-          <Property Name="Setting" Type="String" MaxLength="15" FixedLength="true" Unicode="true" />
-          <Property Name="AnonymousPosting" Type="String" MaxLength="15" FixedLength="true" Unicode="true" />
+          <Property Name="Setting" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="AnonymousPosting" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
           <Property Name="Parent" Type="Int32" />
           <Property Name="DependsOn" Type="Int32" />
-          <Property Name="GroupThink" Type="String" MaxLength="20" FixedLength="true" Unicode="true" />
+          <Property Name="GroupThink" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="ReviewRating" Type="Double" />
           <NavigationProperty Name="AccessRight" Relationship="Self.FK_AccessRight_Issue" FromRole="Issue" ToRole="AccessRight" />
           <NavigationProperty Name="Alternative" Relationship="Self.FK_Alternative_Issue" FromRole="Issue" ToRole="Alternative" />
@@ -1280,7 +1283,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="IssueId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Type" Type="String" MaxLength="20" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Type" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Issue" Relationship="Self.FK_Notification_Issue" FromRole="Notification" ToRole="Issue" />
           <NavigationProperty Name="User" Relationship="Self.FK_Notification_User" FromRole="Notification" ToRole="User" />
@@ -1318,7 +1321,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" MaxLength="40" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="40" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="User" Relationship="Self.UserProperty" FromRole="Property" ToRole="User" />
         </EntityType>
         <EntityType Name="Rating">
@@ -1372,13 +1375,13 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Email" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="FirstName" Type="String" MaxLength="30" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="LastName" Type="String" MaxLength="30" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="PasswordHash" Type="String" MaxLength="30" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="SecretQuestion" Type="String" MaxLength="50" FixedLength="true" Unicode="true" />
-          <Property Name="Answer" Type="String" MaxLength="50" FixedLength="true" Unicode="true" />
-          <Property Name="StakeholderDescription" Type="String" MaxLength="30" FixedLength="true" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="FirstName" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="PasswordHash" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="SecretQuestion" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Answer" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="StakeholderDescription" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="AccessRight" Relationship="Self.FK_AccessRight_User" FromRole="User" ToRole="AccessRight" />
           <NavigationProperty Name="Comment" Relationship="Self.FK_Comment_User" FromRole="User" ToRole="Comment" />
           <NavigationProperty Name="CriterionWeight" Relationship="Self.FK_CriterionWeight_User" FromRole="User" ToRole="CriterionWeight" />
@@ -2083,6 +2086,8 @@
           <EntitySetMapping Name="AccessRight">
             <EntityTypeMapping TypeName="ApplicationDBModel.AccessRight">
               <MappingFragment StoreEntitySet="AccessRight">
+                <ScalarProperty Name="NotificationLevel" ColumnName="NotificationLevel" />
+                <ScalarProperty Name="MailNotification" ColumnName="MailNotification" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="IssueId" ColumnName="IssueId" />
                 <ScalarProperty Name="Right" ColumnName="Right" />

@@ -32,7 +32,7 @@ namespace MApp.Web.Controllers
             if (user != null)
             {
                 var identity = new ClaimsIdentity(new[] {
-                        new Claim(ClaimTypes.Name, user.FirstName.TrimStart() + " " + user.LastName.TrimEnd()),
+                        new Claim(ClaimTypes.Name, user.FirstName + " " + user.LastName),
                         new Claim(ClaimTypes.SerialNumber, user.Id.ToString())
                     }, "ApplicationCookie");
 

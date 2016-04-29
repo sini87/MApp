@@ -26,6 +26,8 @@ namespace MApp.DA
         public Nullable<double> ActivityIndex { get; set; }
         public Nullable<double> SelfAssessmentValue { get; set; }
         public string SelfAssesmentDescr { get; set; }
+        public bool MailNotification { get; set; }
+        public string NotificationLevel { get; set; }
     
         public virtual Issue Issue { get; set; }
         public virtual User User { get; set; }

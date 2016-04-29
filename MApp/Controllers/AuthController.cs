@@ -64,7 +64,7 @@ namespace MApp.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Registration(RegistrationModel model)
+        public ActionResult Registration(UserModel model)
         {
             if (ModelState.IsValid)
             {

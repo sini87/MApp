@@ -5,8 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - My ASP.NET Application</title>
     <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <script src="~/Scripts/modernizr-2.6.2.js"></script>
+    <script src="~/Scripts/knockout-3.4.0.js"></script>
+    <script src="~/Scripts/knockout.mapping-latest.js"></script>
+    <script src="~/Scripts/knockout-3.4.0.debug.js"></script>
+    <script src="~/Scripts/knockout.mapping-latest.debug.js"></script>
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -39,6 +44,9 @@
                     {
                         <li>
                             @Html.ActionLink("Hello " + @User.Identity.Name + "!", "Index", "Home", new { area = "" }, new { @class = "nav navbar-nav navbar-left" })
+                        </li>
+                        <li>
+                            @Html.ActionLink("Profile", "Index", "Profile", new { area = "" }, new { @class = "nav navbar-nav navbar-left" })
                         </li>
                     }
                     else

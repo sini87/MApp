@@ -1,5 +1,6 @@
 ﻿using MApp.App_Start;
 using MApp.Web.App_Start;
+using MApp.Web.CustomLibraries;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace MApp
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+            ControllerBuilder.Current.SetControllerFactory(new DefaultControllerFactory(new CultureAwareControllerActivator()));
         }
     }
 }

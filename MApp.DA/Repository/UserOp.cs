@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -60,6 +61,41 @@ namespace MApp.DA.Repository
             }
             
             return false;
+        }
+
+        /// <summary>
+        /// retrieves user by Id
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public static User GetUser(int userId)
+        {
+            ApplicationDBEntities ctx = DbConnection.Instance.DbContext;
+            User user = ctx.User.Find(userId);
+            return user;
+        }
+
+        /// <summary>
+        /// updates user informations
+        /// </summary>
+        /// <param name="u">User</param>
+        public static void UpdateUser(User userUpdate)
+        {
+            ApplicationDBEntities ctx = DbConnection.Instance.DbContext;
+            User user = ctx.User.Find(userUpdate.Id);
+            user.Email = userUpdate.Email;
+            user.FirstName = userUpdate.FirstName;
+            user.LastName = userUpdate.LastName;
+            user.SecretQuestion = userUpdate.SecretQuestion;
+            user.Answer = userUpdate.Answer;
+            if (userUpdate.StakeholderDescription != null && userUpdate.StakeholderDescription.Length == 0)
+            {
+                user.StakeholderDescription = null;
+            }else
+            {
+                user.StakeholderDescription = userUpdate.StakeholderDescription;
+            }
+            ctx.SaveChanges();
         }
     }
 }

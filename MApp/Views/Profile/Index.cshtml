@@ -1,0 +1,36 @@
+﻿@using PerpetuumSoft.Knockout
+@model MApp.Web.Models.ProfileModel
+@{
+    ViewBag.Title = "Userprofile - " + ViewData["Name"];
+    var ko = Html.CreateKnockoutContext();
+}
+
+<body>
+    <h2>Userprofile of @ViewData["Name"]</h2>
+
+    <div class="form-group">
+        <label for="email">E-Mail</label>
+        <input class="form-control" @ko.Bind.Value(m => m.Email) id="email" name="Email" type="email" />    
+        <label for="firstName">First Name</label>
+        <input type="text" class="form-control" id="firstName" @ko.Bind.Value(m => m.FirstName) />
+        <label for="lastName">Last Name</label>
+        <input type="text" class="form-control" id="lastName" @ko.Bind.Value(m => m.LastName) />
+        @*<label for="password">Password</label>
+        <input id="password" class="form-control" type="password" @ko.Bind.Value(m => m.Password) />*@        
+        <label for="secretQuestion">Secret Question</label>
+        <input id="secretQuestion" type="text" class="form-control" @ko.Bind.Value(m => m.SecretQuestion) />
+        <label for="answer">Answer</label>
+        <input id="answer" type="text" class="form-control" @ko.Bind.Value(m => m.Answer) />
+        <label for="stakeholderDescription">Stakeholder Description</label>
+        <input id="stakeholderDescription" type="text" class="form-control" @ko.Bind.Value(m => m.StakeholderDescription) />
+    </div>
+    <button id="save" type="button" class="btn btn-primary btn-md" onclick="javascript: onSaveClick()">Save</button>
+
+    @ko.Apply(Model)
+</body>
+
+<script type="text/javascript">
+    function onSaveClick() {
+        ko.utils.postJson("", { ProfileModel: ko.toJS(viewModel) })
+    }
+</script>

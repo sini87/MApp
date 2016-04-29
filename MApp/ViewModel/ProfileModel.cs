@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MApp.DA;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +8,7 @@ using System.Web;
 
 namespace MApp.Web.Models
 {
-    public class RegistrationModel
+    public class ProfileModel
     {
         [ScaffoldColumn(false)]
         public int Id { get; set; }
@@ -30,5 +31,28 @@ namespace MApp.Web.Models
         public string Answer { get; set; }
         [DisplayName("Stakeholder description")]
         public string StakeholderDescription { get; set; }
+        [ScaffoldColumn(false)]
+        public List<PropertyModel> Properties {  get; set; }
+
+        public string Name {
+            get
+            {
+                return FirstName + " " + LastName;
+            }
+        }
+
+        public User GetUserEntity()
+        {
+            User user = new User();
+            user.FirstName = FirstName;
+            user.LastName = LastName;
+            user.PasswordHash = Password;
+            user.Answer = Answer;
+            user.StakeholderDescription = StakeholderDescription;
+            user.SecretQuestion = SecretQuestion;
+            user.Email = Email;
+            user.Id = Id;
+            return user;
+        }
     }
 }

@@ -2,6 +2,7 @@
 using MApp.DA.Repository;
 using MApp.Web.CustomLibraries;
 using MApp.Web.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace MApp.Web.Controllers
 {
     public class ProfileController : Controller
     {
+        static List<PropertyModel> pmList;
         // GET: Profile
         public ActionResult Index()
         {
@@ -27,6 +29,9 @@ namespace MApp.Web.Controllers
                 propModelList.Add(PropertyModel.FromEntity(p));
             }
             model.Properties = propModelList;
+            ViewData["Properties"] = propModelList;
+            pmList = propModelList;
+            model.AllProperties = propModelList;
             ViewData["Name"] = model.Name;
 
             return View(model);
@@ -38,6 +43,16 @@ namespace MApp.Web.Controllers
             UserOp.UpdateUser(profileModel.GetUserEntity());
             ViewData["Name"] = profileModel.Name;
             return View(profileModel);
+        }
+
+        public ActionResult GetProperties()
+        {
+            List<string> l = new List<string>();
+            foreach (PropertyModel propModel in pmList)
+            {
+                l.Add(JsonConvert.SerializeObject(propModel));
+            }
+            return Json(new { data = l }, JsonRequestBehavior.AllowGet);
         }
     }
 }

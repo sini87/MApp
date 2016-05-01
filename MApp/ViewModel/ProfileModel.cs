@@ -33,6 +33,8 @@ namespace MApp.Web.Models
         public string StakeholderDescription { get; set; }
         [ScaffoldColumn(false)]
         public List<PropertyModel> Properties {  get; set; }
+        public string Props { get; set; }
+        public List<PropertyModel> AllProperties { get; set; }
 
         public string Name {
             get

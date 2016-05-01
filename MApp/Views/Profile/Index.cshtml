@@ -1,31 +1,40 @@
 ﻿@using PerpetuumSoft.Knockout
+@using MApp.Web.Models
 @model MApp.Web.Models.ProfileModel
 @{
     ViewBag.Title = "Userprofile - " + ViewData["Name"];
     var ko = Html.CreateKnockoutContext();
 }
-
 <body>
-    <h2>Userprofile of @ViewData["Name"]</h2>
+    <div class="container">
+        <h2>Userprofile of @ViewData["Name"]</h2>
 
-    <div class="form-group">
-        <label for="email">E-Mail</label>
-        <input class="form-control" @ko.Bind.Value(m => m.Email) id="email" name="Email" type="email" />    
-        <label for="firstName">First Name</label>
-        <input type="text" class="form-control" id="firstName" @ko.Bind.Value(m => m.FirstName) />
-        <label for="lastName">Last Name</label>
-        <input type="text" class="form-control" id="lastName" @ko.Bind.Value(m => m.LastName) />
-        @*<label for="password">Password</label>
-        <input id="password" class="form-control" type="password" @ko.Bind.Value(m => m.Password) />*@        
-        <label for="secretQuestion">Secret Question</label>
-        <input id="secretQuestion" type="text" class="form-control" @ko.Bind.Value(m => m.SecretQuestion) />
-        <label for="answer">Answer</label>
-        <input id="answer" type="text" class="form-control" @ko.Bind.Value(m => m.Answer) />
-        <label for="stakeholderDescription">Stakeholder Description</label>
-        <input id="stakeholderDescription" type="text" class="form-control" @ko.Bind.Value(m => m.StakeholderDescription) />
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label for="email">E-Mail</label>
+                    <input class="form-control" @ko.Bind.Value(m => m.Email) id="email" name="Email" type="email" />
+                    <label for="firstName">First Name</label>
+                    <input type="text" class="form-control" id="firstName" @ko.Bind.Value(m => m.FirstName) />
+                    <label for="lastName">Last Name</label>
+                    <input type="text" class="form-control" id="lastName" @ko.Bind.Value(m => m.LastName) />
+                    @*<label for="password">Password</label>
+                    <input id="password" class="form-control" type="password" @ko.Bind.Value(m => m.Password) />*@
+                    <label for="secretQuestion">Secret Question</label>
+                    <input id="secretQuestion" type="text" class="form-control" @ko.Bind.Value(m => m.SecretQuestion) />
+                    <label for="answer">Answer</label>
+                    <input id="answer" type="text" class="form-control" @ko.Bind.Value(m => m.Answer) />
+                    <label for="stakeholderDescription">Stakeholder Description</label>
+                    <input id="stakeholderDescription" type="text" class="form-control" @ko.Bind.Value(m => m.StakeholderDescription) />
+                </div>
+            </div>
+                
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="tokenfield" />
+            </div>
+        </div>
+        <button id="save" type="button" class="btn btn-default" onclick="javascript: onSaveClick()">Save</button>
     </div>
-    <button id="save" type="button" class="btn btn-primary btn-md" onclick="javascript: onSaveClick()">Save</button>
-
     @ko.Apply(Model)
 </body>
 
@@ -33,4 +42,45 @@
     function onSaveClick() {
         ko.utils.postJson("", { ProfileModel: ko.toJS(viewModel) })
     }
+
+    $(document).ready(function () {
+        var token = [];
+        var engine;
+        $.get("Profile/GetProperties", function (response) {
+            $.each(response.data, function (i, v) {
+                var obj = JSON.parse(v)
+                token.push({ label: obj.Id.toString(), value: obj.Name });
+                console.log(v);
+            });
+            engine = new Bloodhound({
+                local: token,
+                datumTokenizer: function (d) {
+                    return Bloodhound.tokenizers.whitespace(d.value);
+                },
+                queryTokenizer: Bloodhound.tokenizers.whitespace
+
+            });
+            engine.initialize();
+            console.log(token);
+            $('#tokenfield').on('tokenfield:createtoken', function (e) {
+                var data = e.attrs.value.split('|')
+                e.attrs.value = data[1] || data[0]
+                e.attrs.label = data[1] ? data[0] + ' (' + data[1] + ')' : data[0]
+            }).on('tokenfield:createdtoken', function (e) {
+                var re = /\S+\S+\.\S+/
+                var valid = re.test(e.attrs.value)
+                if (!valid) {
+                    $(e.relatedTarget).addClass('invalid')
+                }
+            }).on('tokenfield:edittoken', function (e) {
+                if (e.attrs.label !== e.attrs.value) {
+                    var label = e.attrs.label.split(' (')
+                    e.attrs.value = label[0] + '|' + e.attrs.value
+                }
+            }).on('tokenfield:removedtoken', function (e) {
+            }).tokenfield({
+                typeahead: [null, { source: engine.ttAdapter() }]
+            });
+        });
+    });
 </script>

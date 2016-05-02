@@ -39,48 +39,77 @@
 </body>
 
 <script type="text/javascript">
+    var usrProp = []
+
+
     function onSaveClick() {
-        ko.utils.postJson("", { ProfileModel: ko.toJS(viewModel) })
+        var tmpVM = ko.toJS(viewModel)
+        
+        tmpVM.Properties = usrProp
+        ko.utils.postJson("", { ProfileModel: tmpVM })
     }
 
     $(document).ready(function () {
         var token = [];
         var engine;
-        $.get("Profile/GetProperties", function (response) {
-            $.each(response.data, function (i, v) {
-                var obj = JSON.parse(v)
-                token.push({ label: obj.Id.toString(), value: obj.Name });
-                console.log(v);
-            });
-            engine = new Bloodhound({
-                local: token,
-                datumTokenizer: function (d) {
-                    return Bloodhound.tokenizers.whitespace(d.value);
-                },
-                queryTokenizer: Bloodhound.tokenizers.whitespace
 
-            });
-            engine.initialize();
-            console.log(token);
-            $('#tokenfield').on('tokenfield:createtoken', function (e) {
-                var data = e.attrs.value.split('|')
-                e.attrs.value = data[1] || data[0]
-                e.attrs.label = data[1] ? data[0] + ' (' + data[1] + ')' : data[0]
-            }).on('tokenfield:createdtoken', function (e) {
-                var re = /\S+\S+\.\S+/
-                var valid = re.test(e.attrs.value)
-                if (!valid) {
-                    $(e.relatedTarget).addClass('invalid')
+        var allProperties = []
+        for (var j = 0; j < viewModelJs.AllProperties.length; j++) {
+            allProperties.push({ value: viewModelJs.AllProperties[j].Id, label: viewModelJs.AllProperties[j].Name })
+        }
+
+        var userProperties = []
+        for (var j = 0; j < viewModelJs.Properties.length; j++) {
+            userProperties.push({ value: viewModelJs.Properties[j].Id, label: viewModelJs.Properties[j].Name })
+        }
+
+        usrProp = viewModelJs.Properties;
+
+        $('#tokenfield')
+            .tokenfield({
+                autocomplete: {
+                    source: allProperties,
+                    delay: 100
+                },
+                showAutocompleteOnFocus: true
+            })
+            .tokenfield('setTokens', userProperties)
+        ;
+        
+        $('#tokenfield').on('tokenfield:createtoken', function (e) {
+            var tokenExists = false
+            for (i = 0; i < usrProp.length; i++) {
+                if (usrProp[i].Name == e.attrs.label) {
+                    tokenExists = true
+                    alert('Property already exists')
                 }
-            }).on('tokenfield:edittoken', function (e) {
-                if (e.attrs.label !== e.attrs.value) {
-                    var label = e.attrs.label.split(' (')
-                    e.attrs.value = label[0] + '|' + e.attrs.value
+            }
+            if (tokenExists) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                return;
+            } else {
+                if (e.attrs.label == e.attrs.value) {
+                    e.attrs.value = -1
                 }
-            }).on('tokenfield:removedtoken', function (e) {
-            }).tokenfield({
-                typeahead: [null, { source: engine.ttAdapter() }]
-            });
+                usrProp.push({ Id: e.attrs.value, Name: e.attrs.label })
+            }
         });
+        $('#tokenfield').on('tokenfield:createtoken', function (e) {
+            
+        });
+        $('#tokenfield').on('tokenfield:removedtoken', function (e) {
+            var idx;
+            for (i = 0; i < usrProp.length; i++) {
+                if (usrProp[i].Id > 0 && parseInt(e.attrs.value) == usrProp[i].Id) {
+                    idx = i
+                } else if (usrProp[i].Name == e.attrs.label)
+                {
+                    idx = i
+                }
+                
+            }
+            usrProp.splice(idx,1)
+        })
     });
 </script>

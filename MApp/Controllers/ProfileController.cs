@@ -14,7 +14,6 @@ namespace MApp.Web.Controllers
 {
     public class ProfileController : Controller
     {
-        static List<PropertyModel> pmList;
         // GET: Profile
         public ActionResult Index()
         {
@@ -22,17 +21,8 @@ namespace MApp.Web.Controllers
             int userId = Convert.ToInt32(claimsIdentity.FindFirst(ClaimTypes.SerialNumber).Value);
             ProfileModel model = UserModel.DbEntityToProfilModel(UserOp.GetUser(userId));
 
-            List<PropertyModel> propModelList = new List<PropertyModel>();
-
-            foreach (Property p in PropertyOp.Properties)
-            {
-                propModelList.Add(PropertyModel.FromEntity(p));
-            }
-            model.Properties = propModelList;
-            ViewData["Properties"] = propModelList;
-            pmList = propModelList;
-            model.AllProperties = propModelList;
-            ViewData["Name"] = model.Name;
+            model.AllProperties = PropertyModel.ToModelList(PropertyOp.Properties);
+            model.Properties = PropertyModel.ToModelList(PropertyOp.GetUserProperties(userId));
 
             return View(model);
         }
@@ -40,19 +30,17 @@ namespace MApp.Web.Controllers
         [HttpPost]
         public ActionResult Index([FromJson] ProfileModel profileModel)
         {
-            UserOp.UpdateUser(profileModel.GetUserEntity());
-            ViewData["Name"] = profileModel.Name;
-            return View(profileModel);
-        }
-
-        public ActionResult GetProperties()
-        {
-            List<string> l = new List<string>();
-            foreach (PropertyModel propModel in pmList)
+            if (profileModel == null)
             {
-                l.Add(JsonConvert.SerializeObject(propModel));
+                return View() ;
             }
-            return Json(new { data = l }, JsonRequestBehavior.AllowGet);
+            UserOp.UpdateUser(profileModel.GetUserEntity());
+            List<Property> pm = PropertyModel.ToEntityList(profileModel.Properties);
+            pm = pm.GroupBy(test => test.Name)
+                   .Select(grp => grp.First())
+                   .ToList();
+            profileModel.Properties = PropertyModel.ToModelList(PropertyOp.AddUserProperties(profileModel.Id, pm));
+            return View(profileModel);
         }
     }
 }

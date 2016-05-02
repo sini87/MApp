@@ -68,7 +68,7 @@ namespace MApp.Web.Models
             model.Properties = new List<PropertyModel>();
             foreach (Property p in user.Property.ToList())
             {
-                model.Properties.Add(PropertyModel.FromEntity(p));
+                model.Properties.Add(PropertyModel.ToModel(p));
             }
             model.SecretQuestion = user.SecretQuestion;
             model.StakeholderDescription = user.StakeholderDescription;

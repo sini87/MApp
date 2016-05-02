@@ -32,8 +32,7 @@ namespace MApp.Web.Models
         [DisplayName("Stakeholder description")]
         public string StakeholderDescription { get; set; }
         [ScaffoldColumn(false)]
-        public List<PropertyModel> Properties {  get; set; }
-        public string Props { get; set; }
+        public List<PropertyModel> Properties { get; set; }
         public List<PropertyModel> AllProperties { get; set; }
 
         public string Name {
@@ -55,6 +54,11 @@ namespace MApp.Web.Models
             user.Email = Email;
             user.Id = Id;
             return user;
+        }
+
+        public ProfileModel()
+        {
+            Properties = new List<PropertyModel>();
         }
     }
 }

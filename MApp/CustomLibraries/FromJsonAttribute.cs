@@ -34,6 +34,9 @@ namespace MApp.Web.CustomLibraries
                 catch(System.Reflection.AmbiguousMatchException ex)
                 {
                     Console.WriteLine(ex.Message);
+                }catch(InvalidOperationException ex)
+                {
+                    Console.WriteLine(ex);
                 }
                 return ret;
             }

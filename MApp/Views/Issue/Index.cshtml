@@ -1,4 +1,4 @@
-﻿@model List<MApp.Web.Models.IssueModel>
+﻿@model List<MApp.Middleware.Models.IssueModel>
 @{
     ViewBag.Title = "Issue Overvies";
 }
@@ -26,7 +26,7 @@
                     treegrid = treegrid + " treegrid-parent-" + issue.Parent;
                 }
                 <tr class="@treegrid">
-                    <td><a href="@Url.Action("Creating", "Issue", new { Id = @issue.Id })">@issue.Title</a></td>
+                    <td><a href="@Url.Action("Creating", "Issue", new { issueId = @issue.Id })">@issue.Title</a></td>
                     <td>@issue.Status</td>
                     <td>@issue.Description</td>
                 </tr>

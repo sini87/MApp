@@ -1,5 +1,6 @@
-﻿using MApp.DA;
-using MApp.DA.Repository;
+﻿using MApp.DA.Repository;
+using MApp.Middleware;
+using MApp.Middleware.Models;
 using MApp.Web.Models;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,8 @@ namespace MApp.Web.Controllers
                 return View(model); //returns the view with the input so that the user doesnt have to retype it again
             }
 
-            MApp.DA.User user = UserOp.Login(model.Email, model.Password);
+            Authentication auth = new Authentication();
+            UserModel user = auth.Login(model.Email, model.Password);
 
             if (user != null)
             {

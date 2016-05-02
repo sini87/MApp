@@ -239,15 +239,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\IListModel.cs" />
-    <Compile Include="Models\IssueModel.cs" />
-    <Compile Include="Models\ListModel.cs" />
-    <Compile Include="Models\LoginModel.cs" />
-    <Compile Include="Models\PropertyModel.cs" />
-    <Compile Include="Models\TagModel.cs" />
+    <Compile Include="ViewModel\LoginModel.cs" />
     <Compile Include="ViewModel\CreatingVM.cs" />
-    <Compile Include="ViewModel\ProfileModel.cs" />
-    <Compile Include="Models\UserModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -264,6 +257,7 @@
     <Content Include="Views\Auth\Registration.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Issue\Index.cshtml" />
+    <Content Include="Views\Issue\Creating.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -276,8 +270,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MApp.DA\MApp.DA.csproj">
-      <Project>{95fce6eb-efb9-4427-a883-b3d732af78d7}</Project>
+      <Project>{95FCE6EB-EFB9-4427-A883-B3D732AF78D7}</Project>
       <Name>MApp.DA</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MApp.Middleware\MApp.Middleware.csproj">
+      <Project>{09bf29e8-3148-4492-a7ae-c662e80dee96}</Project>
+      <Name>MApp.Middleware</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace MApp.Web.Models
+namespace MApp.Middleware.Models
 {
     abstract public class ListModel<Entity,Model> where Model : IListModel<Entity,Model>
     {

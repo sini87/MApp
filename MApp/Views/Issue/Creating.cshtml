@@ -1,0 +1,65 @@
+﻿@using PerpetuumSoft.Knockout
+@model MApp.Web.ViewModel.CreatingVM
+@{
+    var ko = Html.CreateKnockoutContext();
+    ViewBag.Title = "Issue - " + ko.Bind.Value(m => m.Issue.Title);
+}
+<div class="page-header">
+    <h2>Creating</h2>
+</div>
+
+<div class="container">
+    <div class="col-sm-6">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input class="form-control" data-bind="value: Title" id="titleInput" name="Title" type="text" />
+            <label for="description">Description</label>
+            <textarea class="form-control" data-bind="value : viewModelJs.Issue.Description" id="description" name="description"></textarea>
+            <label data-bind="text: viewModelJs.Issue.Status"></label>
+            <p>Aonnymous <input type="checkbox" data-bind="checked: viewModelJs.Issue.Anonymous" /></p>
+            @if (Model.Issue.Parent != null)
+            {
+                <label for="parent">Parent Issue:</label>
+                <a href="Creating?issueId=@Model.Issue.Parent">@Model.Issue.ParentTitle</a>
+            }
+            @if (Model.Issue.DependsOn != null)
+            {
+                <label for="parent">Depends on Issue:</label>
+                <a href="Creating?issueId=@Model.Issue.DependsOnTitle">@Model.Issue.ParentTitle</a>
+            }
+            <input @ko.Bind.Value(i => i.Title) />
+            <label data-bind="@ko.Bind.Value(x => x.Title)"></label>
+        </div>
+    </div>
+    <button id="save" type="button" class="btn btn-default" onclick="javascript: onSaveClick()">Save</button>
+</div>
+
+@ko.Apply(Model)
+
+
+<script type="text/javascript">
+    var IssueViewModel = function (data) {
+        var self = this;
+        ko.mapping.fromJS(data, issueMapping, self);
+    }
+
+    var issueMapping = {
+        'Issue': {
+            create: function (options) {
+                if (options.data != null) return new IssueViewModel(options.data);
+            }
+        }
+    }
+
+    function onSaveClick() {
+        var tmpVM = ko.toJS(viewModel)
+
+        //tmpVM.Properties = usrProp
+        ko.utils.postJson("", { CreatingVM: tmpVM })
+    }
+
+    $(document).ready(function () {
+        var myViewModel = new IssueViewModel(viewModelJs.Issue);
+        ko.applyBindings(myViewModel, document.getElementById('titleInput'));
+    });
+</script>

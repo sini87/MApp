@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MApp.Web.Models
+namespace MApp.Middleware.Models
 {
     public interface IListModel<Entity, ListModel>
     {

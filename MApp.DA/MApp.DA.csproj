@@ -137,6 +137,7 @@
     <Compile Include="Repository\IssueOp.cs" />
     <Compile Include="Repository\Operations.cs" />
     <Compile Include="Repository\PropertyOp.cs" />
+    <Compile Include="Repository\TagOp.cs" />
     <Compile Include="Repository\UserOp.cs" />
     <Compile Include="Review.cs">
       <DependentUpon>DbModel.tt</DependentUpon>

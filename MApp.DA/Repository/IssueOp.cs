@@ -12,12 +12,6 @@ namespace MApp.DA.Repository
         {
             User user = UserOp.GetUser(userId);
 
-            //var query = from issue in Ctx.Issue
-            //            join ar in Ctx.AccessRight on issue.Id equals ar.IssueId
-            //            join u in Ctx.User on ar.UserId equals userId
-            //            select issue;
-
-
             var query = from Issue in Ctx.Issue
                         where
                               (from AccessRight in Ctx.AccessRight

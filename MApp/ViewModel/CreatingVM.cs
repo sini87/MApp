@@ -1,4 +1,4 @@
-﻿using MApp.Web.Models;
+﻿using MApp.Middleware.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +11,7 @@ namespace MApp.Web.ViewModel
         public IssueModel Issue { get; set; }
         public List<TagModel> Tags { get; set; }
         public List<TagModel> AllTags { get; set; }
+        public string Title { get; set; }
+        public string Desc { get; set; }
     }
 }

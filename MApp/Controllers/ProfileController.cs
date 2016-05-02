@@ -1,5 +1,5 @@
-﻿using MApp.DA;
-using MApp.DA.Repository;
+﻿using MApp.Middleware;
+using MApp.Middleware.Models;
 using MApp.Web.CustomLibraries;
 using MApp.Web.Models;
 using Newtonsoft.Json;
@@ -19,12 +19,9 @@ namespace MApp.Web.Controllers
         {
             var claimsIdentity = User.Identity as ClaimsIdentity;
             int userId = Convert.ToInt32(claimsIdentity.FindFirst(ClaimTypes.SerialNumber).Value);
-            ProfileModel model = UserModel.DbEntityToProfilModel(UserOp.GetUser(userId));
+            Authentication auth = new Authentication();
 
-            model.AllProperties = PropertyModel.ToModelList(PropertyOp.Properties);
-            model.Properties = PropertyModel.ToModelList(PropertyOp.GetUserProperties(userId));
-
-            return View(model);
+            return View(auth.GetUserProfileModel(userId));
         }
 
         [HttpPost]
@@ -34,13 +31,8 @@ namespace MApp.Web.Controllers
             {
                 return View() ;
             }
-            UserOp.UpdateUser(profileModel.GetUserEntity());
-            List<Property> pm = PropertyModel.ToEntityList(profileModel.Properties);
-            pm = pm.GroupBy(test => test.Name)
-                   .Select(grp => grp.First())
-                   .ToList();
-            profileModel.Properties = PropertyModel.ToModelList(PropertyOp.AddUserProperties(profileModel.Id, pm));
-            return View(profileModel);
+            Authentication auth = new Authentication();
+            return View(auth.UpdateProfile(profileModel));
         }
     }
 }

@@ -4,8 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - My ASP.NET Application</title>
-    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
-    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
+    
     <link href="~/Content/jquery-ui.css" rel="stylesheet" type="text/css" />
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="~/Content/bootstrap-tokenfield/bootstrap-tokenfield.css" rel="stylesheet" type="text/css" />
@@ -22,6 +21,12 @@
     <script type="text/javascript" src="~/Scripts/typeahead.bundle.min.js"></script>
     <script type="text/javascript" src="~/Scripts/jquery-ui-1.11.4.js"></script>
 
+    <script type="text/javascript" src="~/Scripts/jquery.treegrid.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery.treegrid.bootstrap3.js"></script>
+    <link rel="stylesheet" href="~/Content/jquery.treegrid.css" />
+
+
+    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
     @*@Scripts.Render("~/bundles/jqueryval")*@
 
 
@@ -35,18 +40,24 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-               
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
                     @if (User.Identity.IsAuthenticated)
                     {
+                        <li >
+                            <a href="@Url.Action("Index", "Profile")"><span class="glyphicon glyphicon-user"></span> @User.Identity.Name</a>
+                        </li>
                         <li>
-                            <a href="@Url.Action("Logout", "Auth")">Logout</a>
+                            <a href="@Url.Action("Logout", "Auth")"><span class="glyphicon glyphicon-log-out"></span> Logout</a>
                         </li>
                     }
                     else
                     {
+                        <li>
+                            @*@Html.ActionLink("Login", "Index", "Home", new { area = "" }, new { @class = "nav navbar-nav navbar-left" })*@
+                            <a href="@Url.Action("Login", "Auth")"><span class="glyphicon glyphicon-user"></span> Login</a>
+                        </li>
                         <li>
                             <a href="@Url.Action("Registration", "Auth")"><span class="glyphicon glyphicon-log-in"></span> Register</a>
                         </li>
@@ -56,18 +67,17 @@
                     @if (@User.Identity.IsAuthenticated)
                     {
                         <li>
-                            @Html.ActionLink("Hello " + @User.Identity.Name + "!", "Index", "Home", new { area = "" }, new { @class = "nav navbar-nav navbar-left" })
+                            @Html.ActionLink("MApp", "Index", "Issue", new { area = "" }, new { @class = "nav navbar-nav navbar-left" })
                         </li>
+                        
+                        
                         <li>
-                            @Html.ActionLink("Profile", "Index", "Profile", new { area = "" }, new { @class = "nav navbar-nav navbar-left" })
+                            <a href="@Url.Action("Creating", "Issue")"><span class="glyphicon glyphicon-plus"></span> Create New Issue</a>
                         </li>
                     }
                     else
                     {
-                        <li>
-                            @*@Html.ActionLink("Login", "Index", "Home", new { area = "" }, new { @class = "nav navbar-nav navbar-left" })*@
-                            <a href="@Url.Action("Login", "Auth")"><span class="glyphicon glyphicon-user"></span> Login</a>
-                        </li>                            
+                        <li>MApp</li>                            
                     }
                 </ul>
             </div>

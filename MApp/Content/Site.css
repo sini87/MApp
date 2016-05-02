@@ -16,3 +16,6 @@ textarea {
     max-width: 280px;
 }
 
+.nav-list-item a {
+    font-size: larger
+}

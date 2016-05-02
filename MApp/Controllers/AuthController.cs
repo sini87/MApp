@@ -41,7 +41,7 @@ namespace MApp.Web.Controllers
 
                 authManager.SignIn(identity);
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Issue");
             }
 
             ModelState.AddModelError("", "Invalid email or password");

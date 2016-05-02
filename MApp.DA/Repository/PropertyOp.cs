@@ -56,6 +56,7 @@ namespace MApp.DA.Repository
                     updateProp = ctx.Property.Create();
                     updateProp.Name = prop.Name;
                     updateProp = ctx.Property.Add(updateProp);
+                    ctx.Entry(updateProp).State = EntityState.Added;
                     ctx.SaveChanges();
                 }
                 else
@@ -63,6 +64,7 @@ namespace MApp.DA.Repository
                     updateProp = ctx.Property.Find(prop.Id);
                 }
                 user.Property.Add(updateProp);
+                ctx.Entry(user).State = EntityState.Modified;
                 ctx.SaveChanges();
             }
             return user.Property.ToList();

@@ -2,64 +2,128 @@
 @model MApp.Web.ViewModel.CreatingVM
 @{
     var ko = Html.CreateKnockoutContext();
-    ViewBag.Title = "Issue - " + ko.Bind.Value(m => m.Issue.Title);
+    ViewBag.Title = "Issue - " + @Model.Issue.Title;
 }
 <div class="page-header">
     <h2>Creating</h2>
 </div>
 
 <div class="container">
-    <div class="col-sm-6">
+    <div class="col-md-6">
         <div class="form-group">
-            <label for="title">Title</label>
-            <input class="form-control" data-bind="value: Title" id="titleInput" name="Title" type="text" />
+            <label for="titleInput">Title</label>
+            <input id="titleInput" class="form-control" data-bind="textInput: viewModel.Issue.Title" />
             <label for="description">Description</label>
-            <textarea class="form-control" data-bind="value : viewModelJs.Issue.Description" id="description" name="description"></textarea>
-            <label data-bind="text: viewModelJs.Issue.Status"></label>
-            <p>Aonnymous <input type="checkbox" data-bind="checked: viewModelJs.Issue.Anonymous" /></p>
-            @if (Model.Issue.Parent != null)
-            {
-                <label for="parent">Parent Issue:</label>
-                <a href="Creating?issueId=@Model.Issue.Parent">@Model.Issue.ParentTitle</a>
-            }
-            @if (Model.Issue.DependsOn != null)
-            {
-                <label for="parent">Depends on Issue:</label>
-                <a href="Creating?issueId=@Model.Issue.DependsOnTitle">@Model.Issue.ParentTitle</a>
-            }
-            <input @ko.Bind.Value(i => i.Title) />
-            <label data-bind="@ko.Bind.Value(x => x.Title)"></label>
+            <textarea class="form-control" data-bind="value: viewModel.Issue.Description" id="description" name="description"></textarea>
+            <label for="issueStatus">Issue status:</label>
+            <label id="issueStatus" data-bind="text: viewModel.Issue.Status"></label>
+            <div class="checkbox">
+                <label id="anonymousPostingLabel">
+                    Anonymous posting? <input id="anonymous" type="checkbox" data-bind="checked: viewModel.Issue.AnonymousPosting" />
+                </label>
+            </div>
+            <p>
+                <label for="selectRootIssue">Parent Issue:</label>
+                <select class="selectpicker" data-live-search="true" id="selectRootIssue" data-bind="options: viewModel.Issues, optionsText: 'Title', optionsValue: 'Id', value: viewModel.Issue.Parent"></select>
+                <a data-bind="text: viewModel.parentDDText, attr: {href: '?issueId=' + viewModel.Issue.Parent}"></a>
+            </p>
+            <p>
+                <label for="selectdependsOnIssue">Depends on Issue:</label>
+                <select class="selectpicker" data-live-search="true" id="selectdependsOnIssue" data-bind="options: viewModel.Issues, optionsText: 'Title', optionsValue: 'Id', value: viewModel.Issue.DependsOn"></select>
+            </p>
+
         </div>
+        <button id="save" type="button" class="btn btn-primary" onclick="javascript: onSaveClick()">Save</button>
     </div>
-    <button id="save" type="button" class="btn btn-default" onclick="javascript: onSaveClick()">Save</button>
+
+
+    <div class="col-md-4">
+        <label for="tokenfield">Issue Tags</label>
+        <input type="text" class="form-control" id="tokenfield" />
+    </div>
+    
 </div>
+
 
 @ko.Apply(Model)
 
 
 <script type="text/javascript">
-    var IssueViewModel = function (data) {
-        var self = this;
-        ko.mapping.fromJS(data, issueMapping, self);
-    }
-
-    var issueMapping = {
-        'Issue': {
-            create: function (options) {
-                if (options.data != null) return new IssueViewModel(options.data);
-            }
-        }
-    }
+    var addedTags = [];
+    var deletedTags = [];
 
     function onSaveClick() {
         var tmpVM = ko.toJS(viewModel)
 
-        //tmpVM.Properties = usrProp
+        tmpVM.AddedTags = addedTags;
+        tmpVM.DeletedTags = deletedTags;
         ko.utils.postJson("", { CreatingVM: tmpVM })
     }
 
+    viewModel.parentDDText = ko.computed(function () {
+        return $("#selectRootIssue option[value='" + viewModel.Issue.Parent() + "']").text();
+    });
+
     $(document).ready(function () {
-        var myViewModel = new IssueViewModel(viewModelJs.Issue);
-        ko.applyBindings(myViewModel, document.getElementById('titleInput'));
+        var token = [];
+        var engine;
+
+        var allTags = []
+        for (var j = 0; j < viewModelJs.AllTags.length; j++) {
+            allTags.push({ value: viewModelJs.AllTags[j].Id, label: viewModelJs.AllTags[j].Name })
+        }
+
+        var issueTags = []
+        for (var j = 0; j < viewModelJs.Issue.Tags.length; j++) {
+            issueTags.push({ value: viewModelJs.Issue.Tags[j].Id, label: viewModelJs.Issue.Tags[j].Name })
+        }
+
+        $('#tokenfield')
+            .tokenfield({
+                autocomplete: {
+                    source: allTags,
+                    delay: 100
+                },
+                showAutocompleteOnFocus: true
+            })
+            .tokenfield('setTokens', issueTags)
+        ;
+
+        usrProp = viewModelJs.Issue.Tags;
+
+        $('#tokenfield').on('tokenfield:createtoken', function (e) {
+            var tokenExists = false
+            for (i = 0; i < usrProp.length; i++) {
+                if (usrProp[i].Name == e.attrs.label) {
+                    tokenExists = true
+                    alert('Property already exists')
+                }
+            }
+            if (tokenExists) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                return;
+            } else {
+                if (e.attrs.label == e.attrs.value) {
+                    e.attrs.value = -1
+                }
+                usrProp.push({ Id: e.attrs.value, Name: e.attrs.label })
+                addedTags.push({ Id: e.attrs.value, Name: e.attrs.label })
+            }
+        });
+
+        $('#tokenfield').on('tokenfield:removedtoken', function (e) {
+            var idx;
+            for (i = 0; i < usrProp.length; i++) {
+                if (usrProp[i].Id > 0 && parseInt(e.attrs.value) == usrProp[i].Id) {
+                    idx = i
+                } else if (usrProp[i].Name == e.attrs.label)
+                {
+                    idx = i
+                }
+                
+            }
+            deletedTags.push({ Id: e.attrs.value, Name: e.attrs.label })
+        })
     });
 </script>

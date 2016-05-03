@@ -22,6 +22,7 @@ namespace MApp.Middleware.Models
         public string ParentTitle { get; set; }
         public string DependsOnTitle { get; set; }
         public List<IssueModel> Children { get; set; }
+        public List<TagModel> Tags { get; set; }
 
         public IssueModel()
         {
@@ -41,6 +42,7 @@ namespace MApp.Middleware.Models
             model.DependsOn = entity.DependsOn;
             model.GroupThink = entity.GroupThink;
             model.ReviewRating = entity.ReviewRating;
+            model.AnonymousPosting = entity.AnonymousPosting;
             if (model.Parent != null)
             {
                 model.ParentTitle = IssueOp.IssueTitle(entity.Parent.Value);
@@ -48,6 +50,12 @@ namespace MApp.Middleware.Models
             if (model.DependsOn != null)
             {
                 model.ParentTitle = IssueOp.IssueTitle(entity.DependsOn.Value);
+            }
+
+            Tags = new List<TagModel>();
+            foreach(TagIssue ti in entity.TagIssue)
+            {
+                Tags.Add(new TagModel(ti.TagId, ti.Tag.Name));
             }
 
             return model;
@@ -65,8 +73,13 @@ namespace MApp.Middleware.Models
             entity.DependsOn = model.DependsOn;
             entity.GroupThink = model.GroupThink;
             entity.ReviewRating = model.ReviewRating;
-
+            entity.AnonymousPosting = model.AnonymousPosting;
             return entity;
+        }
+
+        public Issue ToEntity()
+        {
+            return ToEntity(this);
         }
 
     }

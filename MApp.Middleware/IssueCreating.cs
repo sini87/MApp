@@ -1,4 +1,5 @@
-﻿using MApp.DA.Repository;
+﻿using MApp.DA;
+using MApp.DA.Repository;
 using MApp.Middleware.Models;
 using System;
 using System.Collections.Generic;
@@ -23,12 +24,24 @@ namespace MApp.Middleware
             {
                 int parrentIssueId = Convert.ToInt32(im.Parent);
                 im.ParentTitle = IssueOp.GetIssueById(parrentIssueId).Title;
+            }else
+            {
+                im.Parent = -1;
             }
             if (im.DependsOn != null)
             {
                 int dependsOnIssueId = Convert.ToInt32(im.DependsOn);
                 im.DependsOnTitle = IssueOp.GetIssueById(dependsOnIssueId).Title;
             }
+            else
+            {
+                im.DependsOn = -1;
+            }
+
+            TagModel tm = new TagModel();
+
+            im.Tags = tm.ToModelList(TagOp.GetIssueTags(issueId),tm);
+
             return im;
         }
 
@@ -42,6 +55,43 @@ namespace MApp.Middleware
         {
             TagModel tm = new TagModel();
             return tm.ToModelList(TagOp.GetAllTags(), tm);
+        }
+
+        public List<IssueShort> GetUserIssuesShort(int userId)
+        {
+            List<IssueShort> list = new List<IssueShort>();
+            foreach(Issue issue in IssueOp.UserIssues(userId))
+            {
+                list.Add(new IssueShort(issue.Id, issue.Title));
+            }
+            return list;
+        }
+
+        public int SaveIssue(IssueModel issueModel, int userId)
+        {
+            Issue issue = issueModel.ToEntity();
+            if (issue.Parent == -1)
+            {
+                issue.Parent = null;
+            }
+            if (issue.DependsOn == -1)
+            {
+                issue.DependsOn = null;
+            }
+            if (issue.Id > 0)
+            {
+                return IssueOp.UpdateIssue(issue, userId);
+            }else
+            {
+                return IssueOp.InsertIssue(issue, userId);
+            }
+        }
+
+        public void UpdateIsseuTags(int issueId, List<TagModel> addedTags, List<TagModel> deletedTags, int userId)
+        {
+            TagModel tm = new TagModel();
+            TagOp.AddTagsToIssue(tm.ToEntityList(addedTags), issueId);
+            TagOp.AddTagsToIssue(tm.ToEntityList(deletedTags.Where(x => x.Id > 0).ToList()), issueId);
         }
     }
 }

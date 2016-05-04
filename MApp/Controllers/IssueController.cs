@@ -40,17 +40,30 @@ namespace MApp.Web.Controllers
             vm.Issues = new List<IssueShort>();
             vm.Issues.Add(new IssueShort(-1, "none"));
             vm.Issues.AddRange(ic.GetUserIssuesShort(userId));
+            vm.AllUsers = ic.GetAllUsers();
 
             if (issueId != -1)
             {
                 vm.Issue = ic.GetIssue(issueId);
-            }else
+                vm.AccessRights = ic.GetAccessRightsOfIssue(issueId);
+            }
+            else
             {
                 vm.Issue = new IssueModel();
                 vm.Issue.Status = "CREATING";
                 vm.Issue.Setting = "A";
                 vm.Issue.AnonymousPosting = false;
+                vm.AccessRights = new List<AccessRightModel>();
             }
+
+            UserShortModel rmUser;
+            foreach (AccessRightModel arm in vm.AccessRights)
+            {
+                rmUser = vm.AllUsers.Where(x => x.Id == arm.UserId).FirstOrDefault();
+                vm.AllUsers.Remove(rmUser);
+            }
+            vm.AllUsers.Insert(0, new UserShortModel(0, "", ""));
+
             return View(vm);
         }
 
@@ -62,7 +75,6 @@ namespace MApp.Web.Controllers
             creatingVM.Issue.Id = ic.SaveIssue(creatingVM.Issue, GetUserIdFromClaim());
             ic.UpdateIsseuTags(creatingVM.Issue.Id, creatingVM.AddedTags, creatingVM.DeletedTags, GetUserIdFromClaim());
             return RedirectToAction("Creating", "Issue", new { issueId = creatingVM.Issue.Id });
-
         }
     }
 }

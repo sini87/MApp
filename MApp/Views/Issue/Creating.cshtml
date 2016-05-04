@@ -9,7 +9,7 @@
 </div>
 
 <div class="container">
-    <div class="col-md-6">
+    <div class="col-md-7">
         <div class="form-group">
             <label for="titleInput">Title</label>
             <input id="titleInput" class="form-control" data-bind="textInput: viewModel.Issue.Title" />
@@ -33,13 +33,40 @@
             </p>
 
         </div>
-        <button id="save" type="button" class="btn btn-primary" onclick="javascript: onSaveClick()">Save</button>
+        <button id="save" type="button" class="btn btn-success" onclick="javascript: onSaveClick()">Save</button>
     </div>
 
 
-    <div class="col-md-4">
+    <div class="col-md-5">
         <label for="tokenfield">Issue Tags</label>
         <input type="text" class="form-control" id="tokenfield" />
+        @*<label for="Users">Access Rights</label>*@
+
+        <p>
+            <select class="selectpicker" data-live-search="true" id="selectUser" data-width="auto" data-bind="options: viewModel.AllUsers, optionsText: 'Name', optionsValue: 'Id'"></select>
+            <select class="selectpicker" id="selectRight" data-width="auto">
+                <option>Contributor</option>
+                <option>Viewer</option>
+                <option>Owner</option>
+            </select>
+            <button id="addRight" type="button" class="btn btn-primary btn-xs" onclick="javascript: onAddRightClick()">Add</button>
+        </p>
+
+        <table id="userTable" class="table table-hover table-striped table-condensed">
+            <thead align="left">
+                <tr>
+                    <th>Name</th>
+                    <th>Right</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: viewModel.AccessRights">
+                <tr>
+                    <td data-bind="text: Name"></td>
+                    <td data-bind="text: Right"></td>
+                    <td><a class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeRight">Remove</a></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     
 </div>
@@ -60,9 +87,32 @@
         ko.utils.postJson("", { CreatingVM: tmpVM })
     }
 
+    function onAddRightClick() {
+        var uid = $('#selectUser').selectpicker('option:selected').val();
+        if (uid != 0) {
+            var uText = ""
+            for (index = 0; index < viewModelJs.AllUsers.length; ++index) {
+                if (viewModelJs.AllUsers[index].Id == uid) {
+                    uText = viewModelJs.AllUsers[index].Name
+                }
+            }
+            viewModel.AccessRights.push({ UserId: uid, Right: $('#selectRight').selectpicker('option :selected').val(), Name: uText });
+            viewModel.AllUsers.splice($('#selectUser').selectpicker('option :selected').index(), 1)
+            $('#selectUser').find('[value=' + uid + ']').remove();
+            $('#selectUser').selectpicker('refresh');
+        } else {
+            alert('Please select User first');
+        }
+        
+    };
+
     viewModel.parentDDText = ko.computed(function () {
         return $("#selectRootIssue option[value='" + viewModel.Issue.Parent() + "']").text();
     });
+
+    viewModel.removeRight = function () {
+        viewModel.AccessRights.remove(this);
+    };
 
     $(document).ready(function () {
         var token = [];
@@ -117,13 +167,12 @@
             for (i = 0; i < usrProp.length; i++) {
                 if (usrProp[i].Id > 0 && parseInt(e.attrs.value) == usrProp[i].Id) {
                     idx = i
-                } else if (usrProp[i].Name == e.attrs.label)
-                {
+                } else if (usrProp[i].Name == e.attrs.label) {
                     idx = i
                 }
-                
+
             }
             deletedTags.push({ Id: e.attrs.value, Name: e.attrs.label })
-        })
+        });
     });
 </script>

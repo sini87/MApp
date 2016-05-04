@@ -97,5 +97,14 @@ namespace MApp.DA.Repository
             }
             ctx.SaveChanges();
         }
+
+        /// <summary>
+        /// returns all available users
+        /// </summary>
+        /// <returns></returns>
+        public static List<User> GetAllUsers()
+        {
+            return DbConnection.Instance.DbContext.User.ToList();
+        }
     }
 }

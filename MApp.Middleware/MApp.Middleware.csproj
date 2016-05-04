@@ -44,6 +44,7 @@
     <Compile Include="IssueCreating.cs" />
     <Compile Include="IssueOverview.cs" />
     <Compile Include="Authentication.cs" />
+    <Compile Include="Models\AccessRightModel.cs" />
     <Compile Include="Models\IListModel.cs" />
     <Compile Include="Models\IssueModel.cs" />
     <Compile Include="Models\IssueShortModel.cs" />
@@ -52,6 +53,7 @@
     <Compile Include="Models\PropertyModel.cs" />
     <Compile Include="Models\TagModel.cs" />
     <Compile Include="Models\UserModel.cs" />
+    <Compile Include="Models\UserShortModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

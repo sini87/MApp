@@ -8,19 +8,11 @@ using System.Web;
 
 namespace MApp.Middleware.Models
 {
-    public class UserModel
+    public class UserModel : UserShortModel
     {
-        [ScaffoldColumn(false)]
-        public int Id { get; set; }
         [Required(ErrorMessage = "Please write down an valid E-Mail Adress")]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
-        [Required]
-        [DisplayName("First Name")]
-        public string FirstName { get; set; }
-        [Required]
-        [DisplayName("Last Name")]
-        public string LastName { get; set; }
         [Required]
         [DisplayName("Password")]
         [DataType(DataType.Password)]

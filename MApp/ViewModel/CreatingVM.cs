@@ -17,5 +17,7 @@ namespace MApp.Web.ViewModel
         public List<IssueShort> Issues { get; set; }
         public List<TagModel> AddedTags { get; set; }
         public List<TagModel> DeletedTags { get; set; }
+        public List<UserShortModel> AllUsers { get; set; }
+        public List<AccessRightModel> AccessRights { get; set; }
     }
 }

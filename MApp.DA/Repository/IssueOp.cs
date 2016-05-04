@@ -122,7 +122,30 @@ namespace MApp.DA.Repository
                 Console.WriteLine(ex.Message);
             }
             return issueId;
-            
+        }
+
+        /// <summary>
+        /// returns Ids of users who have access to an issue
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <returns></returns>
+        public static Dictionary<int,string> GetAccessRightsForIssue(int issueId)
+        {
+            Dictionary<int,string> list= new Dictionary<int,string>();
+            var query = from AccessRight in Ctx.AccessRight
+                        where
+                          AccessRight.IssueId == issueId
+                        select new
+                        {
+                            AccessRight.UserId,
+                            AccessRight.Right
+                        };
+            foreach (var ent in query)
+            {
+                list.Add(ent.UserId, ent.Right);
+            }
+
+            return list;
         }
     }
 }

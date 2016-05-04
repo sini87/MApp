@@ -11,6 +11,7 @@ namespace MApp.Middleware
 {
     public class IssueCreating
     {
+        public List<UserShortModel> userList;
         public IssueCreating()
         {
 
@@ -92,6 +93,61 @@ namespace MApp.Middleware
             TagModel tm = new TagModel();
             TagOp.AddTagsToIssue(tm.ToEntityList(addedTags), issueId);
             TagOp.RemoveTagsFromIssue(tm.ToEntityList(deletedTags.Where(x => x.Id > 0).ToList()), issueId);
+        }
+
+        /// <summary>
+        /// returns all Users
+        /// </summary>
+        /// <returns></returns>
+        public List<UserShortModel> GetAllUsers()
+        {
+            List<UserShortModel> list = new List<UserShortModel>();
+            foreach (User u in UserOp.GetAllUsers())
+            {
+                list.Add(new UserShortModel(u.Id, u.FirstName, u.LastName));
+            }
+            userList = list;
+            return userList;
+        }
+
+        /// <summary>
+        /// returns list of access right by IssueId
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <returns>Accessright with UserId and full Username</returns>
+        public List<AccessRightModel> GetAccessRightsOfIssue(int issueId)
+        {
+            List<AccessRightModel> list = new List<AccessRightModel>();
+            Dictionary<int, string> arDict = IssueOp.GetAccessRightsForIssue(issueId);
+            string right;
+            string name;
+            foreach(KeyValuePair<int,string> ar in arDict)
+            {
+                right = ar.Value;
+                switch (right)
+                {
+                    case "O":
+                        right = "Owner";
+                        break;
+                    case "C":
+                        right = "Contributor";
+                        break;
+                    case "V":
+                        right = "Viewer";
+                        break;
+
+                }
+                if (userList == null)
+                {
+                    list.Add(new AccessRightModel(ar.Key, right));
+                }else
+                {
+                    name = userList.Find(x => x.Id == ar.Key).FirstName + " " + userList.Find(x => x.Id == ar.Key).LastName;
+                    list.Add(new AccessRightModel(ar.Key, right, name));
+                }
+                
+            }
+            return list;
         }
     }
 }

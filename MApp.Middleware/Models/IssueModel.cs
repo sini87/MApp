@@ -14,7 +14,7 @@ namespace MApp.Middleware.Models
         public string Status { get; set; }
         public string Description { get; set; }
         public string Setting { get; set; }
-        public string AnonymousPosting { get; set; }
+        public bool AnonymousPosting { get; set; }
         public Nullable<int> Parent { get; set; }
         public Nullable<int> DependsOn { get; set; }
         public string GroupThink { get; set; }
@@ -42,7 +42,14 @@ namespace MApp.Middleware.Models
             model.DependsOn = entity.DependsOn;
             model.GroupThink = entity.GroupThink;
             model.ReviewRating = entity.ReviewRating;
-            model.AnonymousPosting = entity.AnonymousPosting;
+            if (entity.AnonymousPosting == "false")
+            {
+                model.AnonymousPosting = false;
+            }else
+            {
+                model.AnonymousPosting = true;
+            }
+            
             if (model.Parent != null)
             {
                 model.ParentTitle = IssueOp.IssueTitle(entity.Parent.Value);
@@ -73,7 +80,13 @@ namespace MApp.Middleware.Models
             entity.DependsOn = model.DependsOn;
             entity.GroupThink = model.GroupThink;
             entity.ReviewRating = model.ReviewRating;
-            entity.AnonymousPosting = model.AnonymousPosting;
+            if (model.AnonymousPosting)
+            {
+                entity.AnonymousPosting = "true";
+            }else
+            {
+                entity.AnonymousPosting = "false";
+            }
             return entity;
         }
 

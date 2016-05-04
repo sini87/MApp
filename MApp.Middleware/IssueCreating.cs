@@ -91,7 +91,7 @@ namespace MApp.Middleware
         {
             TagModel tm = new TagModel();
             TagOp.AddTagsToIssue(tm.ToEntityList(addedTags), issueId);
-            TagOp.AddTagsToIssue(tm.ToEntityList(deletedTags.Where(x => x.Id > 0).ToList()), issueId);
+            TagOp.RemoveTagsFromIssue(tm.ToEntityList(deletedTags.Where(x => x.Id > 0).ToList()), issueId);
         }
     }
 }

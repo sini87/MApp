@@ -36,23 +36,29 @@ namespace MApp.DA.Repository
 
         public static void AddTagsToIssue(List<Tag> tagList, int issueId)
         {
-            Tag help;
-            TagIssue ti;
+            string sql;
             foreach (Tag tag in tagList)
             {
-                if (tag.Id == -1)
+                using (var dbContextTransaction = Ctx.Database.BeginTransaction())
                 {
-                    help = Ctx.Tag.Create();
-                    help.Name = tag.Name;
-                    Ctx.Entry(help).State = EntityState.Added;
-                    Ctx.SaveChanges();
-                    tag.Id = help.Id;
+                    if (tag.Id == -1)
+                    {
+                        sql = "INSERT INTO appSchema.[Tag] (Name) OUTPUT INSERTED.Id VALUES ({0})";
+                        var res = Ctx.Database.SqlQuery<int>(sql, tag.Name);
+                        dbContextTransaction.Commit();
+                        tag.Id = res.FirstOrDefault();
+                    }
+                    sql = "INSERT INTO appSchema.[TagIssue] VALUES (" + tag.Id + "," + issueId +")";
+                    Ctx.Database.ExecuteSqlCommand(sql, tag.Id,issueId  );
+                    try
+                    {
+                        dbContextTransaction.Commit();
+                    }catch(Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                    
                 }
-                ti = Ctx.TagIssue.Create();
-                ti.TagId = tag.Id;
-                ti.IssueId = issueId;
-                Ctx.Entry(ti).State = EntityState.Added;
-                Ctx.SaveChanges();
             }
         }
 

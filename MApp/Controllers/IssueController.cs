@@ -47,6 +47,9 @@ namespace MApp.Web.Controllers
             }else
             {
                 vm.Issue = new IssueModel();
+                vm.Issue.Status = "CREATING";
+                vm.Issue.Setting = "A";
+                vm.Issue.AnonymousPosting = false;
             }
             return View(vm);
         }
@@ -55,29 +58,11 @@ namespace MApp.Web.Controllers
         public ActionResult Creating([FromJson] CreatingVM creatingVM)
         {
             IssueCreating ic = new IssueCreating();
+            int issueId = creatingVM.Issue.Id;
             creatingVM.Issue.Id = ic.SaveIssue(creatingVM.Issue, GetUserIdFromClaim());
-            ic.UpdateIsseuTags(creatingVM.Issue.Id, creatingVM.AddedTags, creatingVM.DeletedTags,GetUserIdFromClaim());
-            creatingVM.Tags = ic.GetIssueTags(creatingVM.Issue.Id);
+            ic.UpdateIsseuTags(creatingVM.Issue.Id, creatingVM.AddedTags, creatingVM.DeletedTags, GetUserIdFromClaim());
+            return RedirectToAction("Creating", "Issue", new { issueId = creatingVM.Issue.Id });
 
-            //TagModel tmp;
-            //foreach(TagModel t in creatingVM.DeletedTags)
-            //{
-            //    if (creatingVM.Issue.Tags.Where(x => x.Id == t.Id && x.Name == t.Name).Count() > 0)
-            //    {
-            //        tmp = creatingVM.Issue.Tags.Where(x => x.Id == t.Id).FirstOrDefault();
-            //        creatingVM.Issue.Tags.Remove(tmp);
-            //    }
-            //}
-            //foreach (TagModel t in creatingVM.AddedTags)
-            //{
-            //    if (creatingVM.Issue.Tags.Where(x => x.Id == t.Id).Count() == 0)
-            //    {
-            //        creatingVM.Issue.Tags.Add(t);
-            //    }
-            //}
-
-
-            return View(creatingVM);
         }
     }
 }

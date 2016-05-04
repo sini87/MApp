@@ -226,7 +226,7 @@
           <Property Name="CriterionLeft" Type="int" Nullable="false" />
           <Property Name="CriterionRight" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="Value" Type="int" Nullable="false" />
+          <Property Name="Value" Type="float" Nullable="false" />
         </EntityType>
         <EntityType Name="Property">
           <Key>

@@ -134,6 +134,7 @@
     <Compile Include="Rating.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Repository\AccessRightOp.cs" />
     <Compile Include="Repository\IssueOp.cs" />
     <Compile Include="Repository\Operations.cs" />
     <Compile Include="Repository\PropertyOp.cs" />

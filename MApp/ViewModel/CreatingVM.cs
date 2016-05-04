@@ -19,5 +19,7 @@ namespace MApp.Web.ViewModel
         public List<TagModel> DeletedTags { get; set; }
         public List<UserShortModel> AllUsers { get; set; }
         public List<AccessRightModel> AccessRights { get; set; }
+        public List<AccessRightModel> DeletedAR { get; set; }
+        public List<AccessRightModel> AddedAR { get; set; }
     }
 }

@@ -55,36 +55,48 @@ namespace MApp.DA.Repository
         {
             Issue updateIssue;
             updateIssue = GetIssueById(issue.Id);
+            bool updated = false;
             if (issue.Title != updateIssue.Title)
             {
                 updateIssue.Title = issue.Title;
+                updated = true;
             }
             if (updateIssue.Description != issue.Description)
             {
                 updateIssue.Description = issue.Description;
+                updated = true;
             }
             if (updateIssue.AnonymousPosting != issue.AnonymousPosting)
             {
                 updateIssue.AnonymousPosting = issue.AnonymousPosting;
+                updated = true;
             }
             if (updateIssue.Status != issue.Status)
             {
                 updateIssue.Status = issue.Status;
+                updated = true;
             }
             if (updateIssue.Parent != issue.Parent)
             {
                 updateIssue.Parent = issue.Parent;
+                updated = true;
             }
             if (updateIssue.DependsOn != issue.DependsOn)
             {
                 updateIssue.DependsOn = issue.DependsOn;
+                updated = true;
             }
             if (updateIssue.Setting != issue.Setting)
             {
                 updateIssue.Setting = issue.Setting;
+                updated = true;
             }
-            //Ctx.Entry(updateIssue).State = EntityState.Modified;
-            Ctx.SaveChanges();
+            if (updated)
+            {
+                Ctx.Entry(updateIssue).State = EntityState.Modified;
+                Ctx.SaveChanges();
+            }
+            
             return updateIssue.Id;
         }
 
@@ -101,7 +113,7 @@ namespace MApp.DA.Repository
                 updateIssue.Parent = issue.Parent;
                 updateIssue.DependsOn = issue.DependsOn;
                 updateIssue.Setting = issue.Setting;
-                updateIssue.TagIssue = null;
+                //updateIssue.TagIssue = null;
                 Ctx.Issue.Add(updateIssue);
                 Ctx.Entry(updateIssue).State = EntityState.Added;
                 Ctx.SaveChanges();
@@ -125,27 +137,47 @@ namespace MApp.DA.Repository
         }
 
         /// <summary>
-        /// returns Ids of users who have access to an issue
+        /// returns root issues
+        /// </summary>
+        /// <returns></returns>
+        public static List<Issue> RootIssues(int issueId)
+        {
+            List<Issue> parentList = new List<Issue>();
+            int? parent = Ctx.Issue.Find(issueId).Parent;
+            if (parent == null)
+                return null;
+            else
+            {
+                Issue parentIssue = Ctx.Issue.Find(parent);
+                parentList.Add(parentIssue);
+                List<Issue> recIssues = RootIssues(parentIssue.Id);
+                if (recIssues != null)
+                {
+                    parentList.AddRange(recIssues);
+                }
+            }
+            return parentList;
+        }
+
+        /// <summary>
+        /// deletes issue
         /// </summary>
         /// <param name="issueId"></param>
-        /// <returns></returns>
-        public static Dictionary<int,string> GetAccessRightsForIssue(int issueId)
+        /// <returns>returns true if delete was successful</returns>
+        public static bool DeleteIssue (int issueId)
         {
-            Dictionary<int,string> list= new Dictionary<int,string>();
-            var query = from AccessRight in Ctx.AccessRight
-                        where
-                          AccessRight.IssueId == issueId
-                        select new
-                        {
-                            AccessRight.UserId,
-                            AccessRight.Right
-                        };
-            foreach (var ent in query)
+            Issue issue = Ctx.Issue.Find(issueId);
+            Ctx.Issue.Remove(issue);
+            Ctx.Entry(issue).State = EntityState.Deleted;
+            try
             {
-                list.Add(ent.UserId, ent.Right);
+                Ctx.SaveChanges();
+                return true;
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
-
-            return list;
+            return false;
         }
     }
 }

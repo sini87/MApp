@@ -72,9 +72,19 @@ namespace MApp.Web.Controllers
         {
             IssueCreating ic = new IssueCreating();
             int issueId = creatingVM.Issue.Id;
-            creatingVM.Issue.Id = ic.SaveIssue(creatingVM.Issue, GetUserIdFromClaim());
-            ic.UpdateIsseuTags(creatingVM.Issue.Id, creatingVM.AddedTags, creatingVM.DeletedTags, GetUserIdFromClaim());
+            int userId = GetUserIdFromClaim();
+            creatingVM.Issue.Id = ic.SaveIssue(creatingVM.Issue, userId);
+            ic.UpdateIsseuTags(creatingVM.Issue.Id, creatingVM.AddedTags, creatingVM.DeletedTags, userId);
+            ic.UpdateAccessRights(creatingVM.AddedAR, creatingVM.DeletedAR, creatingVM.AccessRights, issueId, userId);
             return RedirectToAction("Creating", "Issue", new { issueId = creatingVM.Issue.Id });
+        }
+
+        [HttpPost]
+        public ActionResult DeleteIssue(int issueId)
+        {
+            IssueCreating ic = new IssueCreating();
+            ic.DeleteIssue(issueId);
+            return RedirectToAction("Index","Issue");
         }
     }
 }

@@ -33,7 +33,6 @@
             </p>
 
         </div>
-        <button id="save" type="button" class="btn btn-success" onclick="javascript: onSaveClick()">Save</button>
     </div>
 
 
@@ -68,7 +67,8 @@
             </tbody>
         </table>
     </div>
-    
+    <button id="save" type="button" class="btn btn-success" onclick="javascript: onSaveClick()">Save</button>
+    <button id="delete" type="button" class="btn btn-danger" onclick="javascript: onDeleteClick()">Delete</button>
 </div>
 
 
@@ -87,6 +87,15 @@
         ko.utils.postJson("", { CreatingVM: tmpVM })
     }
 
+    function onDeleteClick(){
+        $.ajax({
+            url: '@Url.Action("DeleteIssue","Issue")',
+            type: 'POST',
+            data: { issueId: viewModel.Issue.Id }
+        })
+        window.location.replace("http://localhost:15551")
+    }
+
     function onAddRightClick() {
         var uid = $('#selectUser').selectpicker('option:selected').val();
         if (uid != 0) {
@@ -100,10 +109,12 @@
             viewModel.AllUsers.splice($('#selectUser').selectpicker('option :selected').index(), 1)
             $('#selectUser').find('[value=' + uid + ']').remove();
             $('#selectUser').selectpicker('refresh');
+
+            viewModel.AddedAR.push({ UserId: uid, Right: $('#selectRight').selectpicker('option :selected').val(), Name: uText });
         } else {
             alert('Please select User first');
         }
-        
+
     };
 
     viewModel.parentDDText = ko.computed(function () {
@@ -111,6 +122,7 @@
     });
 
     viewModel.removeRight = function () {
+        viewModel.DeletedAR.push({ UserId: this.UserId(), Right: this.Right(), Name: this.Name() });
         viewModel.AccessRights.remove(this);
     };
 

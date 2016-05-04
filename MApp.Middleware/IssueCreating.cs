@@ -118,7 +118,7 @@ namespace MApp.Middleware
         public List<AccessRightModel> GetAccessRightsOfIssue(int issueId)
         {
             List<AccessRightModel> list = new List<AccessRightModel>();
-            Dictionary<int, string> arDict = IssueOp.GetAccessRightsForIssue(issueId);
+            Dictionary<int, string> arDict = AccessRightOp.GetAccessRightsForIssue(issueId);
             string right;
             string name;
             foreach(KeyValuePair<int,string> ar in arDict)
@@ -148,6 +148,33 @@ namespace MApp.Middleware
                 
             }
             return list;
+        }
+
+        /// <summary>
+        /// updates accessrights which user modified
+        /// </summary>
+        /// <param name="addedAr">new granted permissions</param>
+        /// <param name="deletedAr">removed permissions</param>
+        /// <param name="updatedAr">updated permissions</param>
+        /// <param name="issueId">Issue for permissions</param>
+        /// <param name="userId">user who is making changes</param>
+        public void UpdateAccessRights(List<AccessRightModel> addedAr, List<AccessRightModel> deletedAr, List<AccessRightModel> updatedAr, int issueId, int userId)
+        {
+            AccessRightModel arm = new AccessRightModel();
+            List<AccessRight> dList = arm.ToEntityList(deletedAr);
+            List<AccessRight> aList = arm.ToEntityList(addedAr);
+            List<AccessRight> uList = null;
+            if (updatedAr != null)
+            {
+                uList = arm.ToEntityList(updatedAr).Except(dList).Except(aList).ToList();
+                uList = null;
+            }
+            AccessRightOp.UpdateRights(aList, dList, uList, issueId, userId);
+        }
+
+        public bool DeleteIssue(int issueId)
+        {
+            return IssueOp.DeleteIssue(issueId);
         }
     }
 }

@@ -1,0 +1,59 @@
+﻿@using PerpetuumSoft.Knockout
+@model MApp.Web.ViewModel.BrCriteriaVM
+@{
+    ViewBag.Title = "Brainstorming Criteria";
+    var ko = Html.CreateKnockoutContext();
+}
+
+<h2>BrCriteria</h2>
+
+@ko.Apply(Model)
+
+<script>
+    renderMenues()
+
+
+    function renderMenues() {
+        if (@Model.Issue.Status == "FINISHED") {
+            status = 5
+        }
+        if (@Model.Issue.Status == "EVALUATING") {
+            status = 4
+        }
+        if (@Model.Issue.Status == "BRAINSTORMING2") {
+            status = 3
+        } else if (@Model.Issue.Status == "BRAINSTORMING1") {
+            status = 2
+        } else {
+            status = 1
+            window.location.replace("/Issue/Creating?issueId=" + viewModelJs.Issue.Id)
+            return;
+        }
+
+        if (status < 5) {
+            $('#finished-menu').css("color", "gray").css("text-decoration", "none");
+            $('#finished-menu').off("click");
+
+            var menuElem = document.getElementById("finished-menu")
+            menuElem.className = "disabled"
+        }
+        if (status < 4) {
+            $('#evaluating-menu').css("color", "gray").css("text-decoration", "none");
+            $('#evaluating-menu').off("click");
+
+            var menuElem = document.getElementById("evaluating-menu")
+            menuElem.className = "disabled"
+        }
+        if (status < 3) {
+            $('#criteriarating-menu').css("color", "gray").css("text-decoration", "none");
+            $('#criteriarating-menu').off("click");
+
+            var menuElem = document.getElementById("criteriarating-menu")
+            menuElem.className = "disabled"
+        }
+        if (status < 2) {
+            var menuElem = document.getElementById("creating-menu")
+            menuElem.childNodes[0].innerHTML = 'Issue Overview';
+        }
+    }
+</script>

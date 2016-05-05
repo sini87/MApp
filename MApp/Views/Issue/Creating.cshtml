@@ -68,6 +68,7 @@
         </table>
     </div>
     <button id="save" type="button" class="btn btn-success" onclick="javascript: onSaveClick()">Save</button>
+    <button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()">Next Stage</button>
     <button id="delete" type="button" class="btn btn-danger" onclick="javascript: onDeleteClick()">Delete</button>
 </div>
 
@@ -78,6 +79,8 @@
 <script type="text/javascript">
     var addedTags = [];
     var deletedTags = [];
+
+    renderMenues()
 
     function onSaveClick() {
         var tmpVM = ko.toJS(viewModel)
@@ -95,6 +98,15 @@
         })
         window.location.replace("http://localhost:15551")
     }
+
+    function onNextStageClick() {
+        $.ajax({
+            url: '@Url.Action("NextStage","Issue")',
+            type: 'POST',
+            data: { issueId: viewModel.Issue.Id }
+        })
+        window.location.replace("/Issue/BrCriteria?issueId=" + viewModelJs.Issue.Id)
+    };
 
     function onAddRightClick() {
         var uid = $('#selectUser').selectpicker('option:selected').val();
@@ -129,8 +141,12 @@
     $(document).ready(function () {
         var token = [];
         var engine;
-
         var allTags = []
+
+        var status;
+
+
+
         for (var j = 0; j < viewModelJs.AllTags.length; j++) {
             allTags.push({ value: viewModelJs.AllTags[j].Id, label: viewModelJs.AllTags[j].Name })
         }
@@ -187,4 +203,71 @@
             deletedTags.push({ Id: e.attrs.value, Name: e.attrs.label })
         });
     });
+
+    function renderMenues() {
+        if (viewModelJs.Issue.Status == "FINISHED") {
+            status = 5
+        }
+        if (viewModelJs.Issue.Status == "EVALUATING") {
+            status = 4
+        }
+        if (viewModelJs.Issue.Status == "BRAINSTORMING2") {
+            status = 3
+        } else if (viewModelJs.Issue.Status == "BRAINSTORMING1") {
+            status = 2
+        } else {
+            status = 1
+        }
+
+        if (status < 5) {
+            $('#finished-menu').css("color", "gray").css("text-decoration", "none");
+            $('#finished-menu').off("click");
+
+            var menuElem = document.getElementById("finished-menu")
+            menuElem.className = "disabled"
+        }
+        if (status < 4) {
+            $('#evaluating-menu').css("color", "gray").css("text-decoration", "none");
+            $('#evaluating-menu').off("click");
+
+            var menuElem = document.getElementById("evaluating-menu")
+            menuElem.className = "disabled"
+        }
+        if (status < 3) {
+            $('#criteriarating-menu').css("color", "gray").css("text-decoration", "none");
+            $('#criteriarating-menu').off("click");
+
+            var menuElem = document.getElementById("criteriarating-menu")
+            menuElem.className = "disabled"
+
+            menuElem = document.getElementById("creating-menu")
+            for (i = 0; i < menuElem.childNodes.length; i++) {
+                if (menuElem.childNodes[i].nodeName == "A") {
+                    menuElem.childNodes[i].innerHTML = 'Issue Overview';
+                    menuElem.childNodes[i].href = "/Issue/Creating?issueId=" + viewModelJs.Issue.Id;
+                    break;
+                }
+            }
+
+            menuElem = document.getElementById("criteriafinding-menu")
+            menuElem.childNodes[0].href = "/Issue/BrCriteria?issueId=" + viewModelJs.Issue.Id;
+            
+        }
+        if (status < 2) {
+            //$('#criteriafinding-menu').css("color", "gray").css("text-decoration", "none");
+            //$('#criteriafinding-menu').off("click");
+            //$('#alternatives-menu').css("color", "gray").css("text-decoration", "none");
+            //$('#alternatives-menu').off("click");
+            //$('#brainstorming-menu').css("color", "gray").css("text-decoration", "none");
+            //$('#brainstorming-menu').off("click");
+
+
+            var menuElem = document.getElementById("criteriafinding-menu")
+            menuElem.className = "disabled"
+            menuElem = document.getElementById("alternatives-menu")
+            menuElem.className = "disabled"
+            menuElem = document.getElementById("brainstorming-menu")
+            menuElem.className = "disabled"
+        }
+    }
 </script>

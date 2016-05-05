@@ -176,5 +176,10 @@ namespace MApp.Middleware
         {
             return IssueOp.DeleteIssue(issueId);
         }
+
+        public void NextStage (int issueId, int userId)
+        {
+            IssueOp.NextStage(issueId, userId);
+        }
     }
 }

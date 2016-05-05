@@ -86,5 +86,22 @@ namespace MApp.Web.Controllers
             ic.DeleteIssue(issueId);
             return RedirectToAction("Index","Issue");
         }
+
+        [HttpPost]
+        public ActionResult NextStage (int issueId)
+        {
+            IssueCreating ic = new IssueCreating();
+            ic.NextStage(issueId,GetUserIdFromClaim());
+            return RedirectToAction("BrCriteria","Issue",new { issueId = issueId });
+        }
+
+        [HttpGet]
+        public ActionResult BrCriteria(int issueId)
+        {
+            IssueCreating ic = new IssueCreating();
+            BrCriteriaVM viewModel = new BrCriteriaVM();
+            viewModel.Issue = ic.GetIssue(issueId);
+            return View(viewModel);
+        }
     }
 }

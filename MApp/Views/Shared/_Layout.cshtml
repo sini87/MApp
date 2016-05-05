@@ -66,26 +66,47 @@
                         </li>
                     }
                 </ul>
-                <ul class="nav navbar-nav navbar-left">
-                    @if (@User.Identity.IsAuthenticated)
-                    {
+
+                @if (@User.Identity.IsAuthenticated)
+                {
+                    <ul class="nav navbar-nav navbar-left">                    
                         <li>
                             @Html.ActionLink("MApp", "Index", "Issue", new { area = "" }, new { @class = "nav navbar-nav navbar-left" })
                         </li>
                         
-                        
                         <li>
                             <a href="@Url.Action("Creating", "Issue", new { issueId = -1 })"><span class="glyphicon glyphicon-plus"></span> Create New Issue</a>
                         </li>
-                    }
-                    else
-                    {
-                        <li>
-                            <label>MApp</label>
-                        </li>
                         
-                    }
-                </ul>
+                        <li id="creating-menu">
+                            <a href="@Url.Action("Creating", "Issue", new { issueId = -1 })">Creating</a>
+                        </li>
+                        <li id="brainstorming-menu"class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Brainstorming<span class="caret"></span></a>
+                            <ul id="brainstorming-menu" class="dropdown-menu">
+                                <li id="alternatives-menu"><a href="#">Alternatives</a></li>
+                                <li id="criteriafinding-menu"><a href="#">Criteria finding</a></li>
+                                <li id="criteriarating-menu"><a href="#">Criteria rating</a></li>
+                            </ul>
+                        </li>
+                        <li id="evaluating-menu">
+                            <a href="@Url.Action("Creating", "Issue", new { issueId = -1 })">Evaluating</a>
+                        </li>
+                        <li id="finished-menu">
+                            <a href="@Url.Action("Creating", "Issue", new { issueId = -1 })">Finished</a>
+                        </li>
+                    </ul>
+
+                }
+                else
+                {
+                    <ul class="nav navbar-nav navbar-left">
+                        <li>
+                            @Html.ActionLink("MApp", "Auth","Login", new { @class = "nav navbar-nav navbar-left" })
+                        </li>
+                    </ul>
+                }
+                
             </div>
 
         </div>

@@ -179,5 +179,25 @@ namespace MApp.DA.Repository
             }
             return false;
         }
+
+        public static void NextStage(int issueId, int userId)
+        {
+            Issue issue = Ctx.Issue.Find(issueId);
+
+            switch (issue.Status)
+            {
+                case "CREATING":
+                    issue.Status = "BRAINSTORMING1";
+                    break;
+                case "BRAINSTORMING2":
+                    issue.Status = "EVALUATING";
+                    break;
+                case "EVALUATING":
+                    issue.Status = "FINISHED";
+                    break;
+            }
+            Ctx.Entry(issue).State = EntityState.Modified;
+            Ctx.SaveChanges();
+        }
     }
 }

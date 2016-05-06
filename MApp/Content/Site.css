@@ -90,3 +90,9 @@ textarea {
     width: auto;
     max-width: 700px;
 }
+
+.textbox-name{
+    min-width: 200px;
+    width: auto;
+    max-width: 350px;
+}

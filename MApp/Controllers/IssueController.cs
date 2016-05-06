@@ -112,6 +112,7 @@ namespace MApp.Web.Controllers
             IssueBrCriteria ibc = new IssueBrCriteria();
             ibc.UpdateCriteria(brCriteriaVM.IssueCriteria, brCriteriaVM.DeletedCriteria, GetUserIdFromClaim());
             brCriteriaVM.IssueCriteria = ibc.GetIssueCriteria(brCriteriaVM.Issue.Id, GetUserIdFromClaim());
+            brCriteriaVM.DeletedCriteria = new List<int>();
             return View(brCriteriaVM);
         }
 
@@ -120,15 +121,32 @@ namespace MApp.Web.Controllers
         {
             BrAlternativesVM vm = new BrAlternativesVM();
             IssueCreating ic = new IssueCreating();
+            int userId = GetUserIdFromClaim();
             vm.Issue = ic.GetIssue(issueId);
+            IssueBrAlternative iba = new IssueBrAlternative();
+            vm.Alternatives = iba.GetIssueAlternatives(issueId, userId);
             return View(vm);
+        }
+
+        [HttpPost]
+        public ActionResult BrAlternatives([FromJson] BrAlternativesVM brAlternativesVM)
+        {
+            IssueBrAlternative iba = new IssueBrAlternative();
+            int userId = GetUserIdFromClaim();
+            iba.UpdateAlternatives(brAlternativesVM.Alternatives, brAlternativesVM.DeletedAlternatives, userId);
+            brAlternativesVM.Alternatives = iba.GetIssueAlternatives(brAlternativesVM.Issue.Id, userId);
+            brAlternativesVM.DeletedAlternatives = new List<int>();
+            return View(brAlternativesVM);
         }
 
         public ActionResult CriteriaRating(int issueId)
         {
-            CriteriaRatingVM vm = new CriteriaRatingVM();
+            CriteriaWeightsVM vm = new CriteriaWeightsVM();
             IssueCreating ic = new IssueCreating();
+            IssueCriterionWeight icw = new IssueCriterionWeight();
+            int userId = GetUserIdFromClaim();
             vm.Issue = ic.GetIssue(issueId);
+            vm.UserWeights = icw.GetUserWeights(issueId, userId);
             return View(vm);
         }
     }

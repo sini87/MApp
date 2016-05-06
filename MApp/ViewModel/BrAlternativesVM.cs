@@ -9,5 +9,7 @@ namespace MApp.Web.ViewModel
     public class BrAlternativesVM
     {
         public IssueModel Issue { get; set; }
+        public List<AlternativeModel> Alternatives { get; set; }
+        public List<int> DeletedAlternatives { get; set; }
     }
 }

@@ -63,6 +63,7 @@
     <Compile Include="Criterion.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Repository\AlternativeOp.cs" />
     <Compile Include="Repository\CriterionOp.cs" />
     <Compile Include="CriterionWeight.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
@@ -136,6 +137,7 @@
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Repository\AccessRightOp.cs" />
+    <Compile Include="Repository\CriterionWeightOp.cs" />
     <Compile Include="Repository\IssueOp.cs" />
     <Compile Include="Repository\Operations.cs" />
     <Compile Include="Repository\PropertyOp.cs" />

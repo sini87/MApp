@@ -167,6 +167,7 @@
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\Images\ui-anim_basic_16x16.gif" />
     <Content Include="Content\jquery-ui.css" />
+    <Content Include="Content\jquery.bootstrap-touchspin.css" />
     <Content Include="Content\jquery.treegrid.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\themes\base\accordion.css" />
@@ -294,6 +295,7 @@
     <Content Include="Scripts\jquery-2.2.3.min.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
+    <Content Include="Scripts\jquery.bootstrap-touchspin.js" />
     <Content Include="Scripts\jquery.cookie.js" />
     <Content Include="Scripts\jquery.hotkeys.js" />
     <Content Include="Scripts\jquery.treegrid.bootstrap2.js" />
@@ -304,6 +306,7 @@
     <Content Include="Scripts\knockout-3.4.0.js" />
     <Content Include="Scripts\knockout.mapping-latest.debug.js" />
     <Content Include="Scripts\knockout.mapping-latest.js" />
+    <Content Include="Scripts\MAppFunctions.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\summernote\plugin\summernote-ext-hello.js" />
     <Content Include="Scripts\summernote\plugin\summernote-ext-hint.js" />
@@ -333,7 +336,7 @@
     </Compile>
     <Compile Include="ViewModel\BrAlternativesVM.cs" />
     <Compile Include="ViewModel\BrCriteriaVM.cs" />
-    <Compile Include="ViewModel\CriteriaRatingVM.cs" />
+    <Compile Include="ViewModel\CriteriaWeightsVM.cs" />
     <Compile Include="ViewModel\LoginModel.cs" />
     <Compile Include="ViewModel\CreatingVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

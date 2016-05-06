@@ -6,8 +6,9 @@ using System.Web;
 
 namespace MApp.Web.ViewModel
 {
-    public class CriteriaRatingVM
+    public class CriteriaWeightsVM
     {
         public IssueModel Issue { get; set; }
+        public List<CriterionWeightModel> UserWeights { get; set; }
     }
 }

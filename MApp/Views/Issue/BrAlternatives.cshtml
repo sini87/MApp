@@ -1,12 +1,53 @@
 ﻿@using PerpetuumSoft.Knockout
 @model MApp.Web.ViewModel.BrAlternativesVM
 @{
-    ViewBag.Title = Model.Issue.Title + " - Criteria Brainstorming";
+    ViewBag.Title = Model.Issue.Title + " - Alternatives Brainstorming";
     var ko = Html.CreateKnockoutContext();
 }
 
-<h2>BrAlternatives</h2>
+<h2><span data-bind="text: viewModel.Issue.Title"></span> - Alternatives Brainstorming</h2>
 
+<span>
+    <table id="alternativesTable" class="table table-hover table-striped table-condensed table-nonfluid">
+        <thead align="left">
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: viewModel.Alternatives">
+            <tr>
+                <td><input data-bind="textInput: Name" class="form-control textbox-name"/></td>
+                <td>
+                    <textarea data-bind="textInput: Description" class="textarea-desc form-control"></textarea>
+                    <table>
+                        <thead>
+                            <tr class="accordion-toggle" data-toggle="collapse" data-target=".comment">
+                                <td>user</td>
+                                <td>comment</td>
+                            </tr>
+                        </thead>
+                        <tbody class="hiddenRow collapse comment">
+                            <tr>
+                                <td>User1</td>
+                                <td>Some comment</td>
+                            </tr>
+                            <tr>
+                                <td>User 2</td>
+                                <td>Other comment</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button id="addComment" data-bind="enable: Id>'0'" class="btn btn-primary btn-xs" onclick="javascript: onAddCommentClick">Add new comment</button>
+                </td>
+                <td><a class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeAlternative">Remove</a></td>
+            </tr>
+        </tbody>
+    </table>
+</span>
+<button id="addNewAlternative" class="btn btn-primary btn-md" onclick="onAddNewAlternativeClick()">Add new Alternative</button>
+<button id="save" class="btn btn-success btn-md" onclick="onSaveClick()">Save</button>
+<button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()">Next Stage</button>
 
 
 @ko.Apply(Model)
@@ -16,7 +57,7 @@
 
     function onSaveClick() {
         var tmpVM = ko.toJS(viewModel)
-        ko.utils.postJson("", { BralternativesVM: tmpVM })
+        ko.utils.postJson("", { BrAlternativesVM: tmpVM })
     }
 
     function onNextStageClick() {
@@ -28,67 +69,20 @@
         window.location.replace("/Issue/Evaluating?issueId=" + viewModelJs.Issue.Id)
     };
 
-    function onAddCommentClick() {
-
+    function onAddNewAlternativeClick() {
+        viewModel.Alternatives.push({ Id: -1, Name: "", Description: "", IssueId: viewModel.Issue.Id, Reason: 0, Rating: 0 })
     }
 
-    function renderMenues() {
-        var issueId = viewModelJs.Issue.Id;
-
-        if (viewModelJs.Issue.Status == "FINISHED") {
-            status = 5
-        }
-        if (viewModelJs.Issue.Status == "EVALUATING") {
-            status = 4
-        }
-        if (viewModelJs.Issue.Status == "BRAINSTORMING2") {
-            status = 3
-        } else if (viewModelJs.Issue.Status == "BRAINSTORMING1") {
-            status = 2
-        } else {
-            status = 1
-        }
-
-        if (status < 6) {
-            var menuElem = document.getElementById("creating-menu")
-            for (i = 0; i < menuElem.childNodes.length; i++) {
-                if (menuElem.childNodes[i].nodeName == "A") {
-                    menuElem.childNodes[i].innerHTML = 'Issue Overview';
-                    menuElem.childNodes[i].href = "/Issue/Creating?issueId=" + issueId;
-                    break;
-                }
+    viewModel.removeAlternative = function () {
+        viewModel.Alternatives.remove(this);
+        if (typeof this.Id == "function") {
+            if (this.Id() > 0) {
+                viewModel.DeletedAlternatives.push(this.Id())
             }
+        }
+    };
 
-            menuElem = document.getElementById("alternatives-menu")
-            menuElem.childNodes[0].href = "/Issue/BrAlternatives?issueId=" + issueId;
-            menuElem = document.getElementById("criteriafinding-menu")
-            menuElem.childNodes[0].href = "/Issue/BrCriteria?issueId=" + issueId;
-            menuElem = document.getElementById("criteriarating-menu")
-            menuElem.childNodes[0].href = "/Issue/CriteriaRating?issueId=" + issueId;
-            menuElem = document.getElementById("evaluating-menu")
-            menuElem.childNodes[0].href = "/Issue/Evaluating?issueId=" + issueId;
-            menuElem = document.getElementById("evaluating-menu")
-            menuElem.childNodes[0].href = "/Issue/finished?issueId=" + issueId;
-        }
-        if (status < 5) {
+    function onAddCommentClick() {
 
-            var menuElem = document.getElementById("finished-menu")
-            menuElem.className = "disabled"
-        }
-        if (status < 4) {
-            var menuElem = document.getElementById("evaluating-menu")
-            menuElem.className = "disabled"
-        }
-        if (status < 3) {
-            var menuElem = document.getElementById("criteriarating-menu")
-            menuElem.className = "disabled"
-
-        }
-        if (status < 2) {
-            var menuElem = document.getElementById("alternatives-menu")
-            menuElem.className = "disabled"
-            menuElem = document.getElementById("criteriafinding-menu")
-            menuElem.className = "disabled"
-        }
     }
 </script>

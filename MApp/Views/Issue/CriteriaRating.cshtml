@@ -1,18 +1,45 @@
 ﻿@using PerpetuumSoft.Knockout
-@model MApp.Web.ViewModel.CriteriaRatingVM
+@model MApp.Web.ViewModel.CriteriaWeightsVM
 @{
-    ViewBag.Title = Model.Issue.Title + " - Criteria Rating";
+    ViewBag.Title = Model.Issue.Title + " - Criteria Weighting";
     var ko = Html.CreateKnockoutContext();
 }
 
-<h2>CriteriaRating</h2>
-
-
+<span>
+    <table id="criteriaWeightsTable" class="table table-hover table-striped table-condensed table-nonfluid">
+        <thead align="left">
+            <tr>
+                <th>Criteria</th>
+                <th>Your Weight</th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: viewModel.UserWeights">
+            <tr>
+                <td><label data-bind="text: Name" class="form-control" /></td>
+                <td><input data-bind="textInput: Weight" class="form-control"/></td>
+            </tr>
+        </tbody>
+        <tr>
+            <td><label id="sumlabel">Sum:</label></td>
+            <td data-bind="text: viewModel.WeightSum"></td>
+        </tr>
+    </table>
+</span>
+@*<button id="save" class="btn btn-success btn-md" onclick="onSaveClick()">Save</button>
+<button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()">Next Stage</button>*@
 
 @ko.Apply(Model)
 
 <script>
     renderMenues()
+
+    viewModel.WeightSum = ko.computed(function () {
+        var sum = 0;
+        for (i = 0; i < viewModelJs.UserWeights.length; i++) {
+            sum = sum + viewModelJs.UserWeights[0].Weight;
+        }
+        return sum;
+    });
 
     function onSaveClick() {
         var tmpVM = ko.toJS(viewModel)

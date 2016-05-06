@@ -220,24 +220,7 @@
         }
 
         if (status < 5) {
-            $('#finished-menu').css("color", "gray").css("text-decoration", "none");
-            $('#finished-menu').off("click");
-
             var menuElem = document.getElementById("finished-menu")
-            menuElem.className = "disabled"
-        }
-        if (status < 4) {
-            $('#evaluating-menu').css("color", "gray").css("text-decoration", "none");
-            $('#evaluating-menu').off("click");
-
-            var menuElem = document.getElementById("evaluating-menu")
-            menuElem.className = "disabled"
-        }
-        if (status < 3) {
-            $('#criteriarating-menu').css("color", "gray").css("text-decoration", "none");
-            $('#criteriarating-menu').off("click");
-
-            var menuElem = document.getElementById("criteriarating-menu")
             menuElem.className = "disabled"
 
             menuElem = document.getElementById("creating-menu")
@@ -248,6 +231,17 @@
                     break;
                 }
             }
+        }
+        if (status < 4) {
+            var menuElem = document.getElementById("evaluating-menu")
+            menuElem.className = "disabled"
+        }
+        if (status < 3) {
+            $('#criteriarating-menu').css("color", "gray").css("text-decoration", "none");
+            $('#criteriarating-menu').off("click");
+
+            var menuElem = document.getElementById("criteriarating-menu")
+            menuElem.className = "disabled"
 
             menuElem = document.getElementById("criteriafinding-menu")
             menuElem.childNodes[0].href = "/Issue/BrCriteria?issueId=" + viewModelJs.Issue.Id;

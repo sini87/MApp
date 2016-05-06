@@ -652,30 +652,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_PairwiseComparisonCC_CriterionLeft">
-          <End Role="Criterion" Type="Self.Criterion" Multiplicity="1" />
-          <End Role="PairwiseComparisonCC" Type="Self.PairwiseComparisonCC" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Criterion">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PairwiseComparisonCC">
-              <PropertyRef Name="CriterionLeft" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PairwiseComparisonCC_CriterionRight">
-          <End Role="Criterion" Type="Self.Criterion" Multiplicity="1" />
-          <End Role="PairwiseComparisonCC" Type="Self.PairwiseComparisonCC" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Criterion">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PairwiseComparisonCC">
-              <PropertyRef Name="CriterionRight" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_PairwiseComparisonCC_User">
           <End Role="User" Type="Self.User" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -979,14 +955,6 @@
           <AssociationSet Name="FK_PairwiseComparisonAC_User" Association="Self.FK_PairwiseComparisonAC_User">
             <End Role="User" EntitySet="User" />
             <End Role="PairwiseComparisonAC" EntitySet="PairwiseComparisonAC" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PairwiseComparisonCC_CriterionLeft" Association="Self.FK_PairwiseComparisonCC_CriterionLeft">
-            <End Role="Criterion" EntitySet="Criterion" />
-            <End Role="PairwiseComparisonCC" EntitySet="PairwiseComparisonCC" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PairwiseComparisonCC_CriterionRight" Association="Self.FK_PairwiseComparisonCC_CriterionRight">
-            <End Role="Criterion" EntitySet="Criterion" />
-            <End Role="PairwiseComparisonCC" EntitySet="PairwiseComparisonCC" />
           </AssociationSet>
           <AssociationSet Name="FK_PairwiseComparisonCC_User" Association="Self.FK_PairwiseComparisonCC_User">
             <End Role="User" EntitySet="User" />

@@ -101,7 +101,17 @@ namespace MApp.Web.Controllers
             IssueCreating ic = new IssueCreating();
             BrCriteriaVM viewModel = new BrCriteriaVM();
             viewModel.Issue = ic.GetIssue(issueId);
+            IssueBrCriteria ibc = new IssueBrCriteria();
+            viewModel.IssueCriteria = ibc.GetIssueCriteria(issueId, GetUserIdFromClaim());
             return View(viewModel);
+        }
+
+        public ActionResult BrCriteria ([FromJson]BrCriteriaVM brCriteriaVM)
+        {
+            IssueBrCriteria ibc = new IssueBrCriteria();
+            ibc.UpdateCriteria(brCriteriaVM.IssueCriteria, brCriteriaVM.DeletedCriteria, GetUserIdFromClaim());
+            brCriteriaVM.IssueCriteria = ibc.GetIssueCriteria(brCriteriaVM.Issue.Id, GetUserIdFromClaim());
+            return View(brCriteriaVM);
         }
     }
 }

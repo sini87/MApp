@@ -41,10 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IssueBrCriteria.cs" />
     <Compile Include="IssueCreating.cs" />
     <Compile Include="IssueOverview.cs" />
     <Compile Include="Authentication.cs" />
     <Compile Include="Models\AccessRightModel.cs" />
+    <Compile Include="Models\CriterionModel.cs" />
     <Compile Include="Models\IListModel.cs" />
     <Compile Include="Models\IssueModel.cs" />
     <Compile Include="Models\IssueShortModel.cs" />

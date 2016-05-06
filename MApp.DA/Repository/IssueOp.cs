@@ -9,6 +9,11 @@ namespace MApp.DA.Repository
 {
     public class IssueOp : Operations
     {
+        /// <summary>
+        /// returns all isses which the user have access to
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public static List<Issue> UserIssues(int userId)
         {
             User user = UserOp.GetUser(userId);
@@ -41,16 +46,32 @@ namespace MApp.DA.Repository
             return list;
         }
 
+        /// <summary>
+        /// returns all available issues
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <returns></returns>
         public static Issue GetIssueById(int issueId)
         {
             return Ctx.Issue.Find(issueId);
         }
 
+        /// <summary>
+        /// returns title of an issue
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <returns></returns>
         public static string IssueTitle(int issueId)
         {
             return Ctx.Issue.Find(issueId).Title;
         }
 
+        /// <summary>
+        /// updates an issue
+        /// </summary>
+        /// <param name="issue"></param>
+        /// <param name="userId">user who is performing this operation</param>
+        /// <returns></returns>
         public static int UpdateIssue(Issue issue, int userId)
         {
             Issue updateIssue;
@@ -100,6 +121,12 @@ namespace MApp.DA.Repository
             return updateIssue.Id;
         }
 
+        /// <summary>
+        /// inserts new issue
+        /// </summary>
+        /// <param name="issue"></param>
+        /// <param name="userId">user who is performing operation</param>
+        /// <returns></returns>
         public static int InsertIssue(Issue issue, int userId)
         {
             int issueId = -1;
@@ -180,6 +207,11 @@ namespace MApp.DA.Repository
             return false;
         }
 
+        /// <summary>
+        /// puts issue to next stage
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId">user who is performing this action</param>
         public static void NextStage(int issueId, int userId)
         {
             Issue issue = Ctx.Issue.Find(issueId);
@@ -188,6 +220,9 @@ namespace MApp.DA.Repository
             {
                 case "CREATING":
                     issue.Status = "BRAINSTORMING1";
+                    break;
+                case "BRAINSTORMING1":
+                    issue.Status = "BRAINSTORMING2";
                     break;
                 case "BRAINSTORMING2":
                     issue.Status = "EVALUATING";

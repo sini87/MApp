@@ -205,6 +205,8 @@
     });
 
     function renderMenues() {
+        var issueId = viewModelJs.Issue.Id;
+
         if (viewModelJs.Issue.Status == "FINISHED") {
             status = 5
         }
@@ -219,48 +221,45 @@
             status = 1
         }
 
-        if (status < 5) {
-            var menuElem = document.getElementById("finished-menu")
-            menuElem.className = "disabled"
-
-            menuElem = document.getElementById("creating-menu")
+        if (status < 6) {
+            var menuElem = document.getElementById("creating-menu")
             for (i = 0; i < menuElem.childNodes.length; i++) {
                 if (menuElem.childNodes[i].nodeName == "A") {
                     menuElem.childNodes[i].innerHTML = 'Issue Overview';
-                    menuElem.childNodes[i].href = "/Issue/Creating?issueId=" + viewModelJs.Issue.Id;
+                    menuElem.childNodes[i].href = "/Issue/Creating?issueId=" + issueId;
                     break;
                 }
             }
+
+            menuElem = document.getElementById("alternatives-menu")
+            menuElem.childNodes[0].href = "/Issue/BrAlternatives?issueId=" + issueId;
+            menuElem = document.getElementById("criteriafinding-menu")
+            menuElem.childNodes[0].href = "/Issue/BrCriteria?issueId=" + issueId;
+            menuElem = document.getElementById("criteriarating-menu")
+            menuElem.childNodes[0].href = "/Issue/CriteriaRating?issueId=" + issueId;
+            menuElem = document.getElementById("evaluating-menu")
+            menuElem.childNodes[0].href = "/Issue/Evaluating?issueId=" + issueId;
+            menuElem = document.getElementById("evaluating-menu")
+            menuElem.childNodes[0].href = "/Issue/finished?issueId=" + issueId;
+        }
+        if (status < 5) {
+
+            var menuElem = document.getElementById("finished-menu")
+            menuElem.className = "disabled"
         }
         if (status < 4) {
             var menuElem = document.getElementById("evaluating-menu")
             menuElem.className = "disabled"
         }
         if (status < 3) {
-            $('#criteriarating-menu').css("color", "gray").css("text-decoration", "none");
-            $('#criteriarating-menu').off("click");
-
             var menuElem = document.getElementById("criteriarating-menu")
             menuElem.className = "disabled"
 
-            menuElem = document.getElementById("criteriafinding-menu")
-            menuElem.childNodes[0].href = "/Issue/BrCriteria?issueId=" + viewModelJs.Issue.Id;
-            
         }
         if (status < 2) {
-            //$('#criteriafinding-menu').css("color", "gray").css("text-decoration", "none");
-            //$('#criteriafinding-menu').off("click");
-            //$('#alternatives-menu').css("color", "gray").css("text-decoration", "none");
-            //$('#alternatives-menu').off("click");
-            //$('#brainstorming-menu').css("color", "gray").css("text-decoration", "none");
-            //$('#brainstorming-menu').off("click");
-
-
-            var menuElem = document.getElementById("criteriafinding-menu")
+            var menuElem = document.getElementById("alternatives-menu")
             menuElem.className = "disabled"
-            menuElem = document.getElementById("alternatives-menu")
-            menuElem.className = "disabled"
-            menuElem = document.getElementById("brainstorming-menu")
+            menuElem = document.getElementById("criteriafinding-menu")
             menuElem.className = "disabled"
         }
     }

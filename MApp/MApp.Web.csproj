@@ -331,7 +331,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\BrAlternativesVM.cs" />
     <Compile Include="ViewModel\BrCriteriaVM.cs" />
+    <Compile Include="ViewModel\CriteriaRatingVM.cs" />
     <Compile Include="ViewModel\LoginModel.cs" />
     <Compile Include="ViewModel\CreatingVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -353,6 +355,8 @@
     <Content Include="Views\Issue\Creating.cshtml" />
     <Content Include="Scripts\jquery-2.2.3.min.map" />
     <Content Include="Views\Issue\BrCriteria.cshtml" />
+    <Content Include="Views\Issue\BrAlternatives.cshtml" />
+    <Content Include="Views\Issue\CriteriaRating.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

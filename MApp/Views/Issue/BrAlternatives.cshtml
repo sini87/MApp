@@ -1,77 +1,22 @@
 ﻿@using PerpetuumSoft.Knockout
-@model MApp.Web.ViewModel.BrCriteriaVM
+@model MApp.Web.ViewModel.BrAlternativesVM
 @{
     ViewBag.Title = Model.Issue.Title + " - Criteria Brainstorming";
     var ko = Html.CreateKnockoutContext();
 }
 
-<h2><span data-bind="text: viewModel.Issue.Title"></span> - Criteria Brainstorming</h2>
+<h2>BrAlternatives</h2>
 
-<span>
-    <table id="criteriaTable" class="table table-hover table-striped table-condensed table-nonfluid">
-        <thead align="left">
-            <tr>
-                <th>Criterion name</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-        <tbody data-bind="foreach: viewModel.IssueCriteria">
-            <tr>
-                <td><input data-bind="textInput: Name" /></td>
-                <td>
-                    <textarea data-bind="textInput: Description" class="textarea-desc"></textarea>
-                    <table >
-                        <thead>
-                            <tr class="accordion-toggle" data-toggle="collapse" data-target=".comment">
-                                <td>user</td>
-                                <td>comment</td>
-                            </tr>
-                        </thead>
-                        <tbody class="hiddenRow collapse comment">
-                            <tr>
-                                <td>User1</td>
-                                <td>Some comment</td>
-                            </tr>
-                            <tr>
-                                <td>User 2</td>
-                                <td>Other comment</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <button id="addComment" data-bind="enable: Id>'0'" class="btn btn-primary btn-xs" onclick="javascript: onAddCommentClick">Add new comment</button>
-                </td>
-                <td><a class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeCriterion">Remove</a></td>
-            </tr>
-        </tbody>
-    </table>
-</span>
-<button id="addNewCriterion" class="btn btn-primary btn-md" onclick="onAddNewCriterionClick()">Add new Criterion</button>
-<button id="save" class="btn btn-success btn-md" onclick="onSaveClick()">Save</button>
-<button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()">Next Stage</button>
+
 
 @ko.Apply(Model)
 
 <script>
     renderMenues()
-    var deletedCriteria = []
-
-    viewModel.removeCriterion = function () {
-        viewModel.IssueCriteria.remove(this);
-        if (typeof this.Id == "function"){
-            if (this.Id() > 0) {
-            viewModel.DeletedCriteria.push(this.Id())
-            }
-        }
-
-    };
-
-    function onAddNewCriterionClick() {
-        viewModel.IssueCriteria.push({ Id: -1, Name: "", Description: "", IssueId: viewModel.Issue.Id , Weigh: 0, WeightPC: 0})
-    }
 
     function onSaveClick() {
         var tmpVM = ko.toJS(viewModel)
-        ko.utils.postJson("", { BrCriteriaVM: tmpVM })
+        ko.utils.postJson("", { BralternativesVM: tmpVM })
     }
 
     function onNextStageClick() {
@@ -80,7 +25,7 @@
             type: 'POST',
             data: { issueId: viewModel.Issue.Id }
         })
-        window.location.replace("/Issue/CriteriaRating?issueId=" + viewModelJs.Issue.Id)
+        window.location.replace("/Issue/Evaluating?issueId=" + viewModelJs.Issue.Id)
     };
 
     function onAddCommentClick() {

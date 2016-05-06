@@ -106,12 +106,30 @@ namespace MApp.Web.Controllers
             return View(viewModel);
         }
 
+        [HttpPost]
         public ActionResult BrCriteria ([FromJson]BrCriteriaVM brCriteriaVM)
         {
             IssueBrCriteria ibc = new IssueBrCriteria();
             ibc.UpdateCriteria(brCriteriaVM.IssueCriteria, brCriteriaVM.DeletedCriteria, GetUserIdFromClaim());
             brCriteriaVM.IssueCriteria = ibc.GetIssueCriteria(brCriteriaVM.Issue.Id, GetUserIdFromClaim());
             return View(brCriteriaVM);
+        }
+
+        [HttpGet]
+        public ActionResult BrAlternatives(int issueId)
+        {
+            BrAlternativesVM vm = new BrAlternativesVM();
+            IssueCreating ic = new IssueCreating();
+            vm.Issue = ic.GetIssue(issueId);
+            return View(vm);
+        }
+
+        public ActionResult CriteriaRating(int issueId)
+        {
+            CriteriaRatingVM vm = new CriteriaRatingVM();
+            IssueCreating ic = new IssueCreating();
+            vm.Issue = ic.GetIssue(issueId);
+            return View(vm);
         }
     }
 }

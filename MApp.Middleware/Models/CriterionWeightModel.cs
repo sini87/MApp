@@ -19,7 +19,7 @@ namespace MApp.Middleware.Models
             CriterionWeight entity = new CriterionWeight();
             entity.CriterionId = model.CriterionId;
             entity.UserId = model.UserId;
-            entity.Weight = model.Weight;
+            entity.Weight = model.Weight / 100.0;
             return entity;
         }
 
@@ -28,7 +28,7 @@ namespace MApp.Middleware.Models
             CriterionWeightModel model = new CriterionWeightModel();
             model.UserId = entity.UserId;
             model.CriterionId = entity.CriterionId;
-            model.Weight = entity.Weight;
+            model.Weight = entity.Weight * 100.0;
             return model;
         }
     }

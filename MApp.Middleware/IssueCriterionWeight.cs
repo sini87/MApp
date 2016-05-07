@@ -39,5 +39,12 @@ namespace MApp.Middleware
             }
             return list;
         }
+
+        public void SaveCriterionWeights(List<CriterionWeightModel> criteriaWeights, int issueId, int userId)
+        {
+            CriterionWeightModel cwm = new CriterionWeightModel();
+            List<CriterionWeight> entityList = cwm.ToEntityList(criteriaWeights);
+            CriterionWeightOp.SaveCriterionWeights(entityList, issueId, userId);
+        }
     }
 }

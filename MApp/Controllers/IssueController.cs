@@ -149,5 +149,26 @@ namespace MApp.Web.Controllers
             vm.UserWeights = icw.GetUserWeights(issueId, userId);
             return View(vm);
         }
+
+        [HttpPost]
+        public ActionResult CriteriaRating([FromJson] CriteriaWeightsVM criteriaWeightsVM)
+        {
+            IssueCriterionWeight icw = new IssueCriterionWeight();
+            icw.SaveCriterionWeights(criteriaWeightsVM.UserWeights, criteriaWeightsVM.Issue.Id, GetUserIdFromClaim());
+            return View(criteriaWeightsVM);
+        }
+
+        public ActionResult Evaluation(int issueId)
+        {
+            IssueCreating ic = new IssueCreating();
+            EvaluationVM evm = new EvaluationVM();
+            evm.Issue = ic.GetIssue(issueId);
+            return View(evm);
+        }
+
+        public ActionResult Evaluation([FromJson] EvaluationVM evaluationVM)
+        {
+            return View(evaluationVM);
+        }
     }
 }

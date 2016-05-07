@@ -138,6 +138,7 @@
     </Compile>
     <Compile Include="Repository\AccessRightOp.cs" />
     <Compile Include="Repository\CriterionWeightOp.cs" />
+    <Compile Include="Repository\RatingOp.cs" />
     <Compile Include="Repository\IssueOp.cs" />
     <Compile Include="Repository\Operations.cs" />
     <Compile Include="Repository\PropertyOp.cs" />

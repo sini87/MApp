@@ -339,6 +339,7 @@
     <Compile Include="ViewModel\BrAlternativesVM.cs" />
     <Compile Include="ViewModel\BrCriteriaVM.cs" />
     <Compile Include="ViewModel\CriteriaWeightsVM.cs" />
+    <Compile Include="ViewModel\EvaluationVM.cs" />
     <Compile Include="ViewModel\LoginModel.cs" />
     <Compile Include="ViewModel\CreatingVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -363,6 +364,7 @@
     <Content Include="Views\Issue\BrAlternatives.cshtml" />
     <Content Include="Views\Issue\CriteriaRating.cshtml" />
     <Content Include="Scripts\knockout.validation.min.js.map" />
+    <Content Include="Views\Issue\Evaluation.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

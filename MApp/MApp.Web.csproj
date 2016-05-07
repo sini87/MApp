@@ -306,6 +306,8 @@
     <Content Include="Scripts\knockout-3.4.0.js" />
     <Content Include="Scripts\knockout.mapping-latest.debug.js" />
     <Content Include="Scripts\knockout.mapping-latest.js" />
+    <Content Include="Scripts\knockout.validation.js" />
+    <Content Include="Scripts\knockout.validation.min.js" />
     <Content Include="Scripts\MAppFunctions.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\summernote\plugin\summernote-ext-hello.js" />
@@ -360,6 +362,7 @@
     <Content Include="Views\Issue\BrCriteria.cshtml" />
     <Content Include="Views\Issue\BrAlternatives.cshtml" />
     <Content Include="Views\Issue\CriteriaRating.cshtml" />
+    <Content Include="Scripts\knockout.validation.min.js.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

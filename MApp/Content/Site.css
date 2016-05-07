@@ -96,3 +96,24 @@ textarea {
     width: auto;
     max-width: 350px;
 }
+
+.number-in-table{
+    text-align:right;
+}
+
+.table-sum {
+    padding-right: 12px;
+}
+
+/*.info, .success, .warning, .error, .validation {
+    margin: 10px 0px;
+    margin: 10px 0px;
+    padding:15px 10px 15px 50px;
+    background-repeat: no-repeat;
+    background-position: 10px center;
+}*/
+
+.error {
+    color: #a94442;
+}
+

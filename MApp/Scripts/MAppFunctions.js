@@ -30,8 +30,13 @@
         menuElem = document.getElementById("criteriarating-menu")
         menuElem.childNodes[0].href = "/Issue/CriteriaRating?issueId=" + issueId;
         menuElem = document.getElementById("evaluating-menu")
-        menuElem.childNodes[0].href = "/Issue/Evaluating?issueId=" + issueId;
-        menuElem = document.getElementById("evaluating-menu")
+        for (i = 0; i < menuElem.childNodes.length; i++) {
+            if (menuElem.childNodes[i].nodeName == "A") {
+                menuElem.childNodes[i].href = "/Issue/Evaluation?issueId=" + issueId;
+                break;
+            }
+        }
+        menuElem = document.getElementById("finished-menu")
         menuElem.childNodes[0].href = "/Issue/finished?issueId=" + issueId;
     }
     if (status < 5) {

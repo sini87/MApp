@@ -1,9 +1,55 @@
-﻿@using PerpetuumSoft.Knockout
+﻿@using MApp.Middleware.Models
+@using PerpetuumSoft.Knockout
 @model MApp.Web.ViewModel.EvaluationVM
 @{
     ViewBag.Title = Model.Issue.Title + " - Alternatives Evaluation";
     var ko = Html.CreateKnockoutContext();
 }
 
-<h2>Evaluation</h2>
+<h2>@Model.Issue.Title - Alternative Evaluation</h2>
 
+<table>
+    <tr>
+        <th>Crtieria</th>
+        <th>Criteria Weight</th>
+        @using (var item = ko.Foreach(m => m.Alternatives))
+        {
+            <th @item.Bind.Text(m => m.Name)></th>
+        }
+    </tr>
+    <tbody>
+        @{ int i = 0; }
+        @foreach (var item in Model.Criterias)
+        {
+             
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Weight</td>
+                @for (int k = 0; k < Model.UserRating[i].Count;k++)
+                { 
+                    <td>
+                        <input data-bind="textInput: viewModel.UserRating()[@i][@k].Value" />
+                    </td>
+                }
+                
+                
+            </tr>
+            i++;    
+        }
+        
+
+    </tbody>
+</table>
+
+<button id="save" onclick="onClickSave()">save</button>
+
+<script type="text/javascript">
+    var viewModelJs = @Html.Raw(Json.Encode(Model));
+    var viewModel = ko.mapping.fromJS(viewModelJs);
+
+    ko.applyBindings(viewModel);
+    function onClickSave(){
+        var tmpVM = ko.toJS(viewModel)
+        ko.utils.postJson("", { EvaluationVM: tmpVM })    
+    }
+</script>

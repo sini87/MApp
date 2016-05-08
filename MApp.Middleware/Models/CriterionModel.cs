@@ -16,8 +16,8 @@ namespace MApp.Middleware.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public int IssueId { get; set; }
-        public float Weight { get; set; }
-        public float WeightPC { get; set; }
+        public double? Weight { get; set; }
+        public double? WeightPC { get; set; }
 
         public Criterion ToEntity(CriterionModel model)
         {
@@ -36,6 +36,8 @@ namespace MApp.Middleware.Models
             model.Description = entity.Description;
             model.IssueId = entity.Issue;
             model.Name = entity.Name;
+            model.Weight = entity.Weight;
+            model.WeightPC = entity.WeightPC;
             return model;
         }
     }

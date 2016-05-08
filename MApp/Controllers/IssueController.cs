@@ -162,10 +162,18 @@ namespace MApp.Web.Controllers
         {
             IssueCreating ic = new IssueCreating();
             EvaluationVM evm = new EvaluationVM();
+            IssueEvaluation ie = new IssueEvaluation();
+            int userId = GetUserIdFromClaim();
             evm.Issue = ic.GetIssue(issueId);
+            //ToDo check viewsettings & issueOwner
+            evm.AllRatings = ie.GetAllIssueRatings(issueId, userId);
+            evm.UserRating = ie.GetIssueUserRatings(issueId, userId);
+            evm.Criterias = ie.GetIssueCrtieria(issueId, userId);
+            evm.Alternatives = ie.GetIssueAlternatives(issueId, userId);
             return View(evm);
         }
 
+        [HttpPost]
         public ActionResult Evaluation([FromJson] EvaluationVM evaluationVM)
         {
             return View(evaluationVM);

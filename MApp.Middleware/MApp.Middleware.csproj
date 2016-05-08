@@ -45,7 +45,7 @@
     <Compile Include="IssueBrCriteria.cs" />
     <Compile Include="IssueCreating.cs" />
     <Compile Include="IssueCriterionWeight.cs" />
-    <Compile Include="IssueEvaluating.cs" />
+    <Compile Include="IssueEvaluation.cs" />
     <Compile Include="IssueOverview.cs" />
     <Compile Include="Authentication.cs" />
     <Compile Include="Models\AccessRightModel.cs" />

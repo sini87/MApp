@@ -88,11 +88,31 @@ namespace MApp.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult NextStage (int issueId)
+        public ActionResult NextStage (int issueId, string status)
         {
             IssueCreating ic = new IssueCreating();
             ic.NextStage(issueId,GetUserIdFromClaim());
-            return RedirectToAction("BrCriteria","Issue",new { issueId = issueId });
+            string st = status.Remove(status.Length - 1, 1).Remove(0, 1);
+            if (st == "CREATING")
+            {
+                return RedirectToAction("BrCriteria", "Issue", new { issueId = issueId });
+            }else if (st == "BRAINSTORMING1")
+            {
+                return RedirectToAction("CriteriaRating", "Issue", new { issueId = issueId });
+            }
+            else if (st == "BRAINSTORMING2")
+            {
+                return RedirectToAction("EVALUATION", "Issue", new { issueId = issueId });
+            }
+            else if (st == "EVALUATING")
+            {
+                return RedirectToAction("Decision", "Issue", new { issueId = issueId });
+            }
+            else
+            {
+                return RedirectToAction("Issue", "Index", new { issueId = issueId });
+            }
+            
         }
 
         [HttpGet]
@@ -199,14 +219,21 @@ namespace MApp.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Decision ([FromJson] DecisionVM decisionVM)
+        public ActionResult Decision ([FromJson] DecisionModel decisionModel)
         {
             IssueCreating ic = new IssueCreating();
             int userId = GetUserIdFromClaim();
             IssueDecision id = new IssueDecision();
-            id.SaveDecision(decisionVM.Decision,userId);
-            ic.NextStage(decisionVM.Issue.Id, userId);
-            return RedirectToAction("Decision","Issue", new { issueId = decisionVM.Issue.Id });
+            id.SaveDecision(decisionModel,userId);
+            ic.NextStage(decisionModel.IssueId, userId);
+            return RedirectToAction("Decision","Issue", new { issueId = decisionModel.IssueId });
+        }
+
+        public ActionResult UpdateDecision([FromJson] DecisionModel decisionModel)
+        {
+            IssueDecision id = new IssueDecision();
+            id.UpdateDecision(decisionModel,GetUserIdFromClaim());
+            return RedirectToAction("Decision", "Issue", new { issueId = decisionModel.IssueId });
         }
     }
 }

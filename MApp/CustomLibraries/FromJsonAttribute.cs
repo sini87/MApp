@@ -31,10 +31,14 @@ namespace MApp.Web.CustomLibraries
                 {
                     ret = serialier.Deserialize(stringfield, bindingContext.ModelType);
                 }
-                catch(System.Reflection.AmbiguousMatchException ex)
+                catch (System.Reflection.AmbiguousMatchException ex)
                 {
                     Console.WriteLine(ex.Message);
-                }catch(InvalidOperationException ex)
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Console.WriteLine(ex);
+                }catch (System.FormatException ex)
                 {
                     Console.WriteLine(ex);
                 }

@@ -44,5 +44,13 @@ namespace MApp.DA.Repository
             }
             Ctx.SaveChanges();
         }
+
+        public static void  UpdateDecision(Decision decision, int userId)
+        {
+            Decision entity = Ctx.Decision.Where(x => x.IssueId == decision.IssueId).FirstOrDefault();
+            entity.Explanation = decision.Explanation;
+            Ctx.Entry(entity).State = EntityState.Modified;
+            Ctx.SaveChanges();
+        }
     }
 }

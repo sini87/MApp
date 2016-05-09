@@ -58,7 +58,8 @@ namespace MApp.DA.Repository
                 var query2 = from c in Ctx.Criterion
                              from a in Ctx.Alternative
                              where
-                               c.Issue == issueId
+                               c.Issue == issueId &&
+                               a.IssueId == issueId
                              orderby
                                c.Id, a.Id
                              select new

@@ -68,7 +68,7 @@
         </table>
     </div>
     <button id="save" type="button" class="btn btn-success" onclick="javascript: onSaveClick()">Save</button>
-    <button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()">Next Stage</button>
+    <button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()" >Next Stage</button>
     <button id="delete" type="button" class="btn btn-danger" onclick="javascript: onDeleteClick()">Delete</button>
 </div>
 
@@ -100,12 +100,7 @@
     }
 
     function onNextStageClick() {
-        $.ajax({
-            url: '@Url.Action("NextStage","Issue")',
-            type: 'POST',
-            data: { issueId: viewModel.Issue.Id }
-        })
-        window.location.replace("/Issue/BrCriteria?issueId=" + viewModelJs.Issue.Id)
+        ko.utils.postJson("/Issue/NextStage", { issueId: viewModel.Issue.Id, status: viewModel.Issue.Status })
     };
 
     function onAddRightClick() {

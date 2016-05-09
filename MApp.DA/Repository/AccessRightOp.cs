@@ -51,7 +51,11 @@ namespace MApp.DA.Repository
                 try
                 {
                     Ctx.SaveChanges();
-                }catch(Exception ex)
+                }catch(DbEntityValidationException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                 }

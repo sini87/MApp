@@ -44,7 +44,7 @@ else
                 <br />
             </label>
         </div>
-        <textarea data-bind="value: viewModel.Decision.Explanation"></textarea>
+        <textarea data-bind="value: viewModel.Decision.Explanation" id="explanationText"></textarea>
     </div>
     if (Model.Issue.Status != "FINISHED")
     {
@@ -52,7 +52,8 @@ else
     }
     else
     {
-        <button id="save" type="button" class="btn btn-success" onclick="javascript: onSaveClick()">Overthink Decision</button>
+        <button id="makeDecisionBtn" type="button" class="btn btn-success" onclick="javascript: onSaveClick()" data-bind="visible: viewModel.overthink">Overthink Decision</button>
+        <button id="updateDecisionBtn" type="button" class="btn btn-success" onclick="javascript: onUpdateClick()" data-bind="visible: viewModel.update">Update Explanation</button>
     }
 }
 else
@@ -80,7 +81,7 @@ else
                 <td>
                     @Model.Alternatives.Where(x => x.Id == dm.AlternativeId).FirstOrDefault().Name
                     <br />
-                    @Model.Decision.Explanation
+                    @dm.Explanation
                 </td>
             </tr>
         }
@@ -88,12 +89,42 @@ else
     
 }
 
-@ko.Apply(Model)
-
 <script>
 
+    var viewModelJs = @Html.Raw(Json.Encode(Model));
+    var viewModel = ko.mapping.fromJS(viewModelJs);
+
+    viewModel.overthink = ko.computed(function() {
+        if (viewModel.Decision.AlternativeId() != @Model.Decision.AlternativeId ){
+            document.getElementById("explanationText").value = ""
+            return true;
+        }
+
+        else
+            return false;
+    });
+
+    viewModel.update = ko.computed(function() {
+        if (viewModel.Decision.AlternativeId() == @Model.Decision.AlternativeId ){
+            document.getElementById("explanationText").value = '@Model.Decision.Explanation';
+            return true;
+        }else
+            return false;
+    });
+
+    ko.applyBindings(viewModel);
+
+
+    renderMenues()
     function onSaveClick() {
-        var tmpVM = ko.toJS(viewModel)
-        ko.utils.postJson("", { DecisionVM: tmpVM });
+        var tmpVM = ko.toJS(viewModel.Decision)
+        tmpVM.ChangeDate = "";
+        ko.utils.postJson("", { DecisionModel: tmpVM });
+    }
+
+    function onUpdateClick(){
+        var tmpVM = ko.toJS(viewModel.Decision);
+        tmpVM.ChangeDate = "";
+        ko.utils.postJson("/Issue/UpdateDecision", { DecisionModel: tmpVM });
     }
 </script>

@@ -217,9 +217,9 @@ namespace MApp.DA.Repository
                     issue.Status = "EVALUATING";
                     break;
                 case "EVALUATING":
-                    issue.Status = "DECISIONING";
+                    issue.Status = "DECIDING";
                     break;
-                case "DECISIONING":
+                case "DECIDING":
                     issue.Status = "FINISHED";
                     break;
             }

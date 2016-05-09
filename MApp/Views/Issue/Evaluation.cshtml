@@ -84,11 +84,6 @@
     }
 
     function onNextStageClick() {
-        $.ajax({
-            url: '@Url.Action("NextStage","Issue")',
-            type: 'POST',
-            data: { issueId: viewModel.Issue.Id }
-        })
-        window.location.replace("/Issue/Decision?issueId=" + viewModelJs.Issue.Id)
+        ko.utils.postJson("/Issue/NextStage", { issueId: viewModel.Issue.Id, status: viewModel.Issue.Status })
     };
 </script>

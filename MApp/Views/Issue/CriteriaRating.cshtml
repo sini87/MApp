@@ -39,7 +39,7 @@
 </span>
 
 <button id="save" class="btn btn-success btn-md" onclick="onSaveClick()" data-bind="enable: viewModel.PercentSum() == 100">Save</button>
-
+<button id="nextStageBtn" class="bth btn-success btn-md" onclick="onNextStageClick()" data-bind="enable: viewModel.PercentSum() == 100">Next Stage</button>
 <script>
     var viewModelJs = @Html.Raw(Json.Encode(Model));
     var viewModel = ko.mapping.fromJS(viewModelJs);
@@ -51,7 +51,7 @@
         return sum;
     });
 
-    
+
     viewModel.PercentSum = ko.computed(function() {
         var total = 0.0;
         for (var i = 0; i < viewModel.UserWeights().length; i++)
@@ -75,9 +75,9 @@
     };
     ko.validation.registerExtenders();
     viewModel.PercentSum.extend({ mustEqual: { params: 100, message: "Weight sum must be 100" } });
-    
+
     ko.applyBindings(viewModel);
-    
+
     renderMenues()
 
     var weights = document.querySelectorAll('*[id^="CriterionWeight"]');
@@ -99,12 +99,7 @@
     }
 
     function onNextStageClick() {
-        $.ajax({
-            url: '@Url.Action("NextStage","Issue")',
-            type: 'POST',
-            data: { issueId: viewModel.Issue.Id }
-        })
-        window.location.replace("/Issue/Evaluating?issueId=" + viewModelJs.Issue.Id)
+        ko.utils.postJson("/Issue/NextStage", { issueId: viewModel.Issue.Id, status: viewModel.Issue.Status })
     };
 
     function onAddCommentClick() {

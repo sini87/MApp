@@ -47,5 +47,10 @@ namespace MApp.Middleware
         {
             DecisionOp.MakeDecision(decision.ToEntity(decision), userId);
         }
+
+        public void UpdateDecision(DecisionModel decision, int userId)
+        {
+            DecisionOp.UpdateDecision(decision.ToEntity(decision), userId);
+        }
     }
 }

@@ -18,17 +18,6 @@ namespace MApp.DA.Repository
         {
             User user = UserOp.GetUser(userId);
 
-            string q = "WITH myrec AS " +
-                "SELECT Id, Parent, Title, 1 AS 'Level' " +
-                "FROM [appSchema].Issue AS a " +
-                "WHERE a.Parent IS NULL " +
-                "UNION ALL " +
-                "Select b.Id, b.Parent, b.Title, a.Level + 1 " +
-                "FROM myrec as a " +
-                "INNER JOIN [appSchema].Issue AS b ON b.Parent = a.id " +
-                "WHERE b.Parent IS NOT NULL) " +
-                "SELECT DISTINCT Id, Parent, Title, Level From myrec";
-
             var query = from Issue in Ctx.Issue
                         where
                               (from AccessRight in Ctx.AccessRight
@@ -228,6 +217,9 @@ namespace MApp.DA.Repository
                     issue.Status = "EVALUATING";
                     break;
                 case "EVALUATING":
+                    issue.Status = "DECISIONING";
+                    break;
+                case "DECISIONING":
                     issue.Status = "FINISHED";
                     break;
             }

@@ -122,5 +122,10 @@ namespace MApp.DA.Repository
                 }
             }
         }
+
+        public static string AccessRightOfUserForIssue(int userId, int issueId)
+        {
+            return Ctx.AccessRight.Where(x => x.IssueId == issueId && x.UserId == userId).FirstOrDefault().Right;
+        }
     }
 }

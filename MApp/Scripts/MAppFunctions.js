@@ -2,6 +2,8 @@
     var issueId = viewModelJs.Issue.Id;
 
     if (viewModelJs.Issue.Status == "FINISHED") {
+        status = 6
+    }else if (viewModelJs.Issue.Status == "DECISIONING") {
         status = 5
     } else if (viewModelJs.Issue.Status == "EVALUATING") {
         status = 4
@@ -13,7 +15,7 @@
         status = 1
     }
 
-    if (status < 6) {
+    if (status <= 6) {
         var menuElem = document.getElementById("creating-menu")
         for (i = 0; i < menuElem.childNodes.length; i++) {
             if (menuElem.childNodes[i].nodeName == "A") {

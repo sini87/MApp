@@ -1,4 +1,5 @@
-﻿using MApp.DA.Repository;
+﻿using MApp.DA;
+using MApp.DA.Repository;
 using MApp.Middleware.Models;
 using System;
 using System.Collections.Generic;
@@ -60,6 +61,36 @@ namespace MApp.Middleware
         {
             IssueBrCriteria ibc = new IssueBrCriteria();
             return ibc.GetIssueCriteria(issueId, userId);
+        }
+
+        public void SaveUserRatings(List<RatingModel>[] ratings)
+        {
+            List<RatingModel> ratList = new List<RatingModel>();
+            
+            for (int i = 0; i < ratings.Length; i++)
+            {
+                foreach (RatingModel rat in ratings[i])
+                {
+                    ratList.Add(rat);
+                }
+            }
+
+            RatingModel rm = new RatingModel();
+            List<Rating> entityList = rm.ToEntityList(ratList);
+            RatingOp.SaveUserRatings(entityList);
+        }
+
+        public List<UserShortModel> GetRatedUsersForIssue(int issueId, int userId)
+        {
+            List<int> userIds = RatingOp.GetAlreadyRatedUsers(issueId, userId);
+            IssueCreating ic = new IssueCreating();
+            List<UserShortModel> allUsers = ic.GetAllUsers();
+            List<UserShortModel> ratedUsers = new List<UserShortModel>();
+            foreach(int id in userIds)
+            {
+                ratedUsers.Add(allUsers.Where(x => x.Id == id).FirstOrDefault());
+            }
+            return ratedUsers;
         }
     }
 }

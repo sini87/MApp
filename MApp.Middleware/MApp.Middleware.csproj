@@ -45,6 +45,7 @@
     <Compile Include="IssueBrCriteria.cs" />
     <Compile Include="IssueCreating.cs" />
     <Compile Include="IssueCriterionWeight.cs" />
+    <Compile Include="IssueDecision.cs" />
     <Compile Include="IssueEvaluation.cs" />
     <Compile Include="IssueOverview.cs" />
     <Compile Include="Authentication.cs" />
@@ -52,6 +53,7 @@
     <Compile Include="Models\AlternativeModel.cs" />
     <Compile Include="Models\CriterionModel.cs" />
     <Compile Include="Models\CriterionWeightModel.cs" />
+    <Compile Include="Models\DecisionModel.cs" />
     <Compile Include="Models\IListModel.cs" />
     <Compile Include="Models\IssueModel.cs" />
     <Compile Include="Models\IssueShortModel.cs" />

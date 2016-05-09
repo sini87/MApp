@@ -181,5 +181,10 @@ namespace MApp.Middleware
         {
             IssueOp.NextStage(issueId, userId);
         }
+
+        public string AccessRightOfUserForIssue(int userId, int issueId)
+        {
+            return AccessRightOp.AccessRightOfUserForIssue(userId, issueId);
+        }
     }
 }

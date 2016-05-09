@@ -1,0 +1,99 @@
+﻿@using PerpetuumSoft.Knockout
+@model MApp.Web.ViewModel.DecisionVM
+@{
+    var ko = Html.CreateKnockoutContext();
+    if (Model.Issue.Status == "DECISIONING")
+    {
+        ViewBag.Title = Model.Issue.Title + " - Decision Making";
+    }
+    else
+    {
+        ViewBag.Title = Model.Issue.Title + " - Final Decision";
+    }
+
+    bool visible, enabled;
+    if (Model.AccessRight == "O")
+    {
+        visible = true;
+        enabled = true;
+    }else
+    {
+        visible = false;
+        enabled = false;
+    }
+}
+
+@if (Model.Issue.Status == "DECISIONING")
+{
+    <h2>@Model.Issue.Title - Decision Making</h2>
+}
+else
+{
+    <h2>@Model.Issue.Title - Final Decision</h2>
+}
+
+@if (Model.AccessRight == "O")
+{
+
+
+    <div class="form-group">
+        <div data-bind="foreach: viewModel.Alternatives">
+            <label>
+                <input type="radio" name="altRadio" data-bind="checkedValue: Id, checked: viewModel.Decision.AlternativeId" />
+                <span data-bind="text: Name"></span>
+                <br />
+            </label>
+        </div>
+        <textarea data-bind="value: viewModel.Decision.Explanation"></textarea>
+    </div>
+    if (Model.Issue.Status != "FINISHED")
+    {
+        <button id="save" type="button" class="btn btn-success" onclick="javascript: onSaveClick()">Make Decision</button>
+    }
+    else
+    {
+        <button id="save" type="button" class="btn btn-success" onclick="javascript: onSaveClick()">Overthink Decision</button>
+    }
+}
+else
+{
+    if (Model.Issue.Status != "FINISHED")
+    {
+        <h3>Issue owner has made no decision yet</h3>
+    }else
+    {
+        <h3>Decision Made: @Model.Alternatives.Where(x => x.Id == Model.Decision.AlternativeId).FirstOrDefault().Name</h3>
+        <h4>Explanation:</h4>
+        <br />
+        @Model.Decision.Explanation
+    }
+}
+
+@if(Model.OldDecisions != null && Model.OldDecisions.Count > 0)
+{
+    <h3>Old Decisions</h3>
+    <table>
+        @foreach (var dm in Model.OldDecisions)
+        {
+            <tr>
+                <td>@dm.ChangeDate</td>
+                <td>
+                    @Model.Alternatives.Where(x => x.Id == dm.AlternativeId).FirstOrDefault().Name
+                    <br />
+                    @Model.Decision.Explanation
+                </td>
+            </tr>
+        }
+    </table>
+    
+}
+
+@ko.Apply(Model)
+
+<script>
+
+    function onSaveClick() {
+        var tmpVM = ko.toJS(viewModel)
+        ko.utils.postJson("", { DecisionVM: tmpVM });
+    }
+</script>

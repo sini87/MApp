@@ -167,16 +167,46 @@ namespace MApp.Web.Controllers
             evm.Issue = ic.GetIssue(issueId);
             //ToDo check viewsettings & issueOwner
             evm.AllRatings = ie.GetAllIssueRatings(issueId, userId);
-            evm.UserRating = ie.GetIssueUserRatings(issueId, userId);
+            evm.UserRatings = ie.GetIssueUserRatings(issueId, userId);
             evm.Criterias = ie.GetIssueCrtieria(issueId, userId);
             evm.Alternatives = ie.GetIssueAlternatives(issueId, userId);
+            evm.RatedUsers = ie.GetRatedUsersForIssue(issueId, userId);
             return View(evm);
         }
 
         [HttpPost]
         public ActionResult Evaluation([FromJson] EvaluationVM evaluationVM)
         {
+            IssueEvaluation ie = new IssueEvaluation();
+            ie.SaveUserRatings(evaluationVM.UserRatings);
             return View(evaluationVM);
+        }
+
+        public ActionResult Decision(int issueId)
+        {
+            DecisionVM dvm = new DecisionVM();
+            IssueCreating ic = new IssueCreating();
+            IssueBrAlternative iba = new IssueBrAlternative();
+            IssueDecision id = new IssueDecision();
+            int userId = GetUserIdFromClaim();
+            dvm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId);
+            dvm.Alternatives = iba.GetIssueAlternatives(issueId, userId);
+            dvm.Issue = ic.GetIssue(issueId);
+            dvm.OldDecisions = id.GetOldDecisions(issueId, userId);
+            dvm.Decision = id.GetDecision(issueId, userId);
+
+            return View(dvm);
+        }
+
+        [HttpPost]
+        public ActionResult Decision ([FromJson] DecisionVM decisionVM)
+        {
+            IssueCreating ic = new IssueCreating();
+            int userId = GetUserIdFromClaim();
+            IssueDecision id = new IssueDecision();
+            id.SaveDecision(decisionVM.Decision,userId);
+            ic.NextStage(decisionVM.Issue.Id, userId);
+            return RedirectToAction("Decision","Issue", new { issueId = decisionVM.Issue.Id });
         }
     }
 }

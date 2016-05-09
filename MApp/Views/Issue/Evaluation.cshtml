@@ -8,7 +8,7 @@
 
 <h2>@Model.Issue.Title - Alternative Evaluation</h2>
 
-<table>
+<table id="userRatings" class="table table-hover table-striped table-condensed table-nonfluid">
     <tr>
         <th>Crtieria</th>
         <th>Criteria Weight</th>
@@ -23,12 +23,12 @@
         {
              
             <tr>
-                <td>@item.Name</td>
-                <td>@item.Weight</td>
-                @for (int k = 0; k < Model.UserRating[i].Count;k++)
-                { 
+                <td class="table-header-column">@item.Name</td>
+                <td class="table-header-column">@String.Format("{0:#0.## %}",item.Weight)</td>
+                @for (int k = 0; k < Model.UserRatings[i].Count;k++)
+                {
                     <td>
-                        <input data-bind="textInput: viewModel.UserRating()[@i][@k].Value" />
+                        <input data-bind="textInput: viewModel.UserRatings()[@i][@k].Value" class="form-control"/>
                     </td>
                 }
                 
@@ -36,20 +36,59 @@
             </tr>
             i++;    
         }
-        
-
     </tbody>
 </table>
+<button id="save" onclick="onClickSave()" class="btn btn-success btn-md">save</button>
+<button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()">Next Stage</button>
 
-<button id="save" onclick="onClickSave()">save</button>
+@if (Model.RatedUsers.Count > 0)
+{
+    <h3>Ratings of other users</h3>
+    foreach (UserShortModel user in Model.RatedUsers)
+    {
+        <h4>@user.Name</h4>
+        <table id="userRating@(user.Id)table" class="table table-hover table-striped table-condensed table-nonfluid">
+            <thead>
+                <th>Crtieria</th>
+                @foreach (AlternativeModel alt in Model.Alternatives)
+                {
+                    <th>@alt.Name</th>
+                }
+            </thead>
+            <tbody>
+                @foreach (CriterionModel cm in Model.Criterias)
+                {
+                    <tr>
+                        <td class="table-header-column">@cm.Name</td>
+                        @foreach (RatingModel rat in Model.AllRatings.Where(x => x.CriterionId == cm.Id && x.UserId == user.Id).OrderBy(x => x.AlternativeId).ToList())
+                        {
+                            <td>@rat.Value</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
 
 <script type="text/javascript">
     var viewModelJs = @Html.Raw(Json.Encode(Model));
     var viewModel = ko.mapping.fromJS(viewModelJs);
 
     ko.applyBindings(viewModel);
+    renderMenues();
+
     function onClickSave(){
         var tmpVM = ko.toJS(viewModel)
-        ko.utils.postJson("", { EvaluationVM: tmpVM })    
+        ko.utils.postJson("", { EvaluationVM: tmpVM })
     }
+
+    function onNextStageClick() {
+        $.ajax({
+            url: '@Url.Action("NextStage","Issue")',
+            type: 'POST',
+            data: { issueId: viewModel.Issue.Id }
+        })
+        window.location.replace("/Issue/Decision?issueId=" + viewModelJs.Issue.Id)
+    };
 </script>

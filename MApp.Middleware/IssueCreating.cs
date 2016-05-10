@@ -167,7 +167,6 @@ namespace MApp.Middleware
             if (updatedAr != null)
             {
                 uList = arm.ToEntityList(updatedAr).Except(dList).Except(aList).ToList();
-                uList = null;
             }
             AccessRightOp.UpdateRights(aList, dList, uList, issueId, userId);
         }

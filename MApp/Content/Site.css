@@ -89,6 +89,7 @@ textarea {
     min-width: 350px;
     width: auto;
     max-width: 700px;
+    min-height: 30px;
 }
 
 .textbox-name{

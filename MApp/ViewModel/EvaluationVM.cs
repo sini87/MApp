@@ -14,5 +14,6 @@ namespace MApp.Web.ViewModel
         public List<RatingModel> AllRatings { get; set; }
         public List<AlternativeModel> Alternatives { get; set; } 
         public List<UserShortModel> RatedUsers { get; set; }
+        public string AccessRight { get; set; }
     }
 }

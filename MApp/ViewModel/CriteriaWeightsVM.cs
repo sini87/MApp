@@ -10,5 +10,6 @@ namespace MApp.Web.ViewModel
     {
         public IssueModel Issue { get; set; }
         public List<CriterionWeightModel> UserWeights { get; set; }
+        public string AccessRight { get; set; }
     }
 }

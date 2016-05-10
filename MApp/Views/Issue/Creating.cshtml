@@ -9,27 +9,30 @@
 </div>
 
 <div class="container">
-    <div class="col-md-7">
+    <div id ="coreInfos" class="col-md-7">
         <div class="form-group">
             <label for="titleInput">Title</label>
-            <input id="titleInput" class="form-control" data-bind="textInput: viewModel.Issue.Title" />
+            <input id="titleInput" class="form-control" data-bind="textInput: viewModel.Issue.Title, enable: viewModel.AccessRight() != 'V'" />
             <label for="description">Description</label>
-            <textarea class="form-control" data-bind="value: viewModel.Issue.Description" id="description" name="description"></textarea>
+            <textarea class="form-control" data-bind="value: viewModel.Issue.Description, enable: viewModel.AccessRight() != 'V'" id="description" name="description"></textarea>
             <label for="issueStatus">Issue status:</label>
             <label id="issueStatus" data-bind="text: viewModel.Issue.Status"></label>
             <div class="checkbox">
                 <label id="anonymousPostingLabel">
-                    Anonymous posting? <input id="anonymous" type="checkbox" data-bind="checked: viewModel.Issue.AnonymousPosting" />
+                    Anonymous posting? <input id="anonymous" type="checkbox" data-bind="checked: viewModel.Issue.AnonymousPosting, enable: viewModel.AccessRight() != 'V'" />
                 </label>
             </div>
             <p>
                 <label for="selectRootIssue">Parent Issue:</label>
                 <select class="selectpicker" data-live-search="true" id="selectRootIssue" data-bind="options: viewModel.Issues, optionsText: 'Title', optionsValue: 'Id', value: viewModel.Issue.Parent"></select>
-                <a data-bind="text: viewModel.parentDDText, attr: {href: '?issueId=' + viewModel.Issue.Parent}"></a>
+                <a data-bind="text: viewModel.Issue.ParentTitle, attr: {href: '?issueId=' + viewModel.Issue.Parent()}, visible: !viewModel.parentChanged() && viewModel.Issue.ParentTitle() != ''"></a>
+                <a data-bind="text: viewModel.parentDDText, attr: {href: '?issueId=' + viewModel.Issue.Parent()}, visible: viewModel.parentDDText() != 'none' && viewModel.parentChanged"></a>
             </p>
             <p>
                 <label for="selectdependsOnIssue">Depends on Issue:</label>
                 <select class="selectpicker" data-live-search="true" id="selectdependsOnIssue" data-bind="options: viewModel.Issues, optionsText: 'Title', optionsValue: 'Id', value: viewModel.Issue.DependsOn"></select>
+                <a data-bind="text: viewModel.Issue.DependsOnTitle, attr: {href: '?issueId=' + viewModel.Issue.DependsOn()}, visible: !viewModel.dependsOnChanged() && viewModel.Issue.DependsOnTitle() != ''"></a>
+                <a data-bind="text: viewModel.dependsOnDDText, attr: {href: '?issueId=' + viewModel.Issue.DependsOn()}, visible: viewModel.dependsOnDDText() != 'none' && viewModel.dependsOnChanged"></a>
             </p>
 
         </div>
@@ -38,19 +41,18 @@
 
     <div class="col-md-5">
         <label for="tokenfield">Issue Tags</label>
-        <input type="text" class="form-control" id="tokenfield" />
-        @*<label for="Users">Access Rights</label>*@
+        <input type="text" class="form-control" id="tokenfield" data-bind="enable: viewModel.AccessRight() != 'V'"/>
 
-        <p>
-            <select class="selectpicker" data-live-search="true" id="selectUser" data-width="auto" data-bind="options: viewModel.AllUsers, optionsText: 'Name', optionsValue: 'Id'"></select>
-            <select class="selectpicker" id="selectRight" data-width="auto">
+        <p data-bind="visible: viewModelJs.AccessRight == 'O'">
+            <select class="selectpicker" data-live-search="true" id="selectUser" data-width="auto" data-bind="options: viewModel.AllUsers, optionsText: 'Name', optionsValue: 'Id', visible: viewModel.AccessRight() == 'O'"></select>
+            <select class="selectpicker" id="selectRight" data-width="auto" >
                 <option>Contributor</option>
                 <option>Viewer</option>
                 <option>Owner</option>
             </select>
-            <button id="addRight" type="button" class="btn btn-primary btn-xs" onclick="javascript: onAddRightClick()">Add</button>
+            <button id="addRight" type="button" class="btn btn-primary btn-xs" onclick="javascript: onAddRightClick()" data-bind="visible: viewModelJs.AccessRight == 'O'">Add</button>
         </p>
-
+        <h4>Access Rights</h4>
         <table id="userTable" class="table table-hover table-striped table-condensed">
             <thead align="left">
                 <tr>
@@ -62,25 +64,58 @@
                 <tr>
                     <td data-bind="text: Name"></td>
                     <td data-bind="text: Right"></td>
-                    <td><a class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeRight">Remove</a></td>
+                    <td><a class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeRight, visible: viewModelJs.AccessRight == 'O' && UserId() != viewModel.UserId()">Remove</a></td>
                 </tr>
             </tbody>
         </table>
     </div>
-    <button id="save" type="button" class="btn btn-success" onclick="javascript: onSaveClick()">Save</button>
-    <button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()" >Next Stage</button>
-    <button id="delete" type="button" class="btn btn-danger" onclick="javascript: onDeleteClick()">Delete</button>
+    <button id="save" type="button" class="btn btn-success" onclick="javascript: onSaveClick()" data-bind="visible: viewModelJs.AccessRight == 'O' || viewModelJs.AccessRight == 'C'">Save</button>
+    <button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.AccessRight() == 'O'">Next Stage</button>
+    <button id="delete" type="button" class="btn btn-danger" onclick="javascript: onDeleteClick()" data-bind="visible: viewModelJs.AccessRight == 'O'">Delete</button>
 </div>
-
-
-@ko.Apply(Model)
 
 
 <script type="text/javascript">
     var addedTags = [];
     var deletedTags = [];
+    var viewModelJs = @Html.Raw(Json.Encode(Model));
+    var viewModel = ko.mapping.fromJS(viewModelJs);
+    
+    viewModel.parentChanged = ko.observable(false);
+    viewModel.dependsOnChanged = ko.observable(false);
+    viewModel.DeletedAR = ko.observableArray();
+    viewModel.AddedAR = ko.observableArray();
+    
+    viewModel.dependsOnDDText = ko.computed(function () {
+        return $("#selectdependsOnIssue option[value='" + viewModel.Issue.DependsOn() + "']").text();
+    });
+
+    viewModel.parentDDText = ko.computed(function () {
+        return $("#selectRootIssue option[value='" + viewModel.Issue.Parent() + "']").text();
+    });
+
+    if (viewModelJs.Issue.Id == -1){
+        viewModel.Issue.Tags = ko.observableArray();
+    }
+
+    ko.applyBindings(viewModel);
+    
 
     renderMenues()
+    makePermissions()
+
+    viewModel.removeRight = function () {
+        viewModel.DeletedAR.push({ UserId: this.UserId(), Right: this.Right(), Name: this.Name() });
+        viewModel.AccessRights.remove(this);
+    };
+
+    $('#selectRootIssue').on('hidden.bs.select', function (e) {
+        viewModel.parentChanged(true)
+    });
+
+    $('#selectdependsOnIssue').on('hidden.bs.select', function (e) {
+        viewModel.dependsOnChanged(true)
+    });
 
     function onSaveClick() {
         var tmpVM = ko.toJS(viewModel)
@@ -112,7 +147,12 @@
                     uText = viewModelJs.AllUsers[index].Name
                 }
             }
-            viewModel.AccessRights.push({ UserId: uid, Right: $('#selectRight').selectpicker('option :selected').val(), Name: uText });
+            var ar = {
+                UserId: ko.observable(uid),
+                Right: ko.observable($('#selectRight').selectpicker('option :selected').val()),
+                Name: ko.observable(uText)
+            }
+            viewModel.AccessRights.push(ar);
             viewModel.AllUsers.splice($('#selectUser').selectpicker('option :selected').index(), 1)
             $('#selectUser').find('[value=' + uid + ']').remove();
             $('#selectUser').selectpicker('refresh');
@@ -124,14 +164,12 @@
 
     };
 
-    viewModel.parentDDText = ko.computed(function () {
-        return $("#selectRootIssue option[value='" + viewModel.Issue.Parent() + "']").text();
-    });
-
-    viewModel.removeRight = function () {
-        viewModel.DeletedAR.push({ UserId: this.UserId(), Right: this.Right(), Name: this.Name() });
-        viewModel.AccessRights.remove(this);
-    };
+    function makePermissions(){
+        if (viewModelJs.AccessRight == 'V'){
+            $('#selectRootIssue').selectpicker('hide');
+            $('#selectdependsOnIssue').selectpicker('hide');
+        }
+    }
 
     $(document).ready(function () {
         var token = [];
@@ -147,8 +185,10 @@
         }
 
         var issueTags = []
-        for (var j = 0; j < viewModelJs.Issue.Tags.length; j++) {
-            issueTags.push({ value: viewModelJs.Issue.Tags[j].Id, label: viewModelJs.Issue.Tags[j].Name })
+        if (viewModel.Issue.Id() != -1){
+            for (var j = 0; j < viewModel.Issue.Tags().length; j++) {
+                issueTags.push({ value: viewModelJs.Issue.Tags[j].Id, label: viewModelJs.Issue.Tags[j].Name })
+            }
         }
 
         $('#tokenfield')
@@ -162,7 +202,7 @@
             .tokenfield('setTokens', issueTags)
         ;
 
-        usrProp = viewModelJs.Issue.Tags;
+        usrProp = viewModel.Issue.Tags();
 
         $('#tokenfield').on('tokenfield:createtoken', function (e) {
             var tokenExists = false

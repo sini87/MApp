@@ -32,6 +32,19 @@ else
     <h2>@Model.Issue.Title - Final Decision</h2>
 }
 
+<div>
+    <h3>Voting Results</h3>
+    <table class="table">
+        @foreach(var am in Model.Alternatives)
+        {
+            <tr>
+                <td>@am.Name</td>
+                <td>@String.Format("{0:0.00#}", am.Rating)</td>
+            </tr>
+        }
+    </table>
+</div>
+
 @if (Model.AccessRight == "O")
 {
 
@@ -105,7 +118,7 @@ else
     });
 
     viewModel.update = ko.computed(function() {
-        if (viewModel.Decision.AlternativeId() == @Model.Decision.AlternativeId ){
+        if (viewModel.Decision.AlternativeId() == @Model.Decision.AlternativeId && viewModel.Issue.Status() == "FINISHED" && viewModel.AccessRight() == "O"){
             document.getElementById("explanationText").value = '@Model.Decision.Explanation';
             return true;
         }else

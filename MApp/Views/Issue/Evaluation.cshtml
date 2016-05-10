@@ -8,38 +8,45 @@
 
 <h2>@Model.Issue.Title - Alternative Evaluation</h2>
 
-<table id="userRatings" class="table table-hover table-striped table-condensed table-nonfluid">
-    <tr>
-        <th>Crtieria</th>
-        <th>Criteria Weight</th>
-        @using (var item = ko.Foreach(m => m.Alternatives))
-        {
-            <th @item.Bind.Text(m => m.Name)></th>
-        }
-    </tr>
-    <tbody>
-        @{ int i = 0; }
-        @foreach (var item in Model.Criterias)
-        {
+@if (Model.AccessRight != "V")
+{
+    <table id="userRatings" class="table table-hover table-striped table-condensed table-nonfluid">
+        <tr>
+            <th>Crtieria</th>
+            <th>Criteria Weight</th>
+            @using (var item = ko.Foreach(m => m.Alternatives))
+            {
+                <th @item.Bind.Text(m => m.Name)></th>
+            }
+        </tr>
+        <tbody>
+            @{ int i = 0; }
+            @foreach (var item in Model.Criterias)
+            {
              
-            <tr>
-                <td class="table-header-column">@item.Name</td>
-                <td class="table-header-column">@String.Format("{0:#0.## %}",item.Weight)</td>
-                @for (int k = 0; k < Model.UserRatings[i].Count;k++)
-                {
-                    <td>
-                        <input data-bind="textInput: viewModel.UserRatings()[@i][@k].Value" class="form-control"/>
-                    </td>
-                }
+                <tr>
+                    <td class="table-header-column">@item.Name</td>
+                    <td class="table-header-column">@String.Format("{0:#0.## %}",item.Weight)</td>
+                    @for (int k = 0; k < Model.UserRatings[i].Count;k++)
+                    {
+                        <td>
+                            <input data-bind="textInput: viewModel.UserRatings()[@i][@k].Value" class="form-control"/>
+                        </td>
+                    }
                 
                 
-            </tr>
-            i++;    
-        }
-    </tbody>
-</table>
-<button id="save" onclick="onClickSave()" class="btn btn-success btn-md">save</button>
-<button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()">Next Stage</button>
+                </tr>
+                i++;    
+            }
+        </tbody>
+    </table>
+
+    <button id="save" onclick="onClickSave()" class="btn btn-success btn-md">save</button>
+}
+@if (Model.AccessRight == "O")
+{
+    <button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()">Next Stage</button>
+}
 
 @if (Model.RatedUsers.Count > 0)
 {

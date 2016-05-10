@@ -20,7 +20,8 @@ namespace MApp.DA.Repository
         /// <returns></returns>
         public static List<Criterion> GetIssueCriterions(int issueId, int userId)
         {
-            return Ctx.Criterion.Where(x => x.Issue == issueId).ToList();
+            List<Criterion> list = Ctx.Criterion.Where(x => x.Issue == issueId).ToList();
+            return list;
         }
 
         /// <summary>
@@ -106,7 +107,14 @@ namespace MApp.DA.Repository
                 if (updated)
                 {
                     Ctx.Entry(updatingCrit).State = EntityState.Modified;
-                    Ctx.SaveChanges();
+                    try
+                    {
+                        Ctx.SaveChanges();
+                    }catch(Exception ex)
+                    {
+                        DbConnection.Instance.DisposeAndReload();
+                    }
+                    
                 }
             }
         }

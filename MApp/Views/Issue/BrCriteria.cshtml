@@ -17,9 +17,24 @@
         </thead>
         <tbody data-bind="foreach: viewModel.IssueCriteria">
             <tr>
-                <td><input data-bind="textInput: Name" class="form-control textbox-name"/></td>
+                @if (Model.AccessRight != "V" && Model.Issue.Status == "BRAINSTORMING1")
+                {
+                    <td><input data-bind="textInput: Name" class="form-control textbox-name" /></td>
+                }
+                else
+                {
+                    <td data-bind="text: Name"></td>
+                }
                 <td>
-                    <textarea data-bind="textInput: Description" class="textarea-desc"></textarea>
+                    @if (Model.AccessRight != "V" && Model.Issue.Status == "BRAINSTORMING1")
+                    {
+                        <textarea data-bind="textInput: Description" class="form-control textarea-desc"></textarea>
+                    }
+                    else
+                    {
+                        <p data-bind="text: Description"></p>
+                    }
+                        
                     <table >
                         <thead>
                             <tr class="accordion-toggle" data-toggle="collapse" data-target=".comment">
@@ -38,16 +53,24 @@
                             </tr>
                         </tbody>
                     </table>
-                    <button id="addComment" data-bind="enable: Id>'0'" class="btn btn-primary btn-xs" onclick="javascript: onAddCommentClick">Add new comment</button>
+                    <button id="addComment" data-bind="visible: Id>'0'" class="btn btn-primary btn-xs" onclick="javascript: onAddCommentClick">Add new comment</button>
                 </td>
-                <td><a class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeCriterion">Remove</a></td>
+                <td><button class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeCriterion, visible: viewModel.AccessRight() != 'V', enable: viewModel.Issue.Status() =='BRAINSTORMING1'">Remove</button></td>
             </tr>
         </tbody>
     </table>
 </span>
-<button id="addNewCriterion" class="btn btn-primary btn-md" onclick="onAddNewCriterionClick()">Add new Criterion</button>
-<button id="save" class="btn btn-success btn-md" onclick="onSaveClick()">Save</button>
-<button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()">Next Stage</button>
+
+@if (Model.AccessRight == "C" || Model.AccessRight == "O")
+{
+    <button id="addNewCriterion" class="btn btn-primary btn-md" onclick="onAddNewCriterionClick()" data-bind="enable: viewModel.Issue.Status() == 'BRAINSTORMING1'">Add new Criterion</button>
+    <button id="save" class="btn btn-success btn-md" onclick="onSaveClick()">Save</button>
+}
+@if (Model.AccessRight == "O")
+{
+    <button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()">Next Stage</button>
+}
+
 
 @ko.Apply(Model)
 

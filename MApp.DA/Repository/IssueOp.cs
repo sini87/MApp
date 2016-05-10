@@ -159,6 +159,8 @@ namespace MApp.DA.Repository
         public static List<Issue> RootIssues(int issueId)
         {
             List<Issue> parentList = new List<Issue>();
+            if (issueId == -1)
+                return parentList;
             int? parent = Ctx.Issue.Find(issueId).Parent;
             if (parent == null)
                 return null;

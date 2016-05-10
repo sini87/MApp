@@ -31,5 +31,11 @@ namespace MApp.DA
         }
 
         public ApplicationDBEntities DbContext { get { return dbContext; } }
+
+        public void DisposeAndReload()
+        {
+            dbContext.Dispose();
+            dbContext = new ApplicationDBEntities();
+        }
     }
 }

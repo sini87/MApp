@@ -43,7 +43,7 @@ namespace MApp.Middleware.Models
                     ar.Right = "C";
                     break;
                 case "Viewer":
-                    ar.Right = "Vr";
+                    ar.Right = "V";
                     break;
             }
 

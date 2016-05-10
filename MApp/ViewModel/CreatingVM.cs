@@ -21,5 +21,7 @@ namespace MApp.Web.ViewModel
         public List<AccessRightModel> AccessRights { get; set; }
         public List<AccessRightModel> DeletedAR { get; set; }
         public List<AccessRightModel> AddedAR { get; set; }
+        public string AccessRight { get; set; }
+        public int UserId { get; set; }
     }
 }

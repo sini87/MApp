@@ -41,11 +41,13 @@ namespace MApp.Web.Controllers
             vm.Issues.Add(new IssueShort(-1, "none"));
             vm.Issues.AddRange(ic.GetUserIssuesShort(userId));
             vm.AllUsers = ic.GetAllUsers();
+            vm.UserId = userId;
 
             if (issueId != -1)
             {
                 vm.Issue = ic.GetIssue(issueId);
                 vm.AccessRights = ic.GetAccessRightsOfIssue(issueId);
+                vm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId);
             }
             else
             {
@@ -54,7 +56,11 @@ namespace MApp.Web.Controllers
                 vm.Issue.Setting = "A";
                 vm.Issue.AnonymousPosting = false;
                 vm.AccessRights = new List<AccessRightModel>();
+                vm.AccessRights.Add(new AccessRightModel(userId, "O",vm.AllUsers.Where(x => x.Id == userId).FirstOrDefault().Name));
+                vm.AccessRight = "O";
+                vm.Issue.Id = -1;
             }
+            vm.AllUsers = vm.AllUsers.Where(x => x.Id != userId).ToList();
 
             UserShortModel rmUser;
             foreach (AccessRightModel arm in vm.AccessRights)
@@ -120,9 +126,11 @@ namespace MApp.Web.Controllers
         {
             IssueCreating ic = new IssueCreating();
             BrCriteriaVM viewModel = new BrCriteriaVM();
+            int userId = GetUserIdFromClaim();
             viewModel.Issue = ic.GetIssue(issueId);
             IssueBrCriteria ibc = new IssueBrCriteria();
-            viewModel.IssueCriteria = ibc.GetIssueCriteria(issueId, GetUserIdFromClaim());
+            viewModel.IssueCriteria = ibc.GetIssueCriteria(issueId, userId);
+            viewModel.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId);
             return View(viewModel);
         }
 
@@ -145,6 +153,7 @@ namespace MApp.Web.Controllers
             vm.Issue = ic.GetIssue(issueId);
             IssueBrAlternative iba = new IssueBrAlternative();
             vm.Alternatives = iba.GetIssueAlternatives(issueId, userId);
+            vm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId);
             return View(vm);
         }
 
@@ -167,6 +176,7 @@ namespace MApp.Web.Controllers
             int userId = GetUserIdFromClaim();
             vm.Issue = ic.GetIssue(issueId);
             vm.UserWeights = icw.GetUserWeights(issueId, userId);
+            vm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId);
             return View(vm);
         }
 
@@ -191,6 +201,8 @@ namespace MApp.Web.Controllers
             evm.Criterias = ie.GetIssueCrtieria(issueId, userId);
             evm.Alternatives = ie.GetIssueAlternatives(issueId, userId);
             evm.RatedUsers = ie.GetRatedUsersForIssue(issueId, userId);
+
+            evm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId);
             return View(evm);
         }
 

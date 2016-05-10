@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace MApp.DA.Repository
 {
+    /// <summary>
+    /// handles all db operations to Entity AccessRight
+    /// </summary>
     public class AccessRightOp : Operations
     {
         /// <summary>
@@ -34,6 +37,14 @@ namespace MApp.DA.Repository
             return list;
         }
 
+        /// <summary>
+        /// updates the accessrights for an issue
+        /// </summary>
+        /// <param name="addedList">new access rights added to issue</param>
+        /// <param name="deletedList">accessrights which should be deleted</param>
+        /// <param name="editedList">list of edited access rights</param>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
         public static void UpdateRights(List<AccessRight> addedList, List<AccessRight> deletedList, List<AccessRight> editedList, int issueId, int userId)
         {
             List<AccessRight> intAddList = addedList.Intersect(Ctx.AccessRight).ToList();
@@ -54,10 +65,12 @@ namespace MApp.DA.Repository
                 }catch(DbEntityValidationException ex)
                 {
                     Console.WriteLine(ex.Message);
+                    Ctx.AccessRight.Remove(ar);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
+                    Ctx.AccessRight.Remove(ar);
                 }
                 GrantAccess(ar.UserId, issueId);
                 
@@ -83,8 +96,8 @@ namespace MApp.DA.Repository
             AccessRight tmp;
             foreach (AccessRight ar in editedList)
             {
-                tmp = Ctx.AccessRight.Where(x => x.UserId == ar.UserId && x.IssueId == ar.IssueId).FirstOrDefault();
-                if (tmp.Right != ar.Right)
+                tmp = Ctx.AccessRight.Where(x => x.UserId == ar.UserId && x.IssueId == issueId).FirstOrDefault();
+                if (tmp != null && tmp.Right != ar.Right)
                 {
                     tmp.Right = ar.Right;
                     Ctx.Entry(tmp).State = EntityState.Modified;
@@ -127,6 +140,12 @@ namespace MApp.DA.Repository
             }
         }
 
+        /// <summary>
+        /// gets the accessright for user of an issue
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="issueId"></param>
+        /// <returns></returns>
         public static string AccessRightOfUserForIssue(int userId, int issueId)
         {
             return Ctx.AccessRight.Where(x => x.IssueId == issueId && x.UserId == userId).FirstOrDefault().Right;

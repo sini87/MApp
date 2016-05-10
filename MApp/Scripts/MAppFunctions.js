@@ -5,7 +5,7 @@
 
     if (viewModelJs.Issue.Status == "FINISHED") {
         status = 6
-    }else if (viewModelJs.Issue.Status == "DECISIONING") {
+    }else if (viewModelJs.Issue.Status == "DECIDING") {
         status = 5
     } else if (viewModelJs.Issue.Status == "EVALUATING") {
         status = 4
@@ -55,7 +55,7 @@ function doLinks(issue) {
     menuElem = document.getElementById("finished-menu")
     for (i = 0; i < menuElem.childNodes.length; i++) {
         if (menuElem.childNodes[i].nodeName == "A") {
-            menuElem.childNodes[i].href = "/Issue/finished?issueId=" + issueId;
+            menuElem.childNodes[i].href = "/Issue/Decision?issueId=" + issueId;
             if (issue.Status == "FINISHED")
                 menuElem.childNodes[i].innerHTML = 'Finished';
             break;

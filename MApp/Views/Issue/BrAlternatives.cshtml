@@ -17,9 +17,23 @@
         </thead>
         <tbody data-bind="foreach: viewModel.Alternatives">
             <tr>
-                <td><input data-bind="textInput: Name" class="form-control textbox-name"/></td>
+                @if (Model.AccessRight != "V")
+                {
+                    <td><input data-bind="textInput: Name" class="form-control textbox-name" /></td>
+                }
+                else
+                {
+                    <td data-bind="text: Name"></td>
+                }
                 <td>
-                    <textarea data-bind="textInput: Description" class="textarea-desc form-control"></textarea>
+                    @if (Model.AccessRight != "V")
+                    {
+                        <textarea data-bind="textInput: Description" class="form-control textarea-desc"></textarea>
+                    }
+                    else
+                    {
+                        <p data-bind="text: Description"></p>
+                    }
                     <table>
                         <thead>
                             <tr class="accordion-toggle" data-toggle="collapse" data-target=".comment">
@@ -40,14 +54,22 @@
                     </table>
                     <button id="addComment" data-bind="enable: Id>'0'" class="btn btn-primary btn-xs" onclick="javascript: onAddCommentClick">Add new comment</button>
                 </td>
-                <td><a class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeAlternative">Remove</a></td>
+                <td><a class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeAlternative, visible: viewModel.AccessRight() != 'V'">Remove</a></td>
             </tr>
         </tbody>
     </table>
 </span>
-<button id="addNewAlternative" class="btn btn-primary btn-md" onclick="onAddNewAlternativeClick()">Add new Alternative</button>
-<button id="save" class="btn btn-success btn-md" onclick="onSaveClick()">Save</button>
-<button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()">Next Stage</button>
+
+@if (Model.AccessRight == "C" || Model.AccessRight == "O")
+{
+    <button id="addNewAlternative" class="btn btn-primary btn-md" onclick="onAddNewAlternativeClick()" data-bind="enable: viewModel.Issue.Status() =='BRAINSTORMING1' || viewModel.Issue.Status() =='BRAINSTORMING2'">Add new Alternative</button>
+    <button id="save" class="btn btn-success btn-md" onclick="onSaveClick()">Save</button>
+}
+@if (Model.AccessRight == "O")
+{
+    <button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()">Next Stage</button>
+}
+
 
 
 @ko.Apply(Model)

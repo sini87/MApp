@@ -21,8 +21,7 @@ namespace MApp.DA
                 {
                     instance = new DbConnection();
                     dbContext = new ApplicationDBEntities();
-                }
-                else if (dbContext == null)
+                }else
                 {
                     dbContext = new ApplicationDBEntities();
                 }

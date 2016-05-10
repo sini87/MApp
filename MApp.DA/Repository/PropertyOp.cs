@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace MApp.DA.Repository
 {
+    /// <summary>
+    /// makes all operations to table property
+    /// </summary>
     public class PropertyOp
     {
         /// <summary>
@@ -16,27 +19,38 @@ namespace MApp.DA.Repository
         {
             get
             {
-                ApplicationDBEntities ctx = DbConnection.Instance.DbContext;
-                return ctx.Property.ToList();
+                ApplicationDBEntities ctx = new ApplicationDBEntities();
+                List<Property> list = ctx.Property.AsNoTracking().ToList();
+                ctx.Dispose();
+
+                return list;
             }
         }
 
-        public static DbSet<Property> PropertySet
-        {
-            get
-            {
-                return DbConnection.Instance.DbContext.Property;
-            }
-        }
-
+        /// <summary>
+        /// returns list of properties for user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public static List<Property> GetUserProperties(int userId)
         {
-            return DbConnection.Instance.DbContext.User.Find(userId).Property.ToList();
-        }
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            User u = ctx.User.AsNoTracking().Where(x => x.Id == userId).FirstOrDefault();
+            List<Property> list = ctx.Property.AsNoTracking().Where(x => x.User == u).ToList();
+            ctx.Dispose();
 
+            return list;
+       } 
+
+        /// <summary>
+        /// adds properties to user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="properties"></param>
+        /// <returns></returns>
         public static List<Property> AddUserProperties(int userId, List<Property> properties)
         {
-            ApplicationDBEntities ctx = DbConnection.Instance.DbContext;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
 
             using (var dbContextTransaction = ctx.Database.BeginTransaction())
             {
@@ -67,7 +81,10 @@ namespace MApp.DA.Repository
                 ctx.Entry(user).State = EntityState.Modified;
                 ctx.SaveChanges();
             }
-            return user.Property.ToList();
+
+            ctx.Dispose();
+
+            return GetUserProperties(userId);
         }
     }
 }

@@ -5,41 +5,47 @@
     var ko = Html.CreateKnockoutContext();
 }
 
-<span>
-    <table id="criteriaWeightsTable" class="table table-hover table-striped table-condensed table-nonfluid">
-        <thead align="left">
+@if (Model.AccessRight != "V")
+{
+    <span>
+        <table id="criteriaWeightsTable" class="table table-hover table-striped table-condensed table-nonfluid">
+            <thead align="left">
+                <tr>
+                    <th>Criteria</th>
+                    <th>Your Weight</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: viewModel.UserWeights">
+                <tr>
+                    <td><label data-bind="text: Name" /></td>
+                    <td><input data-bind="textInput: Weight, valueUpdate:'afterkeydown', attr: {id: 'CriterionWeight' + CriterionId}" type="number" min="0" max="100" class="form-control number-in-table" /></td>
+                </tr>
+            </tbody>
             <tr>
-                <th>Criteria</th>
-                <th>Your Weight</th>
-            </tr>
-        </thead>
-        <tbody data-bind="foreach: viewModel.UserWeights">
-            <tr>
-                <td><label data-bind="text: Name"/></td>
-                <td><input data-bind="textInput: Weight, valueUpdate:'afterkeydown', attr: {id: 'CriterionWeight' + CriterionId}" type="number" min="0" max="100" class="form-control number-in-table"/></td>
-            </tr>
-        </tbody>
-        <tr>
-            <td>
+                <td>
                     <label data-bind="css: { error: viewModel.PercentSum() != 100 }">Sum</label>
-            </td>
-            <td class="number-in-table">
-                <div data-bind="css: { error: viewModel.PercentSum() != 100 }">
-                    <span id="sumlbl" data-bind="text: viewModel.WeightSum" class="table-sum" aria-describedby="inputErrors"></span>
-                    <label>%</label>
-                </div>
-            </td>
-            <td>
-                <p data-bind="css: { error: viewModel.PercentSum() != 100 }">
-                    <span data-bind="validationMessage: PercentSum" class="validationMessage"></span>
-                </p>
-            </td>
-        </tr>
-    </table>
-</span>
+                </td>
+                <td class="number-in-table">
+                    <div data-bind="css: { error: viewModel.PercentSum() != 100 }">
+                        <span id="sumlbl" data-bind="text: viewModel.WeightSum" class="table-sum" aria-describedby="inputErrors"></span>
+                        <label>%</label>
+                    </div>
+                </td>
+                <td>
+                    <p data-bind="css: { error: viewModel.PercentSum() != 100 }">
+                        <span data-bind="validationMessage: PercentSum" class="validationMessage"></span>
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </span>
+}else
+{
+    <h4>you are not allowed to vote!</h4>
+}
 
-<button id="save" class="btn btn-success btn-md" onclick="onSaveClick()" data-bind="enable: viewModel.PercentSum() == 100">Save</button>
-<button id="nextStageBtn" class="bth btn-success btn-md" onclick="onNextStageClick()" data-bind="enable: viewModel.PercentSum() == 100">Next Stage</button>
+<button id="save" class="btn btn-success btn-md" onclick="onSaveClick()" data-bind="enable: viewModel.PercentSum() == 100, visible: viewModelJs.AccessRight != 'V'">Save</button>
+<button id="nextStageBtn" class="bth btn-success btn-md" onclick="onNextStageClick()" data-bind="enable: viewModel.PercentSum() == 100, visible: viewModelJs.AccessRight == 'O'">Next Stage</button>
 <script>
     var viewModelJs = @Html.Raw(Json.Encode(Model));
     var viewModel = ko.mapping.fromJS(viewModelJs);

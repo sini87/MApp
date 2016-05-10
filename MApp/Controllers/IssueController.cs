@@ -80,6 +80,7 @@ namespace MApp.Web.Controllers
             int issueId = creatingVM.Issue.Id;
             int userId = GetUserIdFromClaim();
             creatingVM.Issue.Id = ic.SaveIssue(creatingVM.Issue, userId);
+            issueId = creatingVM.Issue.Id;
             ic.UpdateIsseuTags(creatingVM.Issue.Id, creatingVM.AddedTags, creatingVM.DeletedTags, userId);
             ic.UpdateAccessRights(creatingVM.AddedAR, creatingVM.DeletedAR, creatingVM.AccessRights, issueId, userId);
             return RedirectToAction("Creating", "Issue", new { issueId = creatingVM.Issue.Id });

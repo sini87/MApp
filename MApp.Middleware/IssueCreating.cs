@@ -71,6 +71,7 @@ namespace MApp.Middleware
         public int SaveIssue(IssueModel issueModel, int userId)
         {
             Issue issue = issueModel.ToEntity();
+            int issueId = -1;
             if (issue.Parent == -1)
             {
                 issue.Parent = null;
@@ -81,10 +82,12 @@ namespace MApp.Middleware
             }
             if (issue.Id > 0)
             {
-                return IssueOp.UpdateIssue(issue, userId);
+                issueId = IssueOp.UpdateIssue(issue, userId);
+                return issueId;
             }else
             {
-                return IssueOp.InsertIssue(issue, userId);
+                issueId = IssueOp.InsertIssue(issue, userId);
+                return issueId;
             }
         }
 

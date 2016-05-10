@@ -46,7 +46,6 @@ namespace MApp.Middleware
                 model.FirstName = user.FirstName;
                 model.LastName = user.LastName;
                 model.Password = user.PasswordHash;
-                model.Properties = user.Property.ToList();
                 model.SecretQuestion = user.SecretQuestion;
                 model.StakeholderDescription = user.StakeholderDescription;
                 model.Email = user.Email;

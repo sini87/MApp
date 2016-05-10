@@ -10,7 +10,7 @@ namespace MApp.DA.Repository
     /// <summary>
     /// Class represents all operations to Table Alternative
     /// </summary>
-    public class AlternativeOp : Operations
+    public class AlternativeOp
     {
         /// <summary>
         /// returns alternatives of issue
@@ -20,7 +20,9 @@ namespace MApp.DA.Repository
         /// <returns></returns>
         public static List<Alternative> GetIssueAlternatives(int issueId, int userId)
         {
-            return Ctx.Alternative.Where(x => x.IssueId == issueId).ToList();
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            List<Alternative> list = ctx.Alternative.AsNoTracking().Where(x => x.IssueId == issueId).ToList();
+            return list;
         }
 
         /// <summary>
@@ -31,6 +33,8 @@ namespace MApp.DA.Repository
         public static void DeleteAlternatives (List<int> alternativeIdList, int userId)
         {
             Alternative alt;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+
             if (alternativeIdList == null || alternativeIdList.Count() == 0)
             {
                 return;
@@ -38,11 +42,13 @@ namespace MApp.DA.Repository
 
             foreach (int id in alternativeIdList)
             {
-                alt = Ctx.Alternative.Find(id);
-                Ctx.Alternative.Remove(alt);
-                Ctx.Entry(alt).State = EntityState.Deleted;
-                Ctx.SaveChanges();
+                alt = ctx.Alternative.Find(id);
+                ctx.Alternative.Remove(alt);
+                ctx.Entry(alt).State = EntityState.Deleted;
+                ctx.SaveChanges();
             }
+
+            ctx.Dispose();
         }
 
         /// <summary>
@@ -53,6 +59,8 @@ namespace MApp.DA.Repository
         public static void AddAlternatives (List<Alternative> alternativeList, int userId)
         {
             Alternative addedAlt;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+
             if (alternativeList == null || alternativeList.Count() == 0)
             {
                 return;
@@ -60,15 +68,17 @@ namespace MApp.DA.Repository
 
             foreach (Alternative alt in alternativeList)
             {
-                addedAlt = Ctx.Alternative.Create();
+                addedAlt = ctx.Alternative.Create();
                 addedAlt.Description = alt.Description;
                 addedAlt.IssueId = alt.IssueId;
                 addedAlt.Name = alt.Name;
                 addedAlt.Reason = alt.Reason;
-                Ctx.Alternative.Add(addedAlt);
-                Ctx.Entry(addedAlt).State = EntityState.Added;
-                Ctx.SaveChanges();
+                ctx.Alternative.Add(addedAlt);
+                ctx.Entry(addedAlt).State = EntityState.Added;
+                ctx.SaveChanges();
             }
+
+            ctx.Dispose();
         }
 
         /// <summary>
@@ -80,6 +90,7 @@ namespace MApp.DA.Repository
         {
             Alternative updateAlt;
             bool updated;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
 
             if (alternativeList == null || alternativeList.Count() == 0)
             {
@@ -89,7 +100,7 @@ namespace MApp.DA.Repository
             foreach (Alternative alt in alternativeList)
             {
                 updated = false;
-                updateAlt = Ctx.Alternative.Find(alt.Id);
+                updateAlt = ctx.Alternative.Find(alt.Id);
                 if (alt.Description != updateAlt.Description || !alt.Description.Equals(updateAlt.Description))
                 {
                     updateAlt.Description = alt.Description;
@@ -108,13 +119,15 @@ namespace MApp.DA.Repository
                         updated = true;
                     }
                 }
-                    
+
                 if (updated)
                 {
-                    Ctx.Entry(updateAlt).State = EntityState.Modified;
-                    Ctx.SaveChanges();
+                    ctx.Entry(updateAlt).State = EntityState.Modified;
+                    ctx.SaveChanges();
                 }
             }
+
+            ctx.Dispose();
         }
     }
 }

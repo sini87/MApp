@@ -10,7 +10,7 @@ namespace MApp.DA.Repository
     /// <summary>
     /// In this are class all functions regarding table Criteria
     /// </summary>
-    public class CriterionOp : Operations
+    public class CriterionOp
     {
         /// <summary>
         /// returns all Criteria of an Issue
@@ -20,7 +20,9 @@ namespace MApp.DA.Repository
         /// <returns></returns>
         public static List<Criterion> GetIssueCriterions(int issueId, int userId)
         {
-            List<Criterion> list = Ctx.Criterion.Where(x => x.Issue == issueId).ToList();
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            List<Criterion> list = ctx.Criterion.AsNoTracking().Where(x => x.Issue == issueId).ToList();
+            ctx.Dispose();
             return list;
         }
 
@@ -32,6 +34,7 @@ namespace MApp.DA.Repository
         public static void DeleteCriterions(List<int> criterionIdList, int userId)
         {
             Criterion crit;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
 
             if (criterionIdList == null || criterionIdList.Count == 0)
             {
@@ -40,11 +43,13 @@ namespace MApp.DA.Repository
 
             foreach(int id in criterionIdList)
             {
-                crit = Ctx.Criterion.Find(id);
-                Ctx.Criterion.Remove(crit);
-                Ctx.Entry(crit).State = EntityState.Deleted;
-                Ctx.SaveChanges();
+                crit = ctx.Criterion.Find(id);
+                ctx.Criterion.Remove(crit);
+                ctx.Entry(crit).State = EntityState.Deleted;
+                ctx.SaveChanges();
             }
+
+            ctx.Dispose();
         }
 
         /// <summary>
@@ -55,24 +60,27 @@ namespace MApp.DA.Repository
         public static void AddCriterions(List<Criterion> criterionList, int userId)
         {
             Criterion addingCrit;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
 
-            if(criterionList == null || criterionList.Count == 0)
+            if (criterionList == null || criterionList.Count == 0)
             {
                 return;
             }
 
             foreach(Criterion crit in criterionList)
             {
-                addingCrit = Ctx.Criterion.Create();
+                addingCrit = ctx.Criterion.Create();
                 addingCrit.Description = crit.Description;
                 addingCrit.Name = crit.Name;
                 addingCrit.Weight = null;
                 addingCrit.WeightPC = null;
                 addingCrit.Issue = crit.Issue;
-                Ctx.Criterion.Add(addingCrit);
-                Ctx.Entry(addingCrit).State = EntityState.Added;
-                Ctx.SaveChanges();
+                ctx.Criterion.Add(addingCrit);
+                ctx.Entry(addingCrit).State = EntityState.Added;
+                ctx.SaveChanges();
             }
+
+            ctx.Dispose();
         }
 
         /// <summary>
@@ -84,6 +92,7 @@ namespace MApp.DA.Repository
         {
             bool updated;
             Criterion updatingCrit;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
 
             if (criterionList == null || criterionList.Count == 0)
             {
@@ -93,7 +102,7 @@ namespace MApp.DA.Repository
             foreach (Criterion crit in criterionList)
             {
                 updated = false;
-                updatingCrit = Ctx.Criterion.Find(crit.Id);
+                updatingCrit = ctx.Criterion.Find(crit.Id);
                 if (updatingCrit.Name != crit.Name)
                 {
                     updated = true;
@@ -106,17 +115,18 @@ namespace MApp.DA.Repository
                 }
                 if (updated)
                 {
-                    Ctx.Entry(updatingCrit).State = EntityState.Modified;
+                    ctx.Entry(updatingCrit).State = EntityState.Modified;
                     try
                     {
-                        Ctx.SaveChanges();
+                        ctx.SaveChanges();
                     }catch(Exception ex)
                     {
                         DbConnection.Instance.DisposeAndReload();
                     }
-                    
                 }
             }
+
+            ctx.Dispose();
         }
     }
 }

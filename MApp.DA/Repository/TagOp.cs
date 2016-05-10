@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace MApp.DA.Repository
 {
-    public class TagOp : Operations
+    /// <summary>
+    /// makes operation on table Tag
+    /// </summary>
+    public class TagOp
     {
         /// <summary>
         /// returns all available Tags
@@ -15,7 +18,10 @@ namespace MApp.DA.Repository
         /// <returns></returns>
         public static List<Tag> GetAllTags()
         {
-            return Ctx.Tag.ToList();
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            List<Tag> list = ctx.Tag.AsNoTracking().ToList();
+            ctx.Dispose();
+            return list;
         }
 
         /// <summary>
@@ -26,30 +32,36 @@ namespace MApp.DA.Repository
         public static List<Tag> GetIssueTags (int issueId)
         {
             List <Tag> list = new List<Tag>();
-            
-            foreach (TagIssue ti in Ctx.TagIssue.Where(ti => ti.IssueId == issueId).ToList())
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+
+            foreach (TagIssue ti in ctx.TagIssue.AsNoTracking().Where(ti => ti.IssueId == issueId).ToList())
             {
                 list.Add(ti.Tag);
             }
+
+            ctx.Dispose();
+
             return list;
         }
 
         public static void AddTagsToIssue(List<Tag> tagList, int issueId)
         {
             string sql;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+
             foreach (Tag tag in tagList)
             {
-                using (var dbContextTransaction = Ctx.Database.BeginTransaction())
+                using (var dbContextTransaction = ctx.Database.BeginTransaction())
                 {
                     if (tag.Id == -1)
                     {
                         sql = "INSERT INTO appSchema.[Tag] (Name) OUTPUT INSERTED.Id VALUES ({0})";
-                        var res = Ctx.Database.SqlQuery<int>(sql, tag.Name);
+                        var res = ctx.Database.SqlQuery<int>(sql, tag.Name);
                         dbContextTransaction.Commit();
                         tag.Id = res.FirstOrDefault();
                     }
                     sql = "INSERT INTO appSchema.[TagIssue] VALUES (" + tag.Id + "," + issueId +")";
-                    Ctx.Database.ExecuteSqlCommand(sql, tag.Id,issueId  );
+                    ctx.Database.ExecuteSqlCommand(sql, tag.Id,issueId  );
                     try
                     {
                         dbContextTransaction.Commit();
@@ -57,21 +69,31 @@ namespace MApp.DA.Repository
                     {
                         Console.WriteLine(ex.Message);
                     }
-                    
                 }
             }
+
+            ctx.Dispose();
         }
 
+        /// <summary>
+        /// removes a list of tags from an issue
+        /// </summary>
+        /// <param name="tagList"></param>
+        /// <param name="issueId"></param>
         public static void RemoveTagsFromIssue(List<Tag> tagList, int issueId)
         {
             TagIssue help;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+
             foreach (Tag tag in tagList)
             {
-                help = Ctx.TagIssue.Find(tag.Id, issueId);
-                Ctx.TagIssue.Remove(help);
-                Ctx.Entry(help).State = EntityState.Deleted;
-                Ctx.SaveChanges();
+                help = ctx.TagIssue.Find(tag.Id, issueId);
+                ctx.TagIssue.Remove(help);
+                ctx.Entry(help).State = EntityState.Deleted;
+                ctx.SaveChanges();
             }
+
+            ctx.Dispose();
         }
     }
 }

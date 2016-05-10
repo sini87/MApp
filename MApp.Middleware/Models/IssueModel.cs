@@ -59,12 +59,6 @@ namespace MApp.Middleware.Models
                 model.ParentTitle = IssueOp.IssueTitle(entity.DependsOn.Value);
             }
 
-            Tags = new List<TagModel>();
-            foreach(TagIssue ti in entity.TagIssue)
-            {
-                Tags.Add(new TagModel(ti.TagId, ti.Tag.Name));
-            }
-
             return model;
         }
 

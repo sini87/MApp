@@ -7,15 +7,24 @@ using System.Threading.Tasks;
 
 namespace MApp.DA.Repository
 {
-    public class CriterionWeightOp : Operations
+    /// <summary>
+    /// class makes operation on Table CriterionWeight
+    /// </summary>
+    public class CriterionWeightOp
     {
-
+        /// <summary>
+        /// gets list of criterionweights which the user should fill out
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId">user who is performing the operation</param>
+        /// <returns></returns>
         public static List<CriterionWeight> GetEmptyWeights(int issueId, int userId)
         {
             CriterionWeight cw;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
             List<CriterionWeight> list = new List<CriterionWeight>();
 
-            var query = from Criterion in Ctx.Criterion
+            var query = from Criterion in ctx.Criterion
                         where
                           Criterion.Issue == issueId
                         select new
@@ -28,7 +37,7 @@ namespace MApp.DA.Repository
                             WeightPC = Criterion.WeightPC
                         };
 
-            foreach (var c in query)
+            foreach (var c in query.AsNoTracking())
             {
                 cw = new CriterionWeight();
                 cw.CriterionId = c.Id;
@@ -36,16 +45,27 @@ namespace MApp.DA.Repository
                 cw.Weight = 0.0;
                 list.Add(cw);
             }
+
+            ctx.Dispose();
+
             return list;
         }
 
+        /// <summary>
+        /// returns already weighted criterions of some user for an issue
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public static List<CriterionWeight> GetIssueWeightsOfUser(int issueId, int userId)
         {
             List<CriterionWeight> list = new List<CriterionWeight>();
             CriterionWeight cw;
-            var query = from CriterionWeight in Ctx.CriterionWeight
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+
+            var query = from CriterionWeight in ctx.CriterionWeight
                         where
-                              (from Criterion in Ctx.Criterion
+                              (from Criterion in ctx.Criterion
                                where
                                Criterion.Issue == issueId
                                select new
@@ -60,7 +80,7 @@ namespace MApp.DA.Repository
                             Weight = CriterionWeight.Weight
                         };
 
-            foreach (var c in query)
+            foreach (var c in query.AsNoTracking())
             {
                 cw = new CriterionWeight();
                 cw.CriterionId = c.CriterionId;
@@ -68,16 +88,27 @@ namespace MApp.DA.Repository
                 cw.UserId = c.UserId;
                 list.Add(cw);
             }
+
+            ctx.Dispose();
+
             return list;
         }
 
+        /// <summary>
+        /// returns all criterionweights of an Issue
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId">user who is performing this operation</param>
+        /// <returns></returns>
         public static List<CriterionWeight> GetIssueWeights(int issueId, int userId)
         {
             List<CriterionWeight> list = new List<CriterionWeight>();
             CriterionWeight cw;
-            var query = from CriterionWeight in Ctx.CriterionWeight
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+
+            var query = from CriterionWeight in ctx.CriterionWeight
                         where
-                              (from Criterion in Ctx.Criterion
+                              (from Criterion in ctx.Criterion
                                where
                                Criterion.Issue == issueId
                                select new
@@ -90,7 +121,7 @@ namespace MApp.DA.Repository
                             CriterionId = CriterionWeight.CriterionId,
                             Weight = CriterionWeight.Weight
                         };
-            foreach (var c in query)
+            foreach (var c in query.AsNoTracking())
             {
                 cw = new CriterionWeight();
                 cw.CriterionId = c.CriterionId;
@@ -98,6 +129,9 @@ namespace MApp.DA.Repository
                 cw.UserId = c.UserId;
                 list.Add(cw);
             }
+
+            ctx.Dispose();
+
             return list;
         }
 
@@ -112,9 +146,12 @@ namespace MApp.DA.Repository
         {
             bool insert;
             CriterionWeight updatedCw;
-            var query = from CriterionWeight in Ctx.CriterionWeight
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+
+            //first check if user wants to update his weights
+            var query = from CriterionWeight in ctx.CriterionWeight
                         where
-                              (from Criterion in Ctx.Criterion
+                              (from Criterion in ctx.Criterion
                                where
                                 Criterion.Issue == issueId &&
                                 CriterionWeight.UserId == userId
@@ -138,22 +175,24 @@ namespace MApp.DA.Repository
             {
                 if (insert)
                 {
-                    updatedCw = Ctx.CriterionWeight.Create();
+                    updatedCw = ctx.CriterionWeight.Create();
                     updatedCw.UserId = cw.UserId;
                     updatedCw.CriterionId = cw.CriterionId;
                     updatedCw.Weight = cw.Weight;
-                    Ctx.CriterionWeight.Add(updatedCw);
-                    Ctx.Entry(updatedCw).State = EntityState.Added;
+                    ctx.CriterionWeight.Add(updatedCw);
+                    ctx.Entry(updatedCw).State = EntityState.Added;
                 }
                 else
                 {
-                    updatedCw = Ctx.CriterionWeight.Find(userId, cw.CriterionId);
+                    updatedCw = ctx.CriterionWeight.Find(userId, cw.CriterionId);
                     updatedCw.Weight = cw.Weight;
-                    Ctx.Entry(updatedCw).State = EntityState.Modified;
+                    ctx.Entry(updatedCw).State = EntityState.Modified;
                 }
                 
-                Ctx.SaveChanges();
+                ctx.SaveChanges();
             }
+
+            ctx.Dispose();
         }
     }
 }

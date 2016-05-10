@@ -11,7 +11,7 @@ namespace MApp.DA.Repository
     /// <summary>
     /// handles all db operations to Entity AccessRight
     /// </summary>
-    public class AccessRightOp : Operations
+    public class AccessRightOp
     {
         /// <summary>
         /// returns Ids of users who have access to an issue
@@ -20,8 +20,9 @@ namespace MApp.DA.Repository
         /// <returns></returns>
         public static Dictionary<int, string> GetAccessRightsForIssue(int issueId)
         {
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
             Dictionary<int, string> list = new Dictionary<int, string>();
-            var query = from AccessRight in Ctx.AccessRight
+            var query = from AccessRight in ctx.AccessRight
                         where
                           AccessRight.IssueId == issueId
                         select new
@@ -33,6 +34,8 @@ namespace MApp.DA.Repository
             {
                 list.Add(ent.UserId, ent.Right);
             }
+
+            ctx.Dispose();
 
             return list;
         }
@@ -47,7 +50,9 @@ namespace MApp.DA.Repository
         /// <param name="userId"></param>
         public static void UpdateRights(List<AccessRight> addedList, List<AccessRight> deletedList, List<AccessRight> editedList, int issueId, int userId)
         {
-            List<AccessRight> intAddList = addedList.Intersect(Ctx.AccessRight).ToList();
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+
+            List<AccessRight> intAddList = addedList.Intersect(ctx.AccessRight).ToList();
             deletedList = deletedList.Distinct().ToList();
             addedList = addedList.Except(intAddList).ToList();
 
@@ -57,32 +62,32 @@ namespace MApp.DA.Repository
                 ar.MailNotification = false;
                 ar.NotificationLevel = "";
                 ar.SelfAssesmentDescr = "";
-                Ctx.AccessRight.Add(ar);
-                Ctx.Entry(ar).State = EntityState.Added;
+                ctx.AccessRight.Add(ar);
+                ctx.Entry(ar).State = EntityState.Added;
                 try
                 {
-                    Ctx.SaveChanges();
+                    ctx.SaveChanges();
                 }catch(DbEntityValidationException ex)
                 {
                     Console.WriteLine(ex.Message);
-                    Ctx.AccessRight.Remove(ar);
+                    ctx.AccessRight.Remove(ar);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                    Ctx.AccessRight.Remove(ar);
+                    ctx.AccessRight.Remove(ar);
                 }
-                GrantAccess(ar.UserId, issueId);
+                GrantAccess(ar.UserId, issueId, ctx);
                 
             }
 
             foreach (AccessRight ar in deletedList)
             {
-                if (Ctx.AccessRight.Where(x => x.UserId == ar.UserId && x.IssueId == issueId).Count() > 0)
+                if (ctx.AccessRight.Where(x => x.UserId == ar.UserId && x.IssueId == issueId).Count() > 0)
                 {
-                    using (var dbContextTransaction = Ctx.Database.BeginTransaction())
+                    using (var dbContextTransaction = ctx.Database.BeginTransaction())
                     {
-                        Ctx.Database.ExecuteSqlCommand("delete from [appSchema].[AccessRight] WHERE UserId = {0} AND IssueId ={1}", ar.UserId, issueId);
+                        ctx.Database.ExecuteSqlCommand("delete from [appSchema].[AccessRight] WHERE UserId = {0} AND IssueId ={1}", ar.UserId, issueId);
                         dbContextTransaction.Commit();
                     }
                 }
@@ -96,14 +101,19 @@ namespace MApp.DA.Repository
             AccessRight tmp;
             foreach (AccessRight ar in editedList)
             {
-                tmp = Ctx.AccessRight.Where(x => x.UserId == ar.UserId && x.IssueId == issueId).FirstOrDefault();
-                if (tmp != null && tmp.Right != ar.Right)
+                if (ar.IssueId != 0)
                 {
-                    tmp.Right = ar.Right;
-                    Ctx.Entry(tmp).State = EntityState.Modified;
-                    Ctx.SaveChanges();
+                    tmp = ctx.AccessRight.AsNoTracking().Where(x => x.UserId == ar.UserId && x.IssueId == issueId).FirstOrDefault();
+                    if (tmp != null && tmp.Right != ar.Right)
+                    {
+                        tmp.Right = ar.Right;
+                        ctx.Entry(tmp).State = EntityState.Modified;
+                        ctx.SaveChanges();
+                    }
                 }
             }
+
+            ctx.Dispose();
         }
 
         /// <summary>
@@ -111,9 +121,9 @@ namespace MApp.DA.Repository
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="issueId"></param>
-        private static void GrantAccess(int userId, int issueId)
+        private static void GrantAccess(int userId, int issueId, ApplicationDBEntities ctx)
         {
-            List<Issue> parentList = IssueOp.RootIssues(issueId);
+            List<Issue> parentList = IssueOp.RootIssues(issueId, ctx);
 
             foreach (Issue i in parentList)
             {
@@ -126,11 +136,11 @@ namespace MApp.DA.Repository
                     ar.MailNotification = false;
                     ar.NotificationLevel = "";
                     ar.SelfAssesmentDescr = "";
-                    Ctx.AccessRight.Add(ar);
-                    Ctx.Entry(ar).State = EntityState.Added;
+                    ctx.AccessRight.Add(ar);
+                    ctx.Entry(ar).State = EntityState.Added;
                     try
                     {
-                        Ctx.SaveChanges();
+                        ctx.SaveChanges();
                     }
                     catch (Exception ex)
                     {
@@ -148,7 +158,10 @@ namespace MApp.DA.Repository
         /// <returns></returns>
         public static string AccessRightOfUserForIssue(int userId, int issueId)
         {
-            return Ctx.AccessRight.Where(x => x.IssueId == issueId && x.UserId == userId).FirstOrDefault().Right;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            string right = ctx.AccessRight.Where(x => x.IssueId == issueId && x.UserId == userId).FirstOrDefault().Right;
+            ctx.Dispose();
+            return right;
         }
     }
 }

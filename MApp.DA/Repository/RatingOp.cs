@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace MApp.DA.Repository
 {
-    public class RatingOp : Operations
+    /// <summary>
+    /// makes operations to table Rating
+    /// </summary>
+    public class RatingOp
     {
         /// <summary>
         /// gets user ratings of an issue
@@ -19,11 +22,12 @@ namespace MApp.DA.Repository
         {
             Rating rat;
             List<Rating> list = new List<Rating>();
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
 
-            var query = from r in Ctx.Rating
+            var query = from r in ctx.Rating
                         where
                           r.UserId == userId &&
-                            (from Criterion in Ctx.Criterion
+                            (from Criterion in ctx.Criterion
                              where Criterion.Issue == issueId
                              select new
                              {
@@ -44,7 +48,7 @@ namespace MApp.DA.Repository
             //check if user hast already done rating
             if (query.Count() > 0)
             {
-                foreach (var entity in query)
+                foreach (var entity in query.AsNoTracking())
                 {
                     rat = new Rating();
                     rat.AlternativeId = entity.AlternativeId;
@@ -55,8 +59,8 @@ namespace MApp.DA.Repository
                 }
             }else if (query.Count() == 0 )
             {//get dummy ratings for user
-                var query2 = from c in Ctx.Criterion
-                             from a in Ctx.Alternative
+                var query2 = from c in ctx.Criterion
+                             from a in ctx.Alternative
                              where
                                c.Issue == issueId &&
                                a.IssueId == issueId
@@ -68,7 +72,7 @@ namespace MApp.DA.Repository
                                  AlternativeId = a.Id
                              };
                 int convertedUserId = Convert.ToInt32(userId);
-                foreach (var entity in query2)
+                foreach (var entity in query2.AsNoTracking())
                 {
                     rat = new Rating();
                     rat.AlternativeId = entity.AlternativeId;
@@ -78,6 +82,9 @@ namespace MApp.DA.Repository
                     list.Add(rat);
                 }
             }
+
+            ctx.Dispose();
+
             return list;
         }
 
@@ -90,8 +97,9 @@ namespace MApp.DA.Repository
         public static List<Rating> GetAllIssueRatings(int issueId, int userId)
         {
             List<Rating> list = new List<Rating>();
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
 
-            var query = from rat in Ctx.Rating
+            var query = from rat in ctx.Rating
                         where
                           rat.UserId != userId &&
                           rat.Alternative.IssueId == issueId
@@ -100,7 +108,8 @@ namespace MApp.DA.Repository
                           rat.Criterion.Id,
                           rat.Alternative.Id
                         select rat;
-            list = query.ToList();
+            list = query.AsNoTracking().ToList();
+            ctx.Dispose();
 
             return list;
         }
@@ -111,6 +120,8 @@ namespace MApp.DA.Repository
         /// <param name="userRatings"></param>
         public static void SaveUserRatings(List<Rating> userRatings)
         {
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+
             if (userRatings.Count > 0)
             {
                 List<Rating> list;
@@ -118,13 +129,13 @@ namespace MApp.DA.Repository
                 int issueId;
                 Rating hRat;
 
-                issueId = Ctx.Criterion.Find(userRatings[0].CriterionId).Issue;
+                issueId = ctx.Criterion.Find(userRatings[0].CriterionId).Issue;
 
                 int userId = userRatings[0].UserId;
-                var query = from Rating in Ctx.Rating
+                var query = from Rating in ctx.Rating
                             where
                                 Rating.UserId == userId &&
-                                (from Criterion in Ctx.Criterion
+                                (from Criterion in ctx.Criterion
                                  where
                              Criterion.Issue == issueId
                                  select new
@@ -146,28 +157,38 @@ namespace MApp.DA.Repository
                 {
                     if (insert)
                     {
-                        Ctx.Rating.Add(rat);
-                        Ctx.Entry(rat).State = EntityState.Added;
+                        ctx.Rating.Add(rat);
+                        ctx.Entry(rat).State = EntityState.Added;
                     }else
                     {
-                        hRat = Ctx.Rating.Find(rat.CriterionId, rat.AlternativeId, rat.UserId);
+                        hRat = ctx.Rating.Find(rat.CriterionId, rat.AlternativeId, rat.UserId);
                         hRat.Value = rat.Value;
-                        Ctx.Entry(hRat).State = EntityState.Modified;
+                        ctx.Entry(hRat).State = EntityState.Modified;
                     }
-                    Ctx.SaveChanges();
+                    ctx.SaveChanges();
                 }
             }
+
+            ctx.Dispose();
         }
 
+        /// <summary>
+        /// returns all users who have rated/evaluated some issue
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId">user who is performint this operation</param>
+        /// <returns></returns>
         public static List<int> GetAlreadyRatedUsers(int issueId, int userId)
         {
             List<int> users;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
 
             string query = "select distinct(rat.UserId) from appSchema.Rating rat, " +
                 "appSchema.Alternative alt where alt.Id = rat.AlternativeId and alt.IssueId = {0} AND " +
                 "rat.UserId !=  {1}";
 
-            users = Ctx.Database.SqlQuery<int>(query, issueId, userId).ToList() ;
+            users = ctx.Database.SqlQuery<int>(query, issueId, userId).ToList() ;
+            ctx.Dispose();
 
             return users;
         }

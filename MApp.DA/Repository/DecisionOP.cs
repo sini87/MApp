@@ -7,27 +7,54 @@ using System.Threading.Tasks;
 
 namespace MApp.DA.Repository
 {
-    public class DecisionOp : Operations
+    public class DecisionOp
     {
+        /// <summary>
+        /// gets decision for an Issue
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId">user who is performing this operation</param>
+        /// <returns></returns>
         public static Decision GetDecision(int issueId, int userId)
         {
-            return Ctx.Decision.Find(issueId);
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            Decision decision = ctx.Decision.AsNoTracking().Where(x => x.IssueId == issueId).FirstOrDefault();
+            ctx.Dispose();
+
+            return decision;
         }
 
+        /// <summary>
+        /// gets previous decisions of an issue
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId">user who is performing this operation</param>
+        /// <returns></returns>
         public static List<HDecision> GetOldDecisions(int issueId, int userId)
         {
-            return Ctx.HDecision.Where(x => x.IssueId == issueId).OrderByDescending(x => x.ChangeDate).ToList();
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            List<HDecision> list = ctx.HDecision.AsNoTracking().Where(x => x.IssueId == issueId).OrderByDescending(x => x.ChangeDate).ToList();
+            ctx.Dispose();
+
+            return list;
         }
 
+        /// <summary>
+        /// sets a decision for an issue
+        /// </summary>
+        /// <param name="decision">the decision</param>
+        /// <param name="userId">user who is performing this operation</param>
         public static void MakeDecision(Decision decision, int userId)
         {
-            if (Ctx.Decision.Where(x => x.IssueId == decision.IssueId).Count() == 0)
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+
+            if (ctx.Decision.Where(x => x.IssueId == decision.IssueId).Count() == 0)
             {
-                Ctx.Decision.Add(decision);
-                Ctx.Entry(decision).State = EntityState.Added;
+                ctx.Decision.Add(decision);
+                ctx.Entry(decision).State = EntityState.Added;
             }else
             {
-                Decision existingD = Ctx.Decision.Find(decision.IssueId);
+                Decision existingD = ctx.Decision.Find(decision.IssueId);
                 HDecision dec = new HDecision();
                 dec.ChangeDate = DateTime.Now;
                 dec.IssueId = decision.IssueId;
@@ -35,22 +62,32 @@ namespace MApp.DA.Repository
                 dec.Action = "Decision reconsidered";
                 dec.AlternativeId = existingD.AlternativeId;
                 dec.Explanation = existingD.Explanation;
-                Ctx.HDecision.Add(dec);
-                Ctx.Entry(dec).State = EntityState.Added;
+                ctx.HDecision.Add(dec);
+                ctx.Entry(dec).State = EntityState.Added;
 
                 existingD.AlternativeId = decision.AlternativeId;
                 existingD.Explanation = decision.Explanation;
-                Ctx.Entry(existingD).State = EntityState.Modified;
+                ctx.Entry(existingD).State = EntityState.Modified;
             }
-            Ctx.SaveChanges();
+            ctx.SaveChanges();
+
+            ctx.Dispose();
         }
 
+        /// <summary>
+        /// overthinks an decision
+        /// </summary>
+        /// <param name="decision"></param>
+        /// <param name="userId"></param>
         public static void  UpdateDecision(Decision decision, int userId)
         {
-            Decision entity = Ctx.Decision.Where(x => x.IssueId == decision.IssueId).FirstOrDefault();
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            Decision entity = ctx.Decision.Where(x => x.IssueId == decision.IssueId).FirstOrDefault();
             entity.Explanation = decision.Explanation;
-            Ctx.Entry(entity).State = EntityState.Modified;
-            Ctx.SaveChanges();
+            ctx.Entry(entity).State = EntityState.Modified;
+            ctx.SaveChanges();
+
+            ctx.Dispose();
         }
     }
 }

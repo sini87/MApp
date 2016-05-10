@@ -70,8 +70,8 @@
         </table>
     </div>
     <button id="save" type="button" class="btn btn-success" onclick="javascript: onSaveClick()" data-bind="visible: viewModelJs.AccessRight == 'O' || viewModelJs.AccessRight == 'C'">Save</button>
-    <button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.AccessRight() == 'O'">Next Stage</button>
-    <button id="delete" type="button" class="btn btn-danger" onclick="javascript: onDeleteClick()" data-bind="visible: viewModelJs.AccessRight == 'O'">Delete</button>
+    <button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.AccessRight() == 'O', enable: viewModelJs.Issue.Id != -1">Next Stage</button>
+    <button id="delete" type="button" class="btn btn-danger" onclick="javascript: onDeleteClick()" data-bind="visible: viewModelJs.AccessRight == 'O', enable: viewModelJs.Issue.Id != -1">Delete</button>
 </div>
 
 

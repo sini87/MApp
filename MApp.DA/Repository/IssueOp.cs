@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace MApp.DA.Repository
 {
-    public class IssueOp : Operations
+    /// <summary>
+    /// makes all operations to table Issue
+    /// </summary>
+    public class IssueOp
     {
         /// <summary>
         /// returns all isses which the user have access to
@@ -17,10 +20,11 @@ namespace MApp.DA.Repository
         public static List<Issue> UserIssues(int userId)
         {
             User user = UserOp.GetUser(userId);
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
 
-            var query = from Issue in Ctx.Issue
+            var query = from Issue in ctx.Issue.AsNoTracking()
                         where
-                              (from AccessRight in Ctx.AccessRight
+                              (from AccessRight in ctx.AccessRight
                                where AccessRight.UserId == userId
                                select new
                                {
@@ -28,10 +32,13 @@ namespace MApp.DA.Repository
                                }).Contains(new { IssueId = Issue.Id })
                         select Issue;
             List<Issue> list = new List<Issue>();
-            foreach (Issue issue in query)
+            foreach (Issue issue in query.AsNoTracking())
             {
                 list.Add(issue);
             }
+
+            ctx.Dispose();
+
             return list;
         }
 
@@ -42,7 +49,11 @@ namespace MApp.DA.Repository
         /// <returns></returns>
         public static Issue GetIssueById(int issueId)
         {
-            return Ctx.Issue.Find(issueId);
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            Issue issue = ctx.Issue.AsNoTracking().Where(x => x.Id == issueId).FirstOrDefault();
+            ctx.Dispose();
+
+            return issue;
         }
 
         /// <summary>
@@ -52,7 +63,10 @@ namespace MApp.DA.Repository
         /// <returns></returns>
         public static string IssueTitle(int issueId)
         {
-            return Ctx.Issue.Find(issueId).Title;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            string title = ctx.Issue.Where(x => x.Id == issueId).FirstOrDefault().Title;
+            ctx.Dispose();
+            return title;
         }
 
         /// <summary>
@@ -64,7 +78,9 @@ namespace MApp.DA.Repository
         public static int UpdateIssue(Issue issue, int userId)
         {
             Issue updateIssue;
-            updateIssue = GetIssueById(issue.Id);
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            updateIssue = ctx.Issue.Find(issue.Id);
+
             bool updated = false;
             if (issue.Title != updateIssue.Title)
             {
@@ -103,10 +119,12 @@ namespace MApp.DA.Repository
             }
             if (updated)
             {
-                Ctx.Entry(updateIssue).State = EntityState.Modified;
-                Ctx.SaveChanges();
+                ctx.Entry(updateIssue).State = EntityState.Modified;
+                ctx.SaveChanges();
             }
-            
+
+            ctx.Dispose();
+
             return updateIssue.Id;
         }
 
@@ -119,9 +137,11 @@ namespace MApp.DA.Repository
         public static int InsertIssue(Issue issue, int userId)
         {
             int issueId = -1;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+
             try
             {
-                Issue updateIssue = Ctx.Issue.Create();
+                Issue updateIssue = ctx.Issue.Create();
                 updateIssue.Title = issue.Title;
                 updateIssue.Description = issue.Description;
                 updateIssue.AnonymousPosting = issue.AnonymousPosting;
@@ -130,9 +150,9 @@ namespace MApp.DA.Repository
                 updateIssue.DependsOn = issue.DependsOn;
                 updateIssue.Setting = issue.Setting;
                 //updateIssue.TagIssue = null;
-                Ctx.Issue.Add(updateIssue);
-                Ctx.Entry(updateIssue).State = EntityState.Added;
-                Ctx.SaveChanges();
+                ctx.Issue.Add(updateIssue);
+                ctx.Entry(updateIssue).State = EntityState.Added;
+                ctx.SaveChanges();
                 issueId = updateIssue.Id;
 
                 AccessRight ar = new AccessRight();
@@ -142,13 +162,16 @@ namespace MApp.DA.Repository
                 ar.SelfAssessmentValue = 10;
                 ar.SelfAssesmentDescr = "";
                 ar.MailNotification = false;
-                Ctx.AccessRight.Add(ar);
-                Ctx.Entry(ar).State = EntityState.Added;
-                Ctx.SaveChanges();
+                ctx.AccessRight.Add(ar);
+                ctx.Entry(ar).State = EntityState.Added;
+                ctx.SaveChanges();
             }catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
+
+            ctx.Dispose();
+
             return issueId;
         }
 
@@ -156,24 +179,26 @@ namespace MApp.DA.Repository
         /// returns root issues
         /// </summary>
         /// <returns></returns>
-        public static List<Issue> RootIssues(int issueId)
+        public static List<Issue> RootIssues(int? issueId, ApplicationDBEntities ctx)
         {
             List<Issue> parentList = new List<Issue>();
+            
             if (issueId == -1)
                 return parentList;
-            int? parent = Ctx.Issue.Find(issueId).Parent;
+            int? parent = ctx.Issue.Where(x => x.Id == issueId).FirstOrDefault().Parent;
             if (parent == null)
-                return null;
+                return parentList;
             else
             {
-                Issue parentIssue = Ctx.Issue.Find(parent);
+                Issue parentIssue = ctx.Issue.AsNoTracking().Where(x => x.Id == issueId).FirstOrDefault();
                 parentList.Add(parentIssue);
-                List<Issue> recIssues = RootIssues(parentIssue.Id);
+                List<Issue> recIssues = RootIssues(parentIssue.Parent, ctx);
                 if (recIssues != null)
                 {
                     parentList.AddRange(recIssues);
                 }
             }
+
             return parentList;
         }
 
@@ -184,17 +209,21 @@ namespace MApp.DA.Repository
         /// <returns>returns true if delete was successful</returns>
         public static bool DeleteIssue (int issueId)
         {
-            Issue issue = Ctx.Issue.Find(issueId);
-            Ctx.Issue.Remove(issue);
-            Ctx.Entry(issue).State = EntityState.Deleted;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            Issue issue = ctx.Issue.Find(issueId);
+            ctx.Issue.Remove(issue);
+            ctx.Entry(issue).State = EntityState.Deleted;
             try
             {
-                Ctx.SaveChanges();
+                ctx.SaveChanges();
                 return true;
             }catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
+
+            ctx.Dispose();
+
             return false;
         }
 
@@ -205,7 +234,8 @@ namespace MApp.DA.Repository
         /// <param name="userId">user who is performing this action</param>
         public static void NextStage(int issueId, int userId)
         {
-            Issue issue = Ctx.Issue.Find(issueId);
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            Issue issue = ctx.Issue.Find(issueId);
 
             switch (issue.Status)
             {
@@ -225,8 +255,10 @@ namespace MApp.DA.Repository
                     issue.Status = "FINISHED";
                     break;
             }
-            Ctx.Entry(issue).State = EntityState.Modified;
-            Ctx.SaveChanges();
+            ctx.Entry(issue).State = EntityState.Modified;
+            ctx.SaveChanges();
+
+            ctx.Dispose();
         }
     }
 }

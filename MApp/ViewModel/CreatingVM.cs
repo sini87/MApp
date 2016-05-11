@@ -23,5 +23,7 @@ namespace MApp.Web.ViewModel
         public List<AccessRightModel> AddedAR { get; set; }
         public string AccessRight { get; set; }
         public int UserId { get; set; }
+        public double SelfAssessmentValue { get; set; }
+        public string SelfAssessmentDescription { get; set; }
     }
 }

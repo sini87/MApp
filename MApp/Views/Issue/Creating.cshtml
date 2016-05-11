@@ -19,7 +19,8 @@
             <label id="issueStatus" data-bind="text: viewModel.Issue.Status"></label>
             <div class="checkbox">
                 <label id="anonymousPostingLabel">
-                    Anonymous posting? <input id="anonymous" type="checkbox" data-bind="checked: viewModel.Issue.AnonymousPosting, enable: viewModel.AccessRight() != 'V'" />
+                    <input id="anonymous" type="checkbox" data-bind="checked: viewModel.Issue.AnonymousPosting, enable: viewModel.AccessRight() != 'V'" />
+                    Anonymous posting?
                 </label>
             </div>
             <p>
@@ -37,7 +38,33 @@
 
         </div>
     </div>
-
+    
+    <div class="col-md-5" id="selfAssessment">
+        <form class="form-inline" role="form">
+            @if (Model.AccessRight != "V")
+            {
+               if (Model.Issue.Status == "CREATING" || Model.Issue.Status == "BRAINSTORMING1")
+               {
+                <div class="form-group has-feedback" data-bind="attr: {class: viewModel.selfAssessmentCheckHas}">
+                    <label for="selfAssessmentV">Value</label>
+                    <input class="form-control" id="selfAssessmentV" data-bind="textInput: viewModel.SelfAssessmentValue" onfocus="javascript: onSelfAssessmentFocus()">
+                    <span data-bind="attr: {class: viewModel.selfAssessmentCheckIcon }"></span>
+                </div>
+                <div class="form-group">
+                    <label for="selfEvaluationD">Description</label>
+                    <textarea type="text" class="form-control" id="selfEvaluationD" data-bind="value: viewModel.SelfAssessmentDescription"></textarea>
+                </div>
+               }else
+               {
+                   <label>Selfassessment Value: </label> @Model.SelfAssessmentValue
+                   <br />
+                   <label>Description:</label>
+                   <br />
+                   @Model.SelfAssessmentDescription
+               }
+            }
+        </form>
+    </div>
 
     <div class="col-md-5">
         <label for="tokenfield">Issue Tags</label>
@@ -58,12 +85,19 @@
                 <tr>
                     <th>Name</th>
                     <th>Right</th>
+                    <th>Selfassessment</th>
                 </tr>
             </thead>
             <tbody data-bind="foreach: viewModel.AccessRights">
                 <tr>
                     <td data-bind="text: Name"></td>
                     <td data-bind="text: Right"></td>
+                    <td class="td-center-top">
+                        <div class="xx">
+                            <label data-bind="text: SelfAssessmentValue"></label>
+                            <span class="tooltiptext" data-bind="text: SelfAssessmentDescr"></span>
+                        </div>
+                    </td>
                     <td><a class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeRight, visible: viewModelJs.AccessRight == 'O' && UserId() != viewModel.UserId()">Remove</a></td>
                 </tr>
             </tbody>
@@ -73,7 +107,6 @@
     <button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.AccessRight() == 'O', enable: viewModelJs.Issue.Id != -1">Next Stage</button>
     <button id="delete" type="button" class="btn btn-danger" onclick="javascript: onDeleteClick()" data-bind="visible: viewModelJs.AccessRight == 'O', enable: viewModelJs.Issue.Id != -1">Delete</button>
 </div>
-
 
 <script type="text/javascript">
     var addedTags = [];
@@ -85,6 +118,14 @@
     viewModel.dependsOnChanged = ko.observable(false);
     viewModel.DeletedAR = ko.observableArray();
     viewModel.AddedAR = ko.observableArray();
+    viewModel.selfAssessmentEntered = ko.observable(false)
+
+    for (var i = 0; i < viewModelJs.AccessRights.length; i++){
+        if (viewModelJs.AccessRights[i].UserId == viewModelJs.UserId){
+            viewModel.AccessRights()[i].SelfAssessmentValue = viewModel.SelfAssessmentValue;
+            viewModel.AccessRights()[i].SelfAssessmentDescr = viewModel.SelfAssessmentDescription;
+        }
+    }
     
     viewModel.dependsOnDDText = ko.computed(function () {
         return $("#selectdependsOnIssue option[value='" + viewModel.Issue.DependsOn() + "']").text();
@@ -92,6 +133,27 @@
 
     viewModel.parentDDText = ko.computed(function () {
         return $("#selectRootIssue option[value='" + viewModel.Issue.Parent() + "']").text();
+    });
+
+    viewModel.selfAssessmentCheckHas = ko.computed(function() {
+        if (viewModel.selfAssessmentEntered()){
+            if (viewModel.SelfAssessmentValue() >= 1 && viewModel.SelfAssessmentValue() <= 10)
+                return 'form-group has-feedback has-success';
+            else
+                return 'form-group has-feedback has-error';
+        }else{
+            return 'form-group';
+        }
+    });
+
+    viewModel.selfAssessmentCheckIcon = ko.computed(function() {
+        if (viewModel.selfAssessmentEntered()){
+            if (viewModel.SelfAssessmentValue() >= 1 && viewModel.SelfAssessmentValue() <= 10)
+                return 'glyphicon glyphicon-ok form-control-feedback';
+            else
+                return 'glyphicon glyphicon-remove form-control-feedback';
+        }
+        return 'form-control-feedback'
     });
 
     if (viewModelJs.Issue.Id == -1){
@@ -150,7 +212,8 @@
             var ar = {
                 UserId: ko.observable(uid),
                 Right: ko.observable($('#selectRight').selectpicker('option :selected').val()),
-                Name: ko.observable(uText)
+                Name: ko.observable(uText),
+                SelfAssessmentValue: ko.observable(0)
             }
             viewModel.AccessRights.push(ar);
             viewModel.AllUsers.splice($('#selectUser').selectpicker('option :selected').index(), 1)
@@ -162,6 +225,10 @@
             alert('Please select User first');
         }
 
+    };
+
+    function onSelfAssessmentFocus(){
+        viewModel.selfAssessmentEntered(true);
     };
 
     function makePermissions(){
@@ -177,8 +244,6 @@
         var allTags = []
 
         var status;
-
-
 
         for (var j = 0; j < viewModelJs.AllTags.length; j++) {
             allTags.push({ value: viewModelJs.AllTags[j].Id, label: viewModelJs.AllTags[j].Name })

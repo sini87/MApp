@@ -68,7 +68,7 @@ namespace MApp.Middleware
             return list;
         }
 
-        public int SaveIssue(IssueModel issueModel, int userId)
+        public int SaveIssue(IssueModel issueModel, int userId, double selfAssessmentValue, string selfAssessmentDescr)
         {
             Issue issue = issueModel.ToEntity();
             int issueId = -1;
@@ -83,10 +83,14 @@ namespace MApp.Middleware
             if (issue.Id > 0)
             {
                 issueId = IssueOp.UpdateIssue(issue, userId);
+                if (issueModel.Status == "CREATING" || issueModel.Status == "BRAINSTORMING1")
+                {
+                    AccessRightOp.UpdateSelfAssesment(selfAssessmentValue, selfAssessmentDescr, issueModel.Id, userId);
+                }
                 return issueId;
             }else
             {
-                issueId = IssueOp.InsertIssue(issue, userId);
+                issueId = IssueOp.InsertIssue(issue, userId, selfAssessmentValue, selfAssessmentDescr);
                 return issueId;
             }
         }
@@ -121,12 +125,13 @@ namespace MApp.Middleware
         public List<AccessRightModel> GetAccessRightsOfIssue(int issueId)
         {
             List<AccessRightModel> list = new List<AccessRightModel>();
-            Dictionary<int, string> arDict = AccessRightOp.GetAccessRightsForIssue(issueId);
+            List<AccessRight> arEntityList = AccessRightOp.GetAccessRightsForIssue(issueId);
             string right;
             string name;
-            foreach(KeyValuePair<int,string> ar in arDict)
+            AccessRightModel arm;
+            foreach(AccessRight ar in arEntityList)
             {
-                right = ar.Value;
+                right = ar.Right;
                 switch (right)
                 {
                     case "O":
@@ -140,13 +145,16 @@ namespace MApp.Middleware
                         break;
 
                 }
+                arm = new AccessRightModel();
+                arm = arm.ToModel(ar);
+                arm.Right = right;
                 if (userList == null)
                 {
-                    list.Add(new AccessRightModel(ar.Key, right));
+                    list.Add(arm);
                 }else
                 {
-                    name = userList.Find(x => x.Id == ar.Key).FirstName + " " + userList.Find(x => x.Id == ar.Key).LastName;
-                    list.Add(new AccessRightModel(ar.Key, right, name));
+                    arm.Name = userList.Find(x => x.Id == arm.UserId).FirstName + " " + userList.Find(x => x.Id == arm.UserId).LastName;
+                    list.Add(arm);
                 }
                 
             }
@@ -184,9 +192,11 @@ namespace MApp.Middleware
             IssueOp.NextStage(issueId, userId);
         }
 
-        public string AccessRightOfUserForIssue(int userId, int issueId)
+        public AccessRightModel AccessRightOfUserForIssue(int userId, int issueId)
         {
-            return AccessRightOp.AccessRightOfUserForIssue(userId, issueId);
+            AccessRightModel arm = new AccessRightModel();
+            AccessRightModel ar = arm.ToModel(AccessRightOp.AccessRightOfUserForIssue(userId, issueId));
+            return ar;
         }
     }
 }

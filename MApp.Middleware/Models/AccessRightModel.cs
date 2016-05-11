@@ -12,15 +12,20 @@ namespace MApp.Middleware.Models
         public int UserId { get; set; }
         public string Right { get; set; }
         public string Name { get; set; }
+        public double? SelfAssessmentValue { get; set; }
+        public string SelfAssessmentDescr { get; set; }
         public AccessRightModel()
         {
-
+            SelfAssessmentValue = 10;
+            SelfAssessmentDescr = "";
         }
 
         public AccessRightModel(int userId, string right)
         {
             UserId = userId;
             Right = right;
+            SelfAssessmentValue = 10;
+            SelfAssessmentDescr = "";
         }
 
         public AccessRightModel(int userId, string right, string name)
@@ -28,6 +33,8 @@ namespace MApp.Middleware.Models
             UserId = userId;
             Right = right;
             Name = name;
+            SelfAssessmentValue = 10;
+            SelfAssessmentDescr = "";
         }
 
         public AccessRight ToEntity(AccessRightModel model)
@@ -47,12 +54,21 @@ namespace MApp.Middleware.Models
                     break;
             }
 
+            ar.SelfAssessmentValue = SelfAssessmentValue;
+            ar.SelfAssesmentDescr = SelfAssessmentDescr;
+
             return ar;
         }
 
         public AccessRightModel ToModel(AccessRight entity)
         {
-            AccessRightModel arm = new AccessRightModel(entity.UserId,entity.Right,entity.User.FirstName + " " + entity.User.LastName);
+            AccessRightModel arm = new AccessRightModel(entity.UserId,entity.Right);
+            arm.SelfAssessmentDescr = entity.SelfAssesmentDescr;
+            arm.Right = entity.Right;
+            if (entity.SelfAssessmentValue == null)
+                arm.SelfAssessmentValue = 0;
+            else
+                arm.SelfAssessmentValue = entity.SelfAssessmentValue;
             return arm;
         }
     }

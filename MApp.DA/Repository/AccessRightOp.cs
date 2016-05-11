@@ -18,22 +18,16 @@ namespace MApp.DA.Repository
         /// </summary>
         /// <param name="issueId"></param>
         /// <returns></returns>
-        public static Dictionary<int, string> GetAccessRightsForIssue(int issueId)
+        public static List<AccessRight> GetAccessRightsForIssue(int issueId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
-            Dictionary<int, string> list = new Dictionary<int, string>();
+            List<AccessRight> list;
             var query = from AccessRight in ctx.AccessRight
                         where
                           AccessRight.IssueId == issueId
-                        select new
-                        {
-                            AccessRight.UserId,
-                            AccessRight.Right
-                        };
-            foreach (var ent in query)
-            {
-                list.Add(ent.UserId, ent.Right);
-            }
+                        select AccessRight;
+
+            list = query.AsNoTracking().ToList();
 
             ctx.Dispose();
 
@@ -62,6 +56,7 @@ namespace MApp.DA.Repository
                 ar.MailNotification = false;
                 ar.NotificationLevel = "";
                 ar.SelfAssesmentDescr = "";
+                ar.SelfAssessmentValue = 0;
                 ctx.AccessRight.Add(ar);
                 ctx.Entry(ar).State = EntityState.Added;
                 try
@@ -132,10 +127,11 @@ namespace MApp.DA.Repository
                     AccessRight ar = new AccessRight();
                     ar.UserId = userId;
                     ar.IssueId = i.Id;
-                    ar.Right = "O";
+                    ar.Right = "V";
                     ar.MailNotification = false;
                     ar.NotificationLevel = "";
                     ar.SelfAssesmentDescr = "";
+                    ar.SelfAssessmentValue = 0;
                     ctx.AccessRight.Add(ar);
                     ctx.Entry(ar).State = EntityState.Added;
                     try
@@ -156,12 +152,42 @@ namespace MApp.DA.Repository
         /// <param name="userId"></param>
         /// <param name="issueId"></param>
         /// <returns></returns>
-        public static string AccessRightOfUserForIssue(int userId, int issueId)
+        public static AccessRight AccessRightOfUserForIssue(int userId, int issueId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
-            string right = ctx.AccessRight.Where(x => x.IssueId == issueId && x.UserId == userId).FirstOrDefault().Right;
+            AccessRight right = ctx.AccessRight.AsNoTracking().Where(x => x.IssueId == issueId && x.UserId == userId).FirstOrDefault();
             ctx.Dispose();
             return right;
+        }
+
+        /// <summary>
+        /// updates slefassesment of an User
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="description"></param>
+        public static void UpdateSelfAssesment(double value, string description, int issueId, int userId)
+        {
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            AccessRight right = ctx.AccessRight.AsNoTracking().Where(x => x.IssueId == issueId && x.UserId == userId).FirstOrDefault();
+            bool update = false;
+
+            if (right.SelfAssessmentValue != value)
+            {
+                right.SelfAssessmentValue = value;
+                update = true;
+            }
+            if (right.SelfAssesmentDescr != description)
+            {
+                right.SelfAssesmentDescr = description;
+                update = true;
+            }
+            if (update)
+            {
+                ctx.Entry(right).State = EntityState.Modified;
+                ctx.SaveChanges();
+            }
+
+            ctx.Dispose();
         }
     }
 }

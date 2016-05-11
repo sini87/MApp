@@ -47,7 +47,10 @@ namespace MApp.Web.Controllers
             {
                 vm.Issue = ic.GetIssue(issueId);
                 vm.AccessRights = ic.GetAccessRightsOfIssue(issueId);
-                vm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId);
+                AccessRightModel arm = ic.AccessRightOfUserForIssue(userId, issueId);
+                vm.AccessRight = arm.Right;
+                vm.SelfAssessmentDescription = arm.SelfAssessmentDescr;
+                vm.SelfAssessmentValue = Convert.ToInt32(arm.SelfAssessmentValue);
             }
             else
             {
@@ -56,7 +59,7 @@ namespace MApp.Web.Controllers
                 vm.Issue.Setting = "A";
                 vm.Issue.AnonymousPosting = false;
                 vm.AccessRights = new List<AccessRightModel>();
-                vm.AccessRights.Add(new AccessRightModel(userId, "O",vm.AllUsers.Where(x => x.Id == userId).FirstOrDefault().Name));
+                vm.AccessRights.Add(new AccessRightModel(userId, "Owner",vm.AllUsers.Where(x => x.Id == userId).FirstOrDefault().Name));
                 vm.AccessRight = "O";
                 vm.Issue.Id = -1;
             }
@@ -79,7 +82,7 @@ namespace MApp.Web.Controllers
             IssueCreating ic = new IssueCreating();
             int issueId = creatingVM.Issue.Id;
             int userId = GetUserIdFromClaim();
-            creatingVM.Issue.Id = ic.SaveIssue(creatingVM.Issue, userId);
+            creatingVM.Issue.Id = ic.SaveIssue(creatingVM.Issue, userId, creatingVM.SelfAssessmentValue, creatingVM.SelfAssessmentDescription);
             issueId = creatingVM.Issue.Id;
             ic.UpdateIsseuTags(creatingVM.Issue.Id, creatingVM.AddedTags, creatingVM.DeletedTags, userId);
             ic.UpdateAccessRights(creatingVM.AddedAR, creatingVM.DeletedAR, creatingVM.AccessRights, issueId, userId);
@@ -131,7 +134,7 @@ namespace MApp.Web.Controllers
             viewModel.Issue = ic.GetIssue(issueId);
             IssueBrCriteria ibc = new IssueBrCriteria();
             viewModel.IssueCriteria = ibc.GetIssueCriteria(issueId, userId);
-            viewModel.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId);
+            viewModel.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
             return View(viewModel);
         }
 
@@ -154,7 +157,7 @@ namespace MApp.Web.Controllers
             vm.Issue = ic.GetIssue(issueId);
             IssueBrAlternative iba = new IssueBrAlternative();
             vm.Alternatives = iba.GetIssueAlternatives(issueId, userId);
-            vm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId);
+            vm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
             return View(vm);
         }
 
@@ -177,7 +180,7 @@ namespace MApp.Web.Controllers
             int userId = GetUserIdFromClaim();
             vm.Issue = ic.GetIssue(issueId);
             vm.UserWeights = icw.GetUserWeights(issueId, userId);
-            vm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId);
+            vm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
             return View(vm);
         }
 
@@ -203,7 +206,7 @@ namespace MApp.Web.Controllers
             evm.Alternatives = ie.GetIssueAlternatives(issueId, userId);
             evm.RatedUsers = ie.GetRatedUsersForIssue(issueId, userId);
 
-            evm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId);
+            evm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
             return View(evm);
         }
 
@@ -222,7 +225,7 @@ namespace MApp.Web.Controllers
             IssueBrAlternative iba = new IssueBrAlternative();
             IssueDecision id = new IssueDecision();
             int userId = GetUserIdFromClaim();
-            dvm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId);
+            dvm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
             dvm.Alternatives = iba.GetIssueAlternatives(issueId, userId);
             dvm.Issue = ic.GetIssue(issueId);
             dvm.OldDecisions = id.GetOldDecisions(issueId, userId);

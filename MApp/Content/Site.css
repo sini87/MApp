@@ -113,3 +113,48 @@ textarea {
 .table-header-column{
     font-weight: bold;
 }
+
+.td-center-top {
+  text-align: center;
+  vertical-align: top;
+}
+
+/*
+    Tooltip
+*/
+/* base CSS element */
+.xx {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+.xx .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -60px;
+}
+
+.xx:hover .tooltiptext {
+    visibility: visible;
+    opacity: 0.9;
+    bottom: 30px;
+    left: 50%;
+    margin-left: -76px;
+    z-index: 999;
+}
+
+/*
+    Tooltip end
+*/

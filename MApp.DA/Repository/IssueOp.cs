@@ -134,7 +134,7 @@ namespace MApp.DA.Repository
         /// <param name="issue"></param>
         /// <param name="userId">user who is performing operation</param>
         /// <returns></returns>
-        public static int InsertIssue(Issue issue, int userId)
+        public static int InsertIssue(Issue issue, int userId, double selfAssessmentValue, string selfAssessmentDescription)
         {
             int issueId = -1;
             ApplicationDBEntities ctx = new ApplicationDBEntities();
@@ -159,8 +159,8 @@ namespace MApp.DA.Repository
                 ar.IssueId = issueId;
                 ar.UserId = userId;
                 ar.Right = "O";
-                ar.SelfAssessmentValue = 10;
-                ar.SelfAssesmentDescr = "";
+                ar.SelfAssessmentValue = selfAssessmentValue;
+                ar.SelfAssesmentDescr = selfAssessmentDescription;
                 ar.MailNotification = false;
                 ctx.AccessRight.Add(ar);
                 ctx.Entry(ar).State = EntityState.Added;

@@ -27,7 +27,36 @@
                 }
                 <tr class="@treegrid">
                     <td><a href="@Url.Action("Creating", "Issue", new { issueId = @issue.Id })">@issue.Title</a></td>
-                    <td>@issue.Status</td>
+                    <td>
+                        @if(issue.Status == "CREATING")
+                        {
+                            <a href="/Issue/Creating?issueId=@issue.Id">Creating</a>
+                        }
+                        else if (issue.Status == "BRAINSTORMING1")
+                        {
+                            <p>Brainstorming</p>
+                            <a href="/Issue/BrCriteria?issueId=@issue.Id">Criteria</a>
+                            <a href="/Issue/BrAlternatives?issueId=@issue.Id">Alternatives</a>
+                        }
+                        else if (issue.Status == "BRAINSTORMING2")
+                        {
+                            <p>Brainstorming</p>
+                            <a href="/Issue/CriteriaRating?issueId=@issue.Id">Criteria Weighting</a>
+                            <a href="/Issue/BrAlternatives?issueId=@issue.Id">Alternatives</a>
+                        }
+                        else if (issue.Status == "EVALUATING")
+                        {
+                            <a href="/Issue/Evaluation?issueId=@issue.Id">Evaluating</a>
+                        }
+                        else if (issue.Status == "DECIDING")
+                        {
+                            <a href="/Issue/Decision?issueId=@issue.Id">Deciding</a>
+                        }
+                        else if (issue.Status == "Finished")
+                        {
+                            <a href="/Issue/Decision?issueId=@issue.Id">Finished</a>
+                        }
+                    </td>
                     <td>@issue.Description</td>
                 </tr>
             }

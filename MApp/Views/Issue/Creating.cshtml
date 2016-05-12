@@ -90,10 +90,22 @@
             </thead>
             <tbody data-bind="foreach: viewModel.AccessRights">
                 <tr>
-                    <td data-bind="text: Name"></td>
+                    <td>
+                        <a data-bind="text: Name, attr: { href: '#modal' + UserId() }"></a>
+                        <div data-bind="attr: { id: 'modal' + UserId()}" class="modalDialog">
+                            <div>
+                                <a href="#close" title="Close" class="closemd">X</a>
+                                <h4 data-bind="text: Name() + ' - Selfassessment'"></h4>
+                                <p>
+                                    <label data-bind="text: 'Selfassessment Value: ' + SelfAssessmentValue()"></label>
+                                </p>
+                                <p data-bind="text: SelfAssessmentDescr"></p>
+                            </div>
+                        </div>
+                    </td>
                     <td data-bind="text: Right"></td>
                     <td class="td-center-top">
-                        <div class="xx">
+                        <div class="ttip">
                             <label data-bind="text: SelfAssessmentValue"></label>
                             <span class="tooltiptext" data-bind="text: SelfAssessmentDescr"></span>
                         </div>
@@ -213,7 +225,8 @@
                 UserId: ko.observable(uid),
                 Right: ko.observable($('#selectRight').selectpicker('option :selected').val()),
                 Name: ko.observable(uText),
-                SelfAssessmentValue: ko.observable(0)
+                SelfAssessmentValue: ko.observable(0),
+                SelfAssessmentDescr: ""
             }
             viewModel.AccessRights.push(ar);
             viewModel.AllUsers.splice($('#selectUser').selectpicker('option :selected').index(), 1)

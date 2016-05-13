@@ -96,10 +96,22 @@
                             <div>
                                 <a href="#close" title="Close" class="closemd">X</a>
                                 <h4 data-bind="text: Name() + ' - Selfassessment'"></h4>
-                                <p>
-                                    <label data-bind="text: 'Selfassessment Value: ' + SelfAssessmentValue()"></label>
-                                </p>
-                                <p data-bind="text: SelfAssessmentDescr"></p>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <td class="datecolumn">Date</td>
+                                            <td>Value</td>
+                                            <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach: SelfAssessmentHistory">
+                                        <tr>
+                                            <td data-bind="text: moment(ChangeDate()).format('DD.MM.YY HH:mm')"></td>
+                                            <td data-bind="text: SelfAssessmentValue"></td>
+                                            <td data-bind="text: SelfAssessmentDescr"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </td>
@@ -196,7 +208,14 @@
 
         tmpVM.AddedTags = addedTags;
         tmpVM.DeletedTags = deletedTags;
-        ko.utils.postJson("", { CreatingVM: tmpVM })
+
+        for (i = 0; i < tmpVM.AccessRights.length; i++){
+            for (j = 0; j < tmpVM.AccessRights[i].SelfAssessmentHistory.length; j++){
+                tmpVM.AccessRights[i].SelfAssessmentHistory[j] = viewModelJs.AccessRights[i].SelfAssessmentHistory[j];
+            }
+        }
+
+        ko.utils.postJson("/Issue/Creating?issueId=" + tmpVM.Issue.Id, { CreatingVM: tmpVM })
     }
 
     function onDeleteClick(){
@@ -226,7 +245,8 @@
                 Right: ko.observable($('#selectRight').selectpicker('option :selected').val()),
                 Name: ko.observable(uText),
                 SelfAssessmentValue: ko.observable(0),
-                SelfAssessmentDescr: ""
+                SelfAssessmentDescr: ko.observable(""),
+                SelfAssessmentHistory: ko.observableArray()
             }
             viewModel.AccessRights.push(ar);
             viewModel.AllUsers.splice($('#selectUser').selectpicker('option :selected').index(), 1)

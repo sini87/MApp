@@ -7,6 +7,27 @@ using System.Threading.Tasks;
 
 namespace MApp.Middleware.Models
 {
+    public class SelfAssessmentHEntry
+    {
+        public long ChangeDate { get; set; }
+        public double SelfAssessmentValue { get; set; }
+        public string SelfAssessmentDescr { get; set; }
+
+        public SelfAssessmentHEntry()
+        {
+
+        }
+
+        public SelfAssessmentHEntry(DateTime changeDate, double selfAssessmentValue, string selfAssessmentDescr)
+        {
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0);
+            var unixDateTime = (changeDate.Ticks - epoch.Ticks) / TimeSpan.TicksPerMillisecond - 7200000;
+
+            ChangeDate = unixDateTime;
+            SelfAssessmentValue = selfAssessmentValue;
+            SelfAssessmentDescr = selfAssessmentDescr;
+        }
+    }
     public class AccessRightModel : ListModel<AccessRight,AccessRightModel>, IListModel<AccessRight,AccessRightModel>
     {
         public int UserId { get; set; }
@@ -14,10 +35,13 @@ namespace MApp.Middleware.Models
         public string Name { get; set; }
         public double? SelfAssessmentValue { get; set; }
         public string SelfAssessmentDescr { get; set; }
+        public List<SelfAssessmentHEntry> SelfAssessmentHistory { get; set; }
+
         public AccessRightModel()
         {
             SelfAssessmentValue = 10;
             SelfAssessmentDescr = "";
+            SelfAssessmentHistory = new List<SelfAssessmentHEntry>();
         }
 
         public AccessRightModel(int userId, string right)
@@ -26,6 +50,7 @@ namespace MApp.Middleware.Models
             Right = right;
             SelfAssessmentValue = 10;
             SelfAssessmentDescr = "";
+            SelfAssessmentHistory = new List<SelfAssessmentHEntry>();
         }
 
         public AccessRightModel(int userId, string right, string name)
@@ -35,6 +60,7 @@ namespace MApp.Middleware.Models
             Name = name;
             SelfAssessmentValue = 10;
             SelfAssessmentDescr = "";
+            SelfAssessmentHistory = new List<SelfAssessmentHEntry>();
         }
 
         public AccessRight ToEntity(AccessRightModel model)

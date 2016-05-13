@@ -80,6 +80,7 @@ namespace MApp.Web.Controllers
         public ActionResult Creating([FromJson] CreatingVM creatingVM)
         {
             IssueCreating ic = new IssueCreating();
+
             int issueId = creatingVM.Issue.Id;
             int userId = GetUserIdFromClaim();
             creatingVM.Issue.Id = ic.SaveIssue(creatingVM.Issue, userId, creatingVM.SelfAssessmentValue, creatingVM.SelfAssessmentDescription);

@@ -148,6 +148,13 @@ namespace MApp.Middleware
                 arm = new AccessRightModel();
                 arm = arm.ToModel(ar);
                 arm.Right = right;
+
+                arm.SelfAssessmentHistory = new List<SelfAssessmentHEntry>();
+                foreach (HAccessRight har in AccessRightOp.GetAccessRightsHistorical(ar.UserId, issueId))
+                {
+                    arm.SelfAssessmentHistory.Add( new SelfAssessmentHEntry(har.ChangeDate, Convert.ToDouble(har.SelfAssessmentValue), har.SelfAssesmentDescr));
+                }
+
                 if (userList == null)
                 {
                     list.Add(arm);

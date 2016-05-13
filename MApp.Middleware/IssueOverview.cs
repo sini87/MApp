@@ -18,7 +18,8 @@ namespace MApp.Middleware
 
             foreach (IssueModel model in allIssues.Where(m => m.Parent == null))
             {
-
+                TagModel tm = new TagModel();
+                model.Tags = tm.ToModelList(TagOp.GetIssueTags(model.Id), tm);
                 model.Children = ChildIssues(allIssues, model.Id);
                 rootIssues.Add(model);
             }
@@ -50,6 +51,8 @@ namespace MApp.Middleware
             foreach (IssueModel model in list.Where(m => m.Parent == issueId))
             {
                 model.Children = ChildIssues(list, model.Id);
+                TagModel tm = new TagModel();
+                model.Tags = tm.ToModelList(TagOp.GetIssueTags(model.Id), tm); 
                 children.Add(model);
             }
             if (children.Count == 0)

@@ -18,6 +18,8 @@ namespace MApp.DA
         public int IssueId { get; set; }
         public int UserId { get; set; }
         public string Action { get; set; }
+        public Nullable<double> SelfAssessmentValue { get; set; }
+        public string SelfAssesmentDescr { get; set; }
     
         public virtual AccessRight AccessRight { get; set; }
     }

@@ -82,11 +82,14 @@
           <Key>
             <PropertyRef Name="ChangeDate" />
             <PropertyRef Name="IssueId" />
+            <PropertyRef Name="UserId" />
           </Key>
           <Property Name="ChangeDate" Type="datetime" Nullable="false" />
           <Property Name="IssueId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="Action" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="SelfAssessmentValue" Type="float" />
+          <Property Name="SelfAssesmentDescr" Type="varchar" MaxLength="500" />
         </EntityType>
         <EntityType Name="HAlternative">
           <Key>
@@ -1106,12 +1109,15 @@
           <Key>
             <PropertyRef Name="ChangeDate" />
             <PropertyRef Name="IssueId" />
+            <PropertyRef Name="UserId" />
           </Key>
           <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="IssueId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
           <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="AccessRight" Relationship="Self.FK_HAccessRight_AccessRight" FromRole="HAccessRight" ToRole="AccessRight" />
+          <Property Name="SelfAssessmentValue" Type="Double" />
+          <Property Name="SelfAssesmentDescr" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="HAlternative">
           <Key>
@@ -2130,6 +2136,8 @@
           <EntitySetMapping Name="HAccessRight">
             <EntityTypeMapping TypeName="ApplicationDBModel.HAccessRight">
               <MappingFragment StoreEntitySet="HAccessRight">
+                <ScalarProperty Name="SelfAssesmentDescr" ColumnName="SelfAssesmentDescr" />
+                <ScalarProperty Name="SelfAssessmentValue" ColumnName="SelfAssessmentValue" />
                 <ScalarProperty Name="ChangeDate" ColumnName="ChangeDate" />
                 <ScalarProperty Name="IssueId" ColumnName="IssueId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />

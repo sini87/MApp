@@ -177,6 +177,11 @@ textarea {
 	-moz-transition: opacity 400ms ease-in;
 	transition: opacity 400ms ease-in;
 	pointer-events: none;
+    max-height: 100%;
+    overflow-y: scroll;
+}
+.modalDialog .datecolumn{
+    width:112px;
 }
 
 .modalDialog:target {
@@ -186,14 +191,16 @@ textarea {
 
 .modalDialog > div {
 	width: 600px;
+    width: auto;
+    max-width: 800px;
 	position: relative;
 	margin: 10% auto;
 	padding: 5px 20px 13px 20px;
 	border-radius: 10px;
 	background: #fff;
-	background: -moz-linear-gradient(#fff, #999);
+    /*background: -moz-linear-gradient(#fff, #999);
 	background: -webkit-linear-gradient(#fff, #999);
-	background: -o-linear-gradient(#fff, #999);
+	background: -o-linear-gradient(#fff, #999);*/
 }
 
 .closemd {
@@ -220,3 +227,16 @@ textarea {
 /**
     modal dialog end
 */
+
+.tag {
+  border: 1px solid #007BC0;
+  padding-left: 10px;
+  padding-right: 10px;
+  float: left;
+  border-radius: 10px;
+  background: #007BC0;
+  text-decoration:none;
+  pointer-events:none;
+  color: #FFFFFF;
+  margin-left: 5px;
+}

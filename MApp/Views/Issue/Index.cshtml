@@ -12,7 +12,7 @@
         <tr>
             <th>Issue</th>
             <th>Status</th>
-            <th>Description</th>
+            <th>Tags</th>
         </tr>
     </thead>
     <tbody>
@@ -57,7 +57,12 @@
                             <a href="/Issue/Decision?issueId=@issue.Id">Finished</a>
                         }
                     </td>
-                    <td>@issue.Description</td>
+                    <td>
+                        @foreach(var tm in issue.Tags)
+                        {
+                            <a class="tag">@tm.Name</a>
+                        }
+                    </td>
                 </tr>
             }
         }

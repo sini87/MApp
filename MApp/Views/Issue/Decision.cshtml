@@ -86,18 +86,26 @@ else
 @if(Model.OldDecisions != null && Model.OldDecisions.Count > 0)
 {
     <h3>Old Decisions</h3>
-    <table>
-        @foreach (var dm in Model.OldDecisions)
-        {
+    <table class="table">
+        <thead>
             <tr>
-                <td>@dm.ChangeDate</td>
-                <td>
-                    @Model.Alternatives.Where(x => x.Id == dm.AlternativeId).FirstOrDefault().Name
-                    <br />
-                    @dm.Explanation
-                </td>
+                <td>Discard Date</td>
+                <td>Decision</td>
             </tr>
-        }
+        </thead>
+        <tbody>
+            @foreach (var dm in Model.OldDecisions)
+            {
+                <tr>
+                    <td>@dm.ChangeDate</td>
+                    <td>
+                        <strong>@Model.Alternatives.Where(x => x.Id == dm.AlternativeId).FirstOrDefault().Name</strong>
+                        <br />
+                        @dm.Explanation
+                    </td>
+                </tr>
+            }
+        </tbody>
     </table>
     
 }

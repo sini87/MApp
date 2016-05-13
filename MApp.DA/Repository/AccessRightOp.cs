@@ -183,11 +183,31 @@ namespace MApp.DA.Repository
             }
             if (update)
             {
+                HAccessRight har = new HAccessRight();
+                har.SelfAssesmentDescr = right.SelfAssesmentDescr;
+                har.SelfAssessmentValue = right.SelfAssessmentValue;
+                har.ChangeDate = System.DateTime.Now;
+                har.IssueId = right.IssueId;
+                har.UserId = right.UserId;
+                har.Action = "Selfassessment udpated";
+                ctx.HAccessRight.Add(har);
+                ctx.Entry(har).State = EntityState.Added;
+
                 ctx.Entry(right).State = EntityState.Modified;
                 ctx.SaveChanges();
             }
 
             ctx.Dispose();
+        }
+
+        public static List<HAccessRight> GetAccessRightsHistorical (int userId, int issueId)
+        {
+            List<HAccessRight> list;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            list = ctx.HAccessRight.Where(x => x.UserId == userId && x.IssueId == issueId).OrderByDescending(x => x.ChangeDate).AsNoTracking().ToList();
+            ctx.Dispose();
+
+            return list;
         }
     }
 }

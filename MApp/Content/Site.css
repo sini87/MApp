@@ -240,3 +240,9 @@ textarea {
   color: #FFFFFF;
   margin-left: 5px;
 }
+
+.editor {
+    background-color: white;
+    overflow:scroll;
+    height: 300px;
+}

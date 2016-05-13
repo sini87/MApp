@@ -15,6 +15,7 @@ namespace MApp.Middleware.Models
         public string Description { get; set; }
         public string Reason { get; set; }
         public double? Rating { get; set; }
+        public List<CommentModel> Comments { get; set; }
         public Alternative ToEntity(AlternativeModel model)
         {
             Alternative alt = new Alternative();

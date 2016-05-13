@@ -35,31 +35,98 @@
                         <p data-bind="text: Description"></p>
                     }
                     <table>
-                        <thead>
-                            <tr class="accordion-toggle" data-toggle="collapse" data-target=".comment">
+                        <thead class="hiddenRow collapse comment">
+                            <tr data-bind="attr: {id: 'commentHead' + Id()}">
                                 <td>user</td>
                                 <td>comment</td>
                             </tr>
                         </thead>
-                        <tbody class="hiddenRow collapse comment">
+                        <tbody class="hiddenRow collapse comment" data-bind="foreach: Comments">
                             <tr>
-                                <td>User1</td>
-                                <td>Some comment</td>
-                            </tr>
-                            <tr>
-                                <td>User 2</td>
-                                <td>Other comment</td>
+                                <td>
+                                    <p data-bind="text: Name"></p>
+                                    <p data-bind="text: moment(DateTime()).format('DD.MM.YY HH:mm')"></p>
+                                </td>
+                                <td data-bind="text: Text"></td>
                             </tr>
                         </tbody>
                     </table>
-                    <button id="addComment" data-bind="enable: Id>'0'" class="btn btn-primary btn-xs" onclick="javascript: onAddCommentClick">Add new comment</button>
+                    
+                    <div data-bind="attr: { id: 'modal' + Id()}" class="modalDialog">
+                        <div>
+                            <a href="#close" title="Close" class="closemd">X</a>
+                            <h4 data-bind="text: 'Commenting ' + Name()"></h4>
+                            <div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor" data-bind="attr: { id: 'editorBtnGrp' + Id() }">
+                                <div class="btn-group">
+                                    <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" title="" data-original-title="Font"><i class="glyphicon glyphicon-font"></i><b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a data-edit="fontName Serif" style="font-family:'Serif'">Serif</a></li>
+                                        <li><a data-edit="fontName Sans" style="font-family:'Sans'">Sans</a></li>
+                                        <li><a data-edit="fontName Arial" style="font-family:'Arial'">Arial</a></li>
+                                        <li><a data-edit="fontName Arial Black" style="font-family:'Arial Black'">Arial Black</a></li>
+                                        <li><a data-edit="fontName Courier" style="font-family:'Courier'">Courier</a></li>
+                                        <li><a data-edit="fontName Courier New" style="font-family:'Courier New'">Courier New</a></li>
+                                        <li><a data-edit="fontName Comic Sans MS" style="font-family:'Comic Sans MS'">Comic Sans MS</a></li>
+                                        <li><a data-edit="fontName Helvetica" style="font-family:'Helvetica'">Helvetica</a></li>
+                                        <li><a data-edit="fontName Impact" style="font-family:'Impact'">Impact</a></li>
+                                        <li><a data-edit="fontName Lucida Grande" style="font-family:'Lucida Grande'">Lucida Grande</a></li>
+                                        <li><a data-edit="fontName Lucida Sans" style="font-family:'Lucida Sans'">Lucida Sans</a></li>
+                                        <li><a data-edit="fontName Tahoma" style="font-family:'Tahoma'">Tahoma</a></li>
+                                        <li><a data-edit="fontName Times" style="font-family:'Times'">Times</a></li>
+                                        <li><a data-edit="fontName Times New Roman" style="font-family:'Times New Roman'">Times New Roman</a></li>
+                                        <li><a data-edit="fontName Verdana" style="font-family:'Verdana'">Verdana</a></li>
+                                    </ul>
+                                </div>
+                                <div class="btn-group">
+                                    <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" title="" data-original-title="Font Size"><i class="glyphicon glyphicon-text-height"></i>&nbsp;<b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a data-edit="fontSize 5"><font size="5">Huge</font></a></li>
+                                        <li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
+                                        <li><a data-edit="fontSize 1"><font size="1">Small</font></a></li>
+                                    </ul>
+                                </div>
+                                <div class="btn-group">
+                                    <a class="btn btn-primary" data-edit="bold" title="" data-original-title="Bold (Ctrl/Cmd+B)"><i class="glyphicon glyphicon-bold"></i></a>
+                                    <a class="btn btn-primary" data-edit="italic" title="" data-original-title="Italic (Ctrl/Cmd+I)"><i class="glyphicon glyphicon-italic"></i></a>
+                                    <a class="btn btn-primary" data-edit="underline" title="" data-original-title="Underline (Ctrl/Cmd+U)"><i class="glyphicon glyphicon-text-width"></i></a>
+                                </div>
+                                <div class="btn-group">
+                                    <a class="btn btn-primary" data-edit="insertunorderedlist" title="" data-original-title="Bullet list"><i class="glyphicon glyphicon-list"></i></a>
+                                    <a class="btn btn-primary" data-edit="insertorderedlist" title="" data-original-title="Number list"><i class="glyphicon glyphicon-list-alt"></i></a>
+                                    <a class="btn btn-primary" data-edit="outdent" title="" data-original-title="Reduce indent (Shift+Tab)"><i class="glyphicon glyphicon-indent-left"></i></a>
+                                    <a class="btn btn-primary" data-edit="indent" title="" data-original-title="Indent (Tab)"><i class="glyphicon glyphicon-indent-right"></i></a>
+                                </div>
+                                <div class="btn-group">
+                                    <a class="btn btn-primary" data-edit="justifyleft" title="" data-original-title="Align Left (Ctrl/Cmd+L)"><i class="glyphicon glyphicon-align-left"></i></a>
+                                    <a class="btn btn-primary" data-edit="justifycenter" title="" data-original-title="Center (Ctrl/Cmd+E)"><i class="glyphicon glyphicon-align-center"></i></a>
+                                    <a class="btn btn-primary" data-edit="justifyright" title="" data-original-title="Align Right (Ctrl/Cmd+R)"><i class="glyphicon glyphicon-align-right"></i></a>
+                                    <a class="btn btn-primary" data-edit="justifyfull" title="" data-original-title="Justify (Ctrl/Cmd+J)"><i class="glyphicon glyphicon-align-justify"></i></a>
+                                </div>
+
+                                <div class="btn-group">
+                                    <a class="btn btn-primary" data-edit="undo" title="" data-original-title="Undo (Ctrl/Cmd+Z)"><i class="glyphicon glyphicon-backward"></i></a>
+                                    <a class="btn btn-primary" data-edit="redo" title="" data-original-title="Redo (Ctrl/Cmd+Y)"><i class="glyphicon glyphicon-forward"></i></a>
+                                </div>
+                            </div>
+
+                            <div data-bind="attr: { id: 'editor' + Id()}" class="editor">
+                                
+                            </div>
+                            <button class="btn btn-success" data-bind="attr: { Id: 'saveCommentBtns' + Id(), onClick: 'onSaveCommentClick(' + Id() + ')'}">Save</button>
+                        </div>
+                    </div>
+
                 </td>
-                <td><a class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeAlternative, visible: viewModel.AccessRight() != 'V'">Remove</a></td>
+                <td>
+                    <a class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeAlternative, visible: viewModel.AccessRight() != 'V'">Remove</a>
+                    <a data-bind="enable: Id>'0', attr: { href: '#modal' + Id(), Id: 'openModalBtn' + Id() }" class="btn btn-primary btn-xs">Add new comment</a>
+                </td>
             </tr>
         </tbody>
     </table>
 </span>
 
+<button id="showCommentsBtn" class="btn btn-primary btn-md accordion-toggle" data-toggle="collapse" data-target=".comment" onclick="onShowCommentClick()">Show comments</button>
 @if (Model.AccessRight == "C" || Model.AccessRight == "O")
 {
     <button id="addNewAlternative" class="btn btn-primary btn-md" onclick="onAddNewAlternativeClick()" data-bind="enable: viewModel.Issue.Status() =='BRAINSTORMING1' || viewModel.Issue.Status() =='BRAINSTORMING2'">Add new Alternative</button>
@@ -72,9 +139,28 @@
 
 
 
-@ko.Apply(Model)
-
 <script>
+    var viewModelJs = @Html.Raw(Json.Encode(Model));
+    var viewModel = ko.mapping.fromJS(viewModelJs);
+
+    //for (var i = 0; i < viewModelJs.Alternatives.length; i++){
+    //    viewModel.Alternatives()[i].Comments = ko.observableArray();
+    //    for (var j = 0; j < viewModelJs.Alternatives[i].Comments.length; j++){
+    //        var jsComment = viewModelJs.Alternatives[i].Comments[j];
+    //        var obsComment = {
+    //            DateTime: ko.observable(jsComment.DateTime),
+    //            IssueId: ko.observable(jsComment.IssueId),
+    //            UserId: ko.observable(jsComment.UserId),
+    //            Type: ko.observable(jsComment.Alternative),
+    //            Text: ko.observable(jsComment.Text),
+    //            Name: ko.observable(jsComment.Name)
+    //        }
+    //        viewModel.Alternatives()[i].Comments().push(obsComment)
+    //    }
+    //}
+
+    ko.applyBindings(viewModel);
+
     renderMenues()
 
     function onSaveClick() {
@@ -87,7 +173,16 @@
     };
 
     function onAddNewAlternativeClick() {
-        viewModel.Alternatives.push({ Id: -1, Name: "", Description: "", IssueId: viewModel.Issue.Id, Reason: 0, Rating: 0 })
+        var alt = { 
+            Id: ko.observable(-1), 
+            Name: ko.observable(""), 
+            Description: ko.observable(""), 
+            IssueId: viewModel.Issue.Id, 
+            Reason: 0, 
+            Rating: 0,
+            Comments: ko.observableArray()
+        }
+        viewModel.Alternatives.push(alt)
     }
 
     viewModel.removeAlternative = function () {
@@ -99,7 +194,66 @@
         }
     };
 
-    function onAddCommentClick() {
-
+    function onSaveCommentClick(altId) {
+        var txt = document.getElementById('editor' + altId);
+        var d = new Date();
+        var n = d.getTime(); 
+        var comment =
+                {
+                    DateTime: n,
+                    IssueId: viewModelJs.Issue.Id,
+                    UserId: 0,
+                    Type: 'Alternative' + altId,
+                    Text: document.getElementById('editor' + altId).innerText,
+                    Name: 'Me'
+                }
+        $.ajax({
+            url: '@Url.Action("AddComment", "Issue")',
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(comment),
+            async: true,
+            processData: false,
+            complete: function (r) {
+                alert(r.responseText);
+                if (r.status = 200) {
+                    for (var i = 0; i < viewModelJs.Alternatives.length; i++){
+                        if (viewModelJs.Alternatives[i].Id == altId) {
+                            var cmt =
+                                {
+                                    DateTime: ko.observable(n),
+                                    IssueId: ko.observable(viewModelJs.Issue.Id),
+                                    UserId: ko.observable(0),
+                                    Type: ko.observable('Alternative' + altId),
+                                    Text: ko.observable(document.getElementById('editor' + altId).innerText),
+                                    Name: ko.observable('Me')
+                                }
+                            viewModel.Alternatives()[i].Comments.push(cmt);
+                        }
+                    }
+                }
+            }
+        })
+        //ko.utils.postJson("/Issue/AddComment",comment)
     }
+
+    var collapsed = true;
+    function onShowCommentClick() {
+        if (collapsed) {
+            document.getElementById('showCommentsBtn').innerText = 'Hide Comments'
+            collapsed = false;
+        } else {
+            document.getElementById('showCommentsBtn').innerText = 'Show Comments'
+            collapsed = true;
+        }
+    }
+
+    $(document).ready(function () {
+        for (var i = 0; i < viewModelJs.Alternatives.length; i++) {
+            document.getElementById('editorBtnGrp' + viewModelJs.Alternatives[i].Id).attributes["data-target"].value = '#editor' + viewModelJs.Alternatives[i].Id;
+            $('#editor' + viewModelJs.Alternatives[i].Id).wysiwyg();
+            $('#editor' + viewModelJs.Alternatives[i].Id).cleanHtml();
+        }
+    })
 </script>

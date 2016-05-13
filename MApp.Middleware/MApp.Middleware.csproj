@@ -51,6 +51,7 @@
     <Compile Include="Authentication.cs" />
     <Compile Include="Models\AccessRightModel.cs" />
     <Compile Include="Models\AlternativeModel.cs" />
+    <Compile Include="Models\CommentModel.cs" />
     <Compile Include="Models\CriterionModel.cs" />
     <Compile Include="Models\CriterionWeightModel.cs" />
     <Compile Include="Models\DecisionModel.cs" />

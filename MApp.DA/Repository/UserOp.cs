@@ -117,5 +117,35 @@ namespace MApp.DA.Repository
             ctx.Dispose();
             return list;
         }
+
+        /// <summary>
+        /// returns a List of Usernames
+        /// </summary>
+        /// <param name="userIds"></param>
+        /// <returns></returns>
+        public static List<KeyValuePair<int,string>> GetUserNames(List<int> userIds)
+        {
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            List<KeyValuePair<int, string>> list = new List<KeyValuePair<int, string>>();
+            string name;
+
+            var query = from User in ctx.User
+                        where userIds.Contains(User.Id)
+                        select new
+                        {
+                            User.Id,
+                            User.FirstName,
+                            User.LastName
+                        };
+            foreach(var person in query)
+            {
+                name = person.FirstName + " " + person.LastName;
+                list.Add(new KeyValuePair<int, string>(person.Id, name));
+            }
+
+            ctx.Dispose();
+
+            return list;
+        }
     }
 }

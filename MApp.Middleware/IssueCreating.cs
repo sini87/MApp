@@ -205,5 +205,16 @@ namespace MApp.Middleware
             AccessRightModel ar = arm.ToModel(AccessRightOp.AccessRightOfUserForIssue(userId, issueId));
             return ar;
         }
+
+        public void AddCommentToAlternative(CommentModel commentModel, int userId)
+        {
+            Comment cmt = new Comment();
+            cmt.Anonymous = false;
+            cmt.Text = commentModel.Text;
+            cmt.IssueId = commentModel.IssueId;
+            cmt.UserId = userId;
+            cmt.Type = commentModel.Type;
+            CommentOp.AddComment(cmt);
+        }
     }
 }

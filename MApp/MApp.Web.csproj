@@ -100,6 +100,7 @@
       <HintPath>..\packages\Speedy.4.0.5945.42553\lib\net452\Speedy.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />

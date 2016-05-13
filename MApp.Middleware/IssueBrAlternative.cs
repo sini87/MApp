@@ -24,6 +24,13 @@ namespace MApp.Middleware
         {
             AlternativeModel am = new AlternativeModel();
             List<AlternativeModel> list = am.ToModelList(AlternativeOp.GetIssueAlternatives(issueId, userId),am);
+            List<CommentModel> comments = GetComments(issueId, userId);
+
+            foreach (AlternativeModel a in list)
+            {
+                a.Comments = comments.Where(x => x.Type == "Alternative" + a.Id).ToList();
+            }
+
             return list;
         }
 
@@ -41,6 +48,26 @@ namespace MApp.Middleware
             AlternativeOp.DeleteAlternatives(deletedAlternatives, userId);
             AlternativeOp.UpdateAlternatives(updateList, userId);
             AlternativeOp.AddAlternatives(addedList, userId);
+        }
+
+        /// <summary>
+        /// returns List of comments for issue alternatives
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        private List<CommentModel> GetComments(int issueId, int userId)
+        {
+            CommentModel cm = new CommentModel();
+            List<CommentModel> list = cm.ToModelList(CommentOp.GetAlternativeComments(issueId, userId), cm);
+            List<KeyValuePair<int, string>> userList = UserOp.GetUserNames(list.Select(x => x.UserId).Distinct().ToList());
+
+            foreach (CommentModel model in list)
+            {
+                model.Name = userList.Where(x => x.Key == model.UserId).FirstOrDefault().Value;
+            }
+
+            return list;
         }
     }
 }

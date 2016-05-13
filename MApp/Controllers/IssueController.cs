@@ -6,6 +6,7 @@ using MApp.Web.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Web;
 using System.Web.Mvc;
@@ -251,6 +252,15 @@ namespace MApp.Web.Controllers
             IssueDecision id = new IssueDecision();
             id.UpdateDecision(decisionModel,GetUserIdFromClaim());
             return RedirectToAction("Decision", "Issue", new { issueId = decisionModel.IssueId });
+        }
+
+        [HttpPost]
+        public HttpResponseMessage AddComment(CommentModel commentModel)
+        {
+
+            IssueCreating ic = new IssueCreating();
+            ic.AddCommentToAlternative(commentModel, GetUserIdFromClaim());
+            return new HttpResponseMessage();
         }
     }
 }

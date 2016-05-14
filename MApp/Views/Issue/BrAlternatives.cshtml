@@ -4,11 +4,12 @@
     ViewBag.Title = Model.Issue.Title + " - Alternatives Brainstorming";
     var ko = Html.CreateKnockoutContext();
 }
+<script src="~/ckeditor/ckeditor.js"></script>
 
 <h2><span data-bind="text: viewModel.Issue.Title"></span> - Alternatives Brainstorming</h2>
 
-<span>
-    <table id="alternativesTable" class="table table-hover table-striped table-condensed table-nonfluid">
+
+    <table id="alternativesTable" class="table table-condensed table-nonfluid commenttable">
         <thead align="left">
             <tr>
                 <th>Name</th>
@@ -34,97 +35,52 @@
                     {
                         <p data-bind="text: Description"></p>
                     }
-                    <table>
-                        <thead class="hiddenRow collapse comment">
-                            <tr data-bind="attr: {id: 'commentHead' + Id()}">
-                                <td>user</td>
-                                <td>comment</td>
-                            </tr>
-                        </thead>
+                    
+                    
+                    <table class="commenttable" data-bind="attr: { style: Comments().length == 0 ? 'display:none' : 'display:table'}">
+                        <tr class="hiddenRow collapse comment commenttable-th">
+                            <th>User</th>
+                            <th>Comment</th>
+                        </tr>
                         <tbody class="hiddenRow collapse comment" data-bind="foreach: Comments">
                             <tr>
-                                <td>
-                                    <p data-bind="text: Name"></p>
+                                <td class="commenttable-td commenttable-usercol">
+                                    <p data-bind="text: Name" class="commentttable-name"></p>
                                     <p data-bind="text: moment(DateTime()).format('DD.MM.YY HH:mm')"></p>
                                 </td>
-                                <td data-bind="text: Text"></td>
+                                <td data-bind="html: Text" class="commenttable-td commenttable-comment"></td>
                             </tr>
                         </tbody>
                     </table>
+                    
                     
                     <div data-bind="attr: { id: 'modal' + Id()}" class="modalDialog">
                         <div>
                             <a href="#close" title="Close" class="closemd">X</a>
                             <h4 data-bind="text: 'Commenting ' + Name()"></h4>
-                            <div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor" data-bind="attr: { id: 'editorBtnGrp' + Id() }">
-                                <div class="btn-group">
-                                    <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" title="" data-original-title="Font"><i class="glyphicon glyphicon-font"></i><b class="caret"></b></a>
-                                    <ul class="dropdown-menu">
-                                        <li><a data-edit="fontName Serif" style="font-family:'Serif'">Serif</a></li>
-                                        <li><a data-edit="fontName Sans" style="font-family:'Sans'">Sans</a></li>
-                                        <li><a data-edit="fontName Arial" style="font-family:'Arial'">Arial</a></li>
-                                        <li><a data-edit="fontName Arial Black" style="font-family:'Arial Black'">Arial Black</a></li>
-                                        <li><a data-edit="fontName Courier" style="font-family:'Courier'">Courier</a></li>
-                                        <li><a data-edit="fontName Courier New" style="font-family:'Courier New'">Courier New</a></li>
-                                        <li><a data-edit="fontName Comic Sans MS" style="font-family:'Comic Sans MS'">Comic Sans MS</a></li>
-                                        <li><a data-edit="fontName Helvetica" style="font-family:'Helvetica'">Helvetica</a></li>
-                                        <li><a data-edit="fontName Impact" style="font-family:'Impact'">Impact</a></li>
-                                        <li><a data-edit="fontName Lucida Grande" style="font-family:'Lucida Grande'">Lucida Grande</a></li>
-                                        <li><a data-edit="fontName Lucida Sans" style="font-family:'Lucida Sans'">Lucida Sans</a></li>
-                                        <li><a data-edit="fontName Tahoma" style="font-family:'Tahoma'">Tahoma</a></li>
-                                        <li><a data-edit="fontName Times" style="font-family:'Times'">Times</a></li>
-                                        <li><a data-edit="fontName Times New Roman" style="font-family:'Times New Roman'">Times New Roman</a></li>
-                                        <li><a data-edit="fontName Verdana" style="font-family:'Verdana'">Verdana</a></li>
-                                    </ul>
-                                </div>
-                                <div class="btn-group">
-                                    <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" title="" data-original-title="Font Size"><i class="glyphicon glyphicon-text-height"></i>&nbsp;<b class="caret"></b></a>
-                                    <ul class="dropdown-menu">
-                                        <li><a data-edit="fontSize 5"><font size="5">Huge</font></a></li>
-                                        <li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
-                                        <li><a data-edit="fontSize 1"><font size="1">Small</font></a></li>
-                                    </ul>
-                                </div>
-                                <div class="btn-group">
-                                    <a class="btn btn-primary" data-edit="bold" title="" data-original-title="Bold (Ctrl/Cmd+B)"><i class="glyphicon glyphicon-bold"></i></a>
-                                    <a class="btn btn-primary" data-edit="italic" title="" data-original-title="Italic (Ctrl/Cmd+I)"><i class="glyphicon glyphicon-italic"></i></a>
-                                    <a class="btn btn-primary" data-edit="underline" title="" data-original-title="Underline (Ctrl/Cmd+U)"><i class="glyphicon glyphicon-text-width"></i></a>
-                                </div>
-                                <div class="btn-group">
-                                    <a class="btn btn-primary" data-edit="insertunorderedlist" title="" data-original-title="Bullet list"><i class="glyphicon glyphicon-list"></i></a>
-                                    <a class="btn btn-primary" data-edit="insertorderedlist" title="" data-original-title="Number list"><i class="glyphicon glyphicon-list-alt"></i></a>
-                                    <a class="btn btn-primary" data-edit="outdent" title="" data-original-title="Reduce indent (Shift+Tab)"><i class="glyphicon glyphicon-indent-left"></i></a>
-                                    <a class="btn btn-primary" data-edit="indent" title="" data-original-title="Indent (Tab)"><i class="glyphicon glyphicon-indent-right"></i></a>
-                                </div>
-                                <div class="btn-group">
-                                    <a class="btn btn-primary" data-edit="justifyleft" title="" data-original-title="Align Left (Ctrl/Cmd+L)"><i class="glyphicon glyphicon-align-left"></i></a>
-                                    <a class="btn btn-primary" data-edit="justifycenter" title="" data-original-title="Center (Ctrl/Cmd+E)"><i class="glyphicon glyphicon-align-center"></i></a>
-                                    <a class="btn btn-primary" data-edit="justifyright" title="" data-original-title="Align Right (Ctrl/Cmd+R)"><i class="glyphicon glyphicon-align-right"></i></a>
-                                    <a class="btn btn-primary" data-edit="justifyfull" title="" data-original-title="Justify (Ctrl/Cmd+J)"><i class="glyphicon glyphicon-align-justify"></i></a>
-                                </div>
 
-                                <div class="btn-group">
-                                    <a class="btn btn-primary" data-edit="undo" title="" data-original-title="Undo (Ctrl/Cmd+Z)"><i class="glyphicon glyphicon-backward"></i></a>
-                                    <a class="btn btn-primary" data-edit="redo" title="" data-original-title="Redo (Ctrl/Cmd+Y)"><i class="glyphicon glyphicon-forward"></i></a>
-                                </div>
-                            </div>
+                            <form>
+                                <textarea data-bind="attr: { id: 'editor' + Id(), name: 'editor' + Id()}">
+                                    
+                                </textarea>
+                            </form>
 
-                            <div data-bind="attr: { id: 'editor' + Id()}" class="editor">
-                                
-                            </div>
                             <button class="btn btn-success" data-bind="attr: { Id: 'saveCommentBtns' + Id(), onClick: 'onSaveCommentClick(' + Id() + ')'}">Save</button>
                         </div>
                     </div>
 
                 </td>
-                <td>
-                    <a class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeAlternative, visible: viewModel.AccessRight() != 'V'">Remove</a>
-                    <a data-bind="enable: Id>'0', attr: { href: '#modal' + Id(), Id: 'openModalBtn' + Id() }" class="btn btn-primary btn-xs">Add new comment</a>
+                <td align="center" class="commenttable-btncol">
+                    <div data-bind="if: viewModel.AccessRight() != 'V' && viewModel.Issue.Status() != 'FINISHED' && viewModel.Issue.Status() != 'DECIDING' && viewModel.Issue.Status() != 'EVALUATING'">
+                        <a class="btn btn-danger btn-xs hyperlink-btn" href="#" data-bind="click: $parent.removeAlternative">Remove</a>
+                    </div>
+                    <div data-bind="if: Id() > 0">
+                        <a data-bind="attr: { href: '#modal' + Id(), Id: 'openModalBtn' + Id() }" class="btn btn-primary btn-xs hyperlink-btn">Add new comment</a>
+                    </div>
                 </td>
             </tr>
         </tbody>
     </table>
-</span>
 
 <button id="showCommentsBtn" class="btn btn-primary btn-md accordion-toggle" data-toggle="collapse" data-target=".comment" onclick="onShowCommentClick()">Show comments</button>
 @if (Model.AccessRight == "C" || Model.AccessRight == "O")
@@ -134,7 +90,7 @@
 }
 @if (Model.AccessRight == "O")
 {
-    <button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()">Next Stage</button>
+    <button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.Issue.Status() != 'FINISHED' && viewModel.Issue.Status() != 'DECIDING' && viewModel.Issue.Status() != 'EVALUATING'">Next Stage</button>
 }
 
 
@@ -165,6 +121,13 @@
 
     function onSaveClick() {
         var tmpVM = ko.toJS(viewModel)
+
+        for (var i = 0; i < tmpVM.Alternatives.length; i++){
+            for (var j = 0; j < tmpVM.Alternatives[i].Comments.length; j++){
+                tmpVM.Alternatives[i].Comments[j].Text = "";
+            }
+        }
+
         ko.utils.postJson("", { BrAlternativesVM: tmpVM })
     }
 
@@ -194,6 +157,13 @@
         }
     };
 
+    for (var i = 0; i < viewModelJs.Alternatives.length; i++){
+        CKEDITOR.replace('editor' + viewModelJs.Alternatives[i].Id,
+        {
+            customConfig: '/ckeditor/config.js'
+        });
+    }
+
     function onSaveCommentClick(altId) {
         var txt = document.getElementById('editor' + altId);
         var d = new Date();
@@ -204,7 +174,7 @@
                     IssueId: viewModelJs.Issue.Id,
                     UserId: 0,
                     Type: 'Alternative' + altId,
-                    Text: document.getElementById('editor' + altId).innerText,
+                    Text: CKEDITOR.instances['editor' + altId].getData(),
                     Name: 'Me'
                 }
         $.ajax({
@@ -216,7 +186,6 @@
             async: true,
             processData: false,
             complete: function (r) {
-                alert(r.responseText);
                 if (r.status = 200) {
                     for (var i = 0; i < viewModelJs.Alternatives.length; i++){
                         if (viewModelJs.Alternatives[i].Id == altId) {
@@ -226,12 +195,17 @@
                                     IssueId: ko.observable(viewModelJs.Issue.Id),
                                     UserId: ko.observable(0),
                                     Type: ko.observable('Alternative' + altId),
-                                    Text: ko.observable(document.getElementById('editor' + altId).innerText),
+                                    Text: ko.observable(CKEDITOR.instances['editor' + altId].getData()),
                                     Name: ko.observable('Me')
                                 }
                             viewModel.Alternatives()[i].Comments.push(cmt);
                         }
                     }
+
+                    CKEDITOR.instances['editor' + altId].setData('');
+                    window.location.href = '#close';
+                }else{
+                    alert("Could not add the comment!" );
                 }
             }
         })
@@ -250,10 +224,10 @@
     }
 
     $(document).ready(function () {
-        for (var i = 0; i < viewModelJs.Alternatives.length; i++) {
-            document.getElementById('editorBtnGrp' + viewModelJs.Alternatives[i].Id).attributes["data-target"].value = '#editor' + viewModelJs.Alternatives[i].Id;
-            $('#editor' + viewModelJs.Alternatives[i].Id).wysiwyg();
-            $('#editor' + viewModelJs.Alternatives[i].Id).cleanHtml();
-        }
+        //for (var i = 0; i < viewModelJs.Alternatives.length; i++) {
+        //    document.getElementById('editorBtnGrp' + viewModelJs.Alternatives[i].Id).attributes["data-target"].value = '#editor' + viewModelJs.Alternatives[i].Id;
+        //    $('#editor' + viewModelJs.Alternatives[i].Id).wysiwyg();
+        //    $('#editor' + viewModelJs.Alternatives[i].Id).cleanHtml();
+        //}
     })
 </script>

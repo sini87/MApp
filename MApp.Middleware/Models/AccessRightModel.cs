@@ -21,7 +21,7 @@ namespace MApp.Middleware.Models
         public SelfAssessmentHEntry(DateTime changeDate, double selfAssessmentValue, string selfAssessmentDescr)
         {
             var epoch = new DateTime(1970, 1, 1, 0, 0, 0);
-            var unixDateTime = (changeDate.Ticks - epoch.Ticks) / TimeSpan.TicksPerMillisecond - 7200000;
+            var unixDateTime = (changeDate.Ticks - epoch.Ticks) / TimeSpan.TicksPerMillisecond - Convert.ToInt32(TimeZone.CurrentTimeZone.GetUtcOffset(changeDate).TotalMilliseconds);
 
             ChangeDate = unixDateTime;
             SelfAssessmentValue = selfAssessmentValue;

@@ -38,5 +38,41 @@ namespace MApp.DA.Repository
 
             return list;
         }
+
+        public static void DeleteAlternativeComments(List<int> alternativeIds)
+        {
+            string alt = "";
+            bool first = true;
+            string sql;
+
+            if (alternativeIds == null || alternativeIds.Count == 0)
+            {
+                return;
+            }
+
+            foreach(int id in alternativeIds)
+            {
+                if (first)
+                {
+                    alt = "('Alternative" + id + "'";
+                    first = false;
+                }
+                else
+                {
+                    alt = alt + ",'Alternative" + id + "'";
+                }
+            }
+            alt = alt + ")";
+
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            using (var dbContextTransaction = ctx.Database.BeginTransaction())
+            {
+                sql = "DELETE FROM  appSchema.Comment WHERE Type in " + alt;
+                ctx.Database.ExecuteSqlCommand(sql);
+                dbContextTransaction.Commit();
+            }
+
+            ctx.Dispose();
+        }
     }
 }

@@ -49,6 +49,7 @@ namespace MApp.DA.Repository
             }
 
             ctx.Dispose();
+            CommentOp.DeleteAlternativeComments(alternativeIdList);
         }
 
         /// <summary>

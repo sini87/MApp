@@ -1,4 +1,5 @@
 ﻿using MApp.DA;
+using MApp.DA.Repository;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -58,7 +59,7 @@ namespace MApp.Middleware.Models
             model.LastName = user.LastName;
             model.Password = user.PasswordHash;
             model.Properties = new List<PropertyModel>();
-            foreach (Property p in user.Property.ToList())
+            foreach (Property p in PropertyOp.GetUserProperties(user.Id))
             {
                 model.Properties.Add(PropertyModel.ToModel(p));
             }

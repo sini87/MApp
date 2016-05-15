@@ -18,6 +18,7 @@ namespace MApp.Middleware.Models
         public int IssueId { get; set; }
         public double? Weight { get; set; }
         public double? WeightPC { get; set; }
+        public List<CommentModel> Comments { get; set; }
 
         public Criterion ToEntity(CriterionModel model)
         {

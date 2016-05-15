@@ -74,5 +74,59 @@ namespace MApp.DA.Repository
 
             ctx.Dispose();
         }
+
+        public static List<Comment> GetCriterionComments(int issueId, int userId)
+        {
+            string sql;
+            List<Comment> list;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            using (var dbContextTransaction = ctx.Database.BeginTransaction())
+            {
+                sql = "Select * from Comment " +
+                    "Where Type in (" +
+                    "Select CONCAT('Criterion', Id) From Criterion Where Issue = {0})";
+                list = ctx.Database.SqlQuery<Comment>(sql, issueId).ToList();
+            }
+
+            ctx.Dispose();
+
+            return list;
+        }
+
+        public static void DeleteCriterionComments(List<int> criterionIds)
+        {
+            string criterions = "";
+            bool first = true;
+            string sql;
+
+            if (criterionIds == null || criterionIds.Count == 0)
+            {
+                return;
+            }
+
+            foreach (int id in criterionIds)
+            {
+                if (first)
+                {
+                    criterions = "('Criterion" + id + "'";
+                    first = false;
+                }
+                else
+                {
+                    criterions = criterions + ",'Criterion" + id + "'";
+                }
+            }
+            criterions = criterions + ")";
+
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            using (var dbContextTransaction = ctx.Database.BeginTransaction())
+            {
+                sql = "DELETE FROM  appSchema.Comment WHERE Type in " + criterions;
+                ctx.Database.ExecuteSqlCommand(sql);
+                dbContextTransaction.Commit();
+            }
+
+            ctx.Dispose();
+        }
     }
 }

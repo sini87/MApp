@@ -24,6 +24,13 @@ namespace MApp.Middleware
         {
             CriterionModel cm = new CriterionModel();
             List<CriterionModel> cmList = cm.ToModelList(CriterionOp.GetIssueCriterions(issueId, userId), cm);
+
+            List<CommentModel> comments = GetComments(issueId, userId);
+            foreach(CriterionModel model in cmList)
+            {
+                model.Comments = comments.Where(x => x.Type == "Criterion" + model.Id).ToList();
+            }
+
             return cmList;
         }
 
@@ -41,6 +48,20 @@ namespace MApp.Middleware
             CriterionOp.DeleteCriterions(deletedCriteria, userId);
             CriterionOp.UpdateCriterions(updateList, userId);
             CriterionOp.AddCriterions(addedList,userId);
+        }
+
+        private List<CommentModel> GetComments(int issueId, int userId)
+        {
+            CommentModel cm = new CommentModel();
+            List<CommentModel> list = cm.ToModelList(CommentOp.GetCriterionComments(issueId, userId), cm);
+            List<KeyValuePair<int, string>> userList = UserOp.GetUserNames(list.Select(x => x.UserId).Distinct().ToList());
+
+            foreach (CommentModel model in list)
+            {
+                model.Name = userList.Where(x => x.Key == model.UserId).FirstOrDefault().Value;
+            }
+
+            return list;
         }
     }
 }

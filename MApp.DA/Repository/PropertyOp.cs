@@ -35,8 +35,14 @@ namespace MApp.DA.Repository
         public static List<Property> GetUserProperties(int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
-            User u = ctx.User.AsNoTracking().Where(x => x.Id == userId).FirstOrDefault();
-            List<Property> list = ctx.Property.AsNoTracking().Where(x => x.User == u).ToList();
+            string sql;
+            List<Property> list;
+            using (var dbContextTransaction = ctx.Database.BeginTransaction())
+            {
+                sql = "Select * from Property WHERE Id in (select PropertyId from UserProperty Where UserId = {0})";
+                list = ctx.Database.SqlQuery<Property>(sql, userId).ToList();
+            }
+
             ctx.Dispose();
 
             return list;

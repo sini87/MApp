@@ -52,6 +52,8 @@ namespace MApp.Web.Controllers
                 vm.AccessRight = arm.Right;
                 vm.SelfAssessmentDescription = arm.SelfAssessmentDescr;
                 vm.SelfAssessmentValue = Convert.ToInt32(arm.SelfAssessmentValue);
+                vm.Comments = ic.GetIssueComments(issueId, userId);
+                vm.GroupthinkNotifications = ic.GetGroupthinkNotifications(issueId, userId);
             }
             else
             {
@@ -63,6 +65,8 @@ namespace MApp.Web.Controllers
                 vm.AccessRights.Add(new AccessRightModel(userId, "Owner",vm.AllUsers.Where(x => x.Id == userId).FirstOrDefault().Name));
                 vm.AccessRight = "O";
                 vm.Issue.Id = -1;
+                vm.Comments = new List<CommentModel>();
+                vm.GroupthinkNotifications = new List<NotificationModel>();
             }
             vm.AllUsers = vm.AllUsers.Where(x => x.Id != userId).ToList();
 
@@ -260,6 +264,23 @@ namespace MApp.Web.Controllers
 
             IssueCreating ic = new IssueCreating();
             ic.AddCommentToAlternative(commentModel, GetUserIdFromClaim());
+            return new HttpResponseMessage();
+        }
+
+        [HttpPost]
+        public HttpResponseMessage AddNotification(NotificationModel notificationModel)
+        {
+            IssueCreating ic = new IssueCreating();
+            notificationModel.UserId = GetUserIdFromClaim();
+            ic.MakeNotification(notificationModel);
+            return new HttpResponseMessage();
+        }
+
+        [HttpPost]
+        public HttpResponseMessage MarkNotificationAsRead(int notificationId)
+        {
+            IssueCreating ic = new IssueCreating();
+            ic.MarkNotificationAsRead(notificationId);
             return new HttpResponseMessage();
         }
     }

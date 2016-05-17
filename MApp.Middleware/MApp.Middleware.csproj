@@ -59,6 +59,7 @@
     <Compile Include="Models\IssueModel.cs" />
     <Compile Include="Models\IssueShortModel.cs" />
     <Compile Include="Models\ListModel.cs" />
+    <Compile Include="Models\NotificationModel.cs" />
     <Compile Include="Models\ProfileModel.cs" />
     <Compile Include="Models\PropertyModel.cs" />
     <Compile Include="Models\RatingModel.cs" />

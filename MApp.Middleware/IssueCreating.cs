@@ -189,16 +189,32 @@ namespace MApp.Middleware
             AccessRightOp.UpdateRights(aList, dList, uList, issueId, userId);
         }
 
+        /// <summary>
+        /// deltetes an issue
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <returns></returns>
         public bool DeleteIssue(int issueId)
         {
             return IssueOp.DeleteIssue(issueId);
         }
 
+        /// <summary>
+        /// puts the issue to next stage
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
         public void NextStage (int issueId, int userId)
         {
             IssueOp.NextStage(issueId, userId);
         }
 
+        /// <summary>
+        /// returns accessright for user to an issue
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="issueId"></param>
+        /// <returns></returns>
         public AccessRightModel AccessRightOfUserForIssue(int userId, int issueId)
         {
             AccessRightModel arm = new AccessRightModel();
@@ -206,6 +222,11 @@ namespace MApp.Middleware
             return ar;
         }
 
+        /// <summary>
+        /// adds a comment to an alternative
+        /// </summary>
+        /// <param name="commentModel"></param>
+        /// <param name="userId"></param>
         public void AddCommentToAlternative(CommentModel commentModel, int userId)
         {
             Comment cmt = new Comment();
@@ -215,6 +236,56 @@ namespace MApp.Middleware
             cmt.UserId = userId;
             cmt.Type = commentModel.Type;
             CommentOp.AddComment(cmt);
+        }
+
+        /// <summary>
+        /// returns all comments for an issue
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public List<CommentModel> GetIssueComments(int issueId, int userId)
+        {
+            CommentModel cm = new CommentModel();
+            List<CommentModel> list = cm.ToModelList(CommentOp.GetTypeComments(issueId, userId,"Issue"), cm);
+            List<KeyValuePair<int, string>> userList = UserOp.GetUserNames(list.Select(x => x.UserId).Distinct().ToList());
+
+            foreach (CommentModel model in list)
+            {
+                model.Name = userList.Where(x => x.Key == model.UserId).FirstOrDefault().Value;
+            }
+
+            return list;
+        }
+
+        /// <summary>
+        /// gets grouphtink notifications
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public List<NotificationModel> GetGroupthinkNotifications(int issueId, int userId)
+        {
+            NotificationModel nm = new NotificationModel();
+            return nm.ToModelList(NotificationOp.GetGroupthinkNotifications(issueId, userId), nm);
+        }
+
+        /// <summary>
+        /// adds a new groupthink notification
+        /// </summary>
+        /// <param name="notification"></param>
+        public void MakeNotification(NotificationModel notification)
+        {
+            NotificationOp.AddNotification(notification.ToEntity(notification));
+        }
+
+        /// <summary>
+        /// marks an notification as read
+        /// </summary>
+        /// <param name="notificationId"></param>
+        public void MarkNotificationAsRead(int notificationId)
+        {
+            NotificationOp.MarkNotificationAsRead(notificationId);
         }
     }
 }

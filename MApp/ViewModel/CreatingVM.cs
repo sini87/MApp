@@ -25,5 +25,7 @@ namespace MApp.Web.ViewModel
         public int UserId { get; set; }
         public double SelfAssessmentValue { get; set; }
         public string SelfAssessmentDescription { get; set; }
+        public List<CommentModel> Comments { get; set; }
+        public List<NotificationModel> GroupthinkNotifications { get; set; }
     }
 }

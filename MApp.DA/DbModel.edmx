@@ -208,6 +208,8 @@
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="Type" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="Text" Type="nvarchar(max)" />
+          <Property Name="Read" Type="bit" />
+          <Property Name="AddedDate" Type="datetime" />
         </EntityType>
         <EntityType Name="PairwiseComparisonAC">
           <Key>
@@ -1261,6 +1263,8 @@
           <Property Name="Text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Issue" Relationship="Self.FK_Notification_Issue" FromRole="Notification" ToRole="Issue" />
           <NavigationProperty Name="User" Relationship="Self.FK_Notification_User" FromRole="Notification" ToRole="User" />
+          <Property Name="Read" Type="Boolean" />
+          <Property Name="AddedDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="PairwiseComparisonAC">
           <Key>
@@ -2256,6 +2260,8 @@
           <EntitySetMapping Name="Notification">
             <EntityTypeMapping TypeName="ApplicationDBModel.Notification">
               <MappingFragment StoreEntitySet="Notification">
+                <ScalarProperty Name="AddedDate" ColumnName="AddedDate" />
+                <ScalarProperty Name="Read" ColumnName="Read" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="IssueId" ColumnName="IssueId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />

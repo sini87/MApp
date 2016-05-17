@@ -128,5 +128,22 @@ namespace MApp.DA.Repository
 
             ctx.Dispose();
         }
+
+        public static List<Comment> GetTypeComments(int issueId, int userId, string type)
+        {
+            string sql;
+            List<Comment> list;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            using (var dbContextTransaction = ctx.Database.BeginTransaction())
+            {
+                sql = "Select * from Comment " +
+                    "Where Type LIKE 'Issue" + issueId + "'";
+                list = ctx.Database.SqlQuery<Comment>(sql, issueId).ToList();
+            }
+
+            ctx.Dispose();
+
+            return list;
+        }
     }
 }

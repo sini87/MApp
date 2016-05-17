@@ -89,7 +89,24 @@ textarea {
     min-width: 400px;
     width: auto;
     max-width: 800px;
+    height: 30px;
     min-height: 30px;
+}
+
+.textarea-issuedesc {
+    min-width: 400px;
+    width: auto;
+    max-width: 800px;
+    height: 100px;
+    min-height: 100px;
+}
+
+.status-label{
+    padding-right: 25px;
+}
+
+.linking-div{
+    padding-bottom: 15px;
 }
 
 .textbox-name{
@@ -104,6 +121,10 @@ textarea {
 
 .table-sum {
     padding-right: 12px;
+}
+
+.td-top{
+    vertical-align: top;
 }
 
 .error {
@@ -145,6 +166,7 @@ textarea {
     padding-right: 10px;
     text-align: left;
     vertical-align: top;
+    min-width: 100px;
 }
 
 .commentttable-name{
@@ -224,6 +246,11 @@ textarea {
     max-height: 100%;
     overflow-y: scroll;
 }
+
+.modalDialotNotification{
+    width: 300px;
+}
+
 .modalDialog .datecolumn{
     width:112px;
 }
@@ -285,8 +312,63 @@ textarea {
   margin-left: 5px;
 }
 
+.tags-div {
+    float: left;
+    padding-top: 10px;
+}
+
+.accessrights-div{
+    float: left;
+}
+
 .editor {
     background-color: white;
     overflow:scroll;
     height: 300px;
+}
+
+/*
+    Phenomenon
+*/
+
+.phenomenon {
+    background: #ff5733;
+    border-radius: 15px;
+    width: 250px;
+}
+
+.phenomenon-badge-header {
+   display:block;
+   float:right;
+   margin:5px 25px 0 2px;
+}
+
+.phenomenon-header{
+    font-size: 16px;
+    padding-left: 25px;
+    font-family: Verdana;
+}
+
+.phenomenon-badge {
+   display:block;
+   float:right;
+   margin:5px 25px 0 2px;
+}
+
+.phenomenon-elem {
+   font-size: 13px;
+   padding-left: 25px;
+   font-family: Verdana;
+   text-decoration:none;
+   cursor:text;
+}
+.phenomenon-link {
+    color:inherit;
+    text-decoration:none;   
+}
+
+.phenomenon-link:hover{
+    color: inherit;
+    cursor: pointer;
+    text-decoration:none;
 }

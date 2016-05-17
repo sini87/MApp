@@ -46,7 +46,7 @@ function doLinks(issue) {
     var menuElem = document.getElementById("creating-menu")
     for (i = 0; i < menuElem.childNodes.length; i++) {
         if (menuElem.childNodes[i].nodeName == "A") {
-            menuElem.childNodes[i].innerHTML = 'Issue Overview';
+            menuElem.childNodes[i].innerHTML = 'Issue';
             menuElem.childNodes[i].href = "/Issue/Creating?issueId=" + issueId;
             break;
         }

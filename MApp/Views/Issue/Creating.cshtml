@@ -4,132 +4,254 @@
     var ko = Html.CreateKnockoutContext();
     ViewBag.Title = "Issue - " + @Model.Issue.Title;
 }
+<script src="~/ckeditor/ckeditor.js"></script>
+
 <div class="page-header">
-    <h2>Creating</h2>
+    <h3 data-bind="text: viewModel.Issue.Title"></h3>
 </div>
 
 <div class="container">
     <div id ="coreInfos" class="col-md-7">
-        <div class="form-group">
+        <div class="row">
             <label for="titleInput">Title</label>
             <input id="titleInput" class="form-control" data-bind="textInput: viewModel.Issue.Title, enable: viewModel.AccessRight() != 'V'" />
-            <label for="description">Description</label>
-            <textarea class="form-control" data-bind="value: viewModel.Issue.Description, enable: viewModel.AccessRight() != 'V'" id="description" name="description"></textarea>
-            <label for="issueStatus">Issue status:</label>
-            <label id="issueStatus" data-bind="text: viewModel.Issue.Status"></label>
-            <div class="checkbox">
-                <label id="anonymousPostingLabel">
-                    <input id="anonymous" type="checkbox" data-bind="checked: viewModel.Issue.AnonymousPosting, enable: viewModel.AccessRight() != 'V'" />
-                    Anonymous posting?
-                </label>
-            </div>
-            <p>
-                <label for="selectRootIssue">Parent Issue:</label>
-                <select class="selectpicker" data-live-search="true" id="selectRootIssue" data-bind="options: viewModel.Issues, optionsText: 'Title', optionsValue: 'Id', value: viewModel.Issue.Parent"></select>
-                <a data-bind="text: viewModel.Issue.ParentTitle, attr: {href: '?issueId=' + viewModel.Issue.Parent()}, visible: !viewModel.parentChanged() && viewModel.Issue.ParentTitle() != ''"></a>
-                <a data-bind="text: viewModel.parentDDText, attr: {href: '?issueId=' + viewModel.Issue.Parent()}, visible: viewModel.parentDDText() != 'none' && viewModel.parentChanged"></a>
-            </p>
-            <p>
-                <label for="selectdependsOnIssue">Depends on Issue:</label>
-                <select class="selectpicker" data-live-search="true" id="selectdependsOnIssue" data-bind="options: viewModel.Issues, optionsText: 'Title', optionsValue: 'Id', value: viewModel.Issue.DependsOn"></select>
-                <a data-bind="text: viewModel.Issue.DependsOnTitle, attr: {href: '?issueId=' + viewModel.Issue.DependsOn()}, visible: !viewModel.dependsOnChanged() && viewModel.Issue.DependsOnTitle() != ''"></a>
-                <a data-bind="text: viewModel.dependsOnDDText, attr: {href: '?issueId=' + viewModel.Issue.DependsOn()}, visible: viewModel.dependsOnDDText() != 'none' && viewModel.dependsOnChanged"></a>
-            </p>
-
         </div>
-    </div>
-    
-    <div class="col-md-5" id="selfAssessment">
-        <form class="form-inline" role="form">
-            @if (Model.AccessRight != "V")
-            {
-               if (Model.Issue.Status == "CREATING" || Model.Issue.Status == "BRAINSTORMING1")
-               {
-                <div class="form-group has-feedback" data-bind="attr: {class: viewModel.selfAssessmentCheckHas}">
-                    <label for="selfAssessmentV">Value</label>
-                    <input class="form-control" id="selfAssessmentV" data-bind="textInput: viewModel.SelfAssessmentValue" onfocus="javascript: onSelfAssessmentFocus()">
-                    <span data-bind="attr: {class: viewModel.selfAssessmentCheckIcon }"></span>
+        <div class="row">
+            <div class="form-inline">
+                <label id="issueStatus" data-bind="text: 'Issue Status: ' + viewModel.Issue.Status()" class="status-label"></label>
+                <div class="checkbox">
+                    <label id="anonymousPostingLabel">
+                        <input id="anonymous" type="checkbox" data-bind="checked: viewModel.Issue.AnonymousPosting, enable: viewModel.AccessRight() != 'V'" />
+                        Anonymous posting?
+                    </label>
                 </div>
-                <div class="form-group">
-                    <label for="selfEvaluationD">Description</label>
-                    <textarea type="text" class="form-control" id="selfEvaluationD" data-bind="value: viewModel.SelfAssessmentDescription"></textarea>
-                </div>
-               }else
-               {
-                   <label>Selfassessment Value: </label> @Model.SelfAssessmentValue
-                   <br />
-                   <label>Description:</label>
-                   <br />
-                   @Model.SelfAssessmentDescription
-               }
-            }
-        </form>
+            </div>
+        </div>
+        <div class="row">
+            <label for="description">Description</label>
+            <textarea class="form-control textarea-issuedesc" data-bind="value: viewModel.Issue.Description, enable: viewModel.AccessRight() != 'V'" id="description" name="description"></textarea>
+        </div>
+
+        <div class="row">
+            <table>
+                <tr>
+                    <td class="td-top">
+                        <label for="selectRootIssue">Parent Issue:</label>
+                        <br />
+                        <select class="selectpicker" data-live-search="true" id="selectRootIssue" data-bind="options: viewModel.Issues, optionsText: 'Title', optionsValue: 'Id', value: viewModel.Issue.Parent"></select>
+                        <br />
+                        <a data-bind="text: viewModel.Issue.ParentTitle, attr: {href: '?issueId=' + viewModel.Issue.Parent()}, visible: !viewModel.parentChanged() && viewModel.Issue.ParentTitle() != ''"></a>
+                        <a data-bind="text: viewModel.parentDDText, attr: {href: '?issueId=' + viewModel.Issue.Parent()}, visible: viewModel.parentDDText() != 'none' && viewModel.parentChanged"></a>
+                    </td>
+                    <td class="td-top">
+                        <label for="selectdependsOnIssue">Depends on Issue:</label>
+                        <br />
+                        <select class="selectpicker" data-live-search="true" id="selectdependsOnIssue" data-bind="options: viewModel.Issues, optionsText: 'Title', optionsValue: 'Id', value: viewModel.Issue.DependsOn"></select>
+                        <br />
+                        <a data-bind="text: viewModel.Issue.DependsOnTitle, attr: {href: '?issueId=' + viewModel.Issue.DependsOn()}, visible: !viewModel.dependsOnChanged() && viewModel.Issue.DependsOnTitle() != ''"></a>
+                        <a data-bind="text: viewModel.dependsOnDDText, attr: {href: '?issueId=' + viewModel.Issue.DependsOn()}, visible: viewModel.dependsOnDDText() != 'none' && viewModel.dependsOnChanged"></a>
+                    </td>
+                </tr>
+            </table>
+
+            
+        </div>
+
+        <div class="row">
+                @if (Model.AccessRight != "V")
+                {
+                    if (Model.Issue.Status == "CREATING" || Model.Issue.Status == "BRAINSTORMING1")
+                    {
+                        <form class="form-inline" role="form">
+                            <div class="form-group has-feedback" data-bind="attr: {class: viewModel.selfAssessmentCheckHas}">
+                                <label for="selfAssessmentV">Selfassessment Value</label>
+                                <input class="form-control" id="selfAssessmentV" data-bind="textInput: viewModel.SelfAssessmentValue" onfocus="javascript: onSelfAssessmentFocus()" placeholder="Selfassessment">
+                                <span data-bind="attr: {class: viewModel.selfAssessmentCheckIcon }"></span>
+                            </div>
+                        </form>
+                        <form class="form-group-sm" role="form">
+                            <div class="form-group">
+                                <label for="selfEvaluationD">Description</label>
+                                <textarea type="text" class="form-control textarea-desc" id="selfEvaluationD" data-bind="value: viewModel.SelfAssessmentDescription" placeholder="Selfassessment description"></textarea>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <label>Selfassessment Value: </label> @Model.SelfAssessmentValue
+                        <br />
+                        <label>Description:</label>
+                        <br />
+                        @Model.SelfAssessmentDescription
+                    }
+                }
+        </div>
+
     </div>
 
     <div class="col-md-5">
-        <label for="tokenfield">Issue Tags</label>
-        <input type="text" class="form-control" id="tokenfield" data-bind="enable: viewModel.AccessRight() != 'V'"/>
+        <div class="phenomenon">
+            <div class="row phenomenon-header">
+                <label>Phenomenon</label>
+                <!-- ko if: viewModel.AccessRight() == 'O' -->
+                    <span class="label label-default phenomenon-badge-header" data-bind="text: viewModel.newPhenomenonNotifications"></span>
+                <!-- /ko -->
+            </div>
+            
+            @*Groupthink notifications*@
+            <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() == 'O'">
+                <a class="phenomenon-link" href="#groupThinkAllNotModalDialog">Groupthink notifications</a>
+                <span class="label label-default phenomenon-badge" data-bind="text: viewModel.newGroupthinkNotifications"></span>
+                <div id="groupThinkAllNotModalDialog" class="modalDialog">
+                    <div>
+                        <a href="#close" title="Close" class="closemd">X</a>
+                        <h4>Groupthink notifications</h4>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td class="datecolumn">Date</td>
+                                    <td>Description</td>
+                                    <td>Read</td>
+                                </tr>
+                            </thead>
+                            <tbody data-bind="foreach: viewModel.GroupthinkNotifications">
+                                <tr>
+                                    <td data-bind="text: moment(AddedDate()).format('DD.MM.YY HH:mm')"></td>
+                                    <td data-bind="text: Text"></td>
+                                    <td>
+                                        <!-- ko if: !Read() -->
+                                            <input type="checkbox" data-bind="checked: Read, attr: { id: 'gtNotification' + Id(), onClick: 'onGtNotificationChange(' + Id() + ')'}" />
+                                        <!-- /ko -->
+                                        <!-- ko if: Read() -->
+                                            <input type="checkbox" data-bind="checked: Read" disabled />
+                                        <!-- /ko -->
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-        <p data-bind="visible: viewModelJs.AccessRight == 'O'">
-            <select class="selectpicker" data-live-search="true" id="selectUser" data-width="auto" data-bind="options: viewModel.AllUsers, optionsText: 'Name', optionsValue: 'Id', visible: viewModel.AccessRight() == 'O'"></select>
-            <select class="selectpicker" id="selectRight" data-width="auto" >
-                <option>Contributor</option>
-                <option>Viewer</option>
-                <option>Owner</option>
-            </select>
-            <button id="addRight" type="button" class="btn btn-primary btn-xs" onclick="javascript: onAddRightClick()" data-bind="visible: viewModelJs.AccessRight == 'O'">Add</button>
-        </p>
-        <h4>Access Rights</h4>
-        <table id="userTable" class="table table-hover table-striped table-condensed">
-            <thead align="left">
-                <tr>
-                    <th>Name</th>
-                    <th>Right</th>
-                    <th>Selfassessment</th>
-                </tr>
-            </thead>
-            <tbody data-bind="foreach: viewModel.AccessRights">
-                <tr>
-                    <td>
-                        <a data-bind="text: Name, attr: { href: '#modal' + UserId() }"></a>
-                        <div data-bind="attr: { id: 'modal' + UserId()}" class="modalDialog">
-                            <div>
-                                <a href="#close" title="Close" class="closemd">X</a>
-                                <h4 data-bind="text: Name() + ' - Selfassessment'"></h4>
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <td class="datecolumn">Date</td>
-                                            <td>Value</td>
-                                            <td>Description</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody data-bind="foreach: SelfAssessmentHistory">
-                                        <tr>
-                                            <td data-bind="text: moment(ChangeDate()).format('DD.MM.YY HH:mm')"></td>
-                                            <td data-bind="text: SelfAssessmentValue"></td>
-                                            <td data-bind="text: SelfAssessmentDescr"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+            @*Groupshift notifications*@
+            <div class="row phenomenon-elem"><a class="phenomenon-link">Groupshift warning</a><span class="label label-default phenomenon-badge" data-bind="text: viewModel.newGroupshiftNotifications"></span></div>
+            
+            @*make groupthink notification only for contributors*@
+            <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() == 'C'">
+                <a class="phenomenon-link" href="#groupThinkModalDialog">Make Groupthink notification</a>
+                <div id="groupThinkModalDialog" class="modalDialog">
+                    <div>
+                        <a href="#close" title="Close" class="closemd">X</a>
+                        <h4>Make Groupthink notification to issue owner</h4>
+                        <div class="form-group">
+                            <textarea id="groupthinkText"></textarea>
+                        </div>
+                        <button id="groupthinkMake" onclick="onGroupthinkMakeClick()" class="btn btn-success">Make notification</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <label for="tokenfield">Issue Tags</label>
+            <input type="text" class="form-control" id="tokenfield" data-bind="enable: viewModel.AccessRight() != 'V'" />
+        </div>
+
+        <div class="accessrights-div">
+            <h4>Access Rights</h4>
+            <p data-bind="visible: viewModelJs.AccessRight == 'O'">
+                <select class="selectpicker" data-live-search="true" id="selectUser" data-width="auto" data-bind="options: viewModel.AllUsers, optionsText: 'Name', optionsValue: 'Id', visible: viewModel.AccessRight() == 'O'"></select>
+                <select class="selectpicker" id="selectRight" data-width="auto">
+                    <option>Contributor</option>
+                    <option>Viewer</option>
+                    <option>Owner</option>
+                </select>
+                <button id="addRight" type="button" class="btn btn-primary btn-xs" onclick="javascript: onAddRightClick()" data-bind="visible: viewModelJs.AccessRight == 'O'">Add</button>
+            </p>
+            <table id="userTable" class="table table-hover table-striped table-condensed">
+                <thead align="left">
+                    <tr>
+                        <th>Name</th>
+                        <th>Right</th>
+                        <th>Selfassessment</th>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach: viewModel.AccessRights">
+                    <tr>
+                        <td>
+                            <a data-bind="text: Name, attr: { href: '#modal' + UserId() }"></a>
+                            <div data-bind="attr: { id: 'modal' + UserId()}" class="modalDialog">
+                                <div>
+                                    <a href="#close" title="Close" class="closemd">X</a>
+                                    <h4 data-bind="text: Name() + ' - Selfassessment'"></h4>
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <td class="datecolumn">Date</td>
+                                                <td>Value</td>
+                                                <td>Description</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-bind="foreach: SelfAssessmentHistory">
+                                            <tr>
+                                                <td data-bind="text: moment(ChangeDate()).format('DD.MM.YY HH:mm')"></td>
+                                                <td data-bind="text: SelfAssessmentValue"></td>
+                                                <td data-bind="text: SelfAssessmentDescr"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
-                    </td>
-                    <td data-bind="text: Right"></td>
-                    <td class="td-center-top">
-                        <div class="ttip">
-                            <label data-bind="text: SelfAssessmentValue"></label>
-                            <span class="tooltiptext" data-bind="text: SelfAssessmentDescr"></span>
-                        </div>
-                    </td>
-                    <td><a class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeRight, visible: viewModelJs.AccessRight == 'O' && UserId() != viewModel.UserId()">Remove</a></td>
-                </tr>
-            </tbody>
-        </table>
+                        </td>
+                        <td data-bind="text: Right"></td>
+                        <td class="td-center-top">
+                            <div class="ttip">
+                                <label data-bind="text: SelfAssessmentValue"></label>
+                                <span class="tooltiptext" data-bind="text: SelfAssessmentDescr"></span>
+                            </div>
+                        </td>
+                        <td><a class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeRight, visible: viewModelJs.AccessRight == 'O' && UserId() != viewModel.UserId()">Remove</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
+    
+</div>
+
+<div class="row">
     <button id="save" type="button" class="btn btn-success" onclick="javascript: onSaveClick()" data-bind="visible: viewModelJs.AccessRight == 'O' || viewModelJs.AccessRight == 'C'">Save</button>
     <button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.AccessRight() == 'O', enable: viewModelJs.Issue.Id != -1">Next Stage</button>
     <button id="delete" type="button" class="btn btn-danger" onclick="javascript: onDeleteClick()" data-bind="visible: viewModelJs.AccessRight == 'O', enable: viewModelJs.Issue.Id != -1">Delete</button>
+    <button id="showCommentsBtn" class="btn btn-primary btn-md accordion-toggle" data-toggle="collapse" data-target=".comment" data-bind="enable: viewModelJs.Issue.Id != -1">Show comments</button>
+</div>
+
+<div class="row collapse comment">
+    <h4 class="collapse comment">Comments</h4>
+    <table class="commenttable" data-bind="attr: { style: viewModel.Comments().length == 0 ? 'display:none' : 'display:table'}">
+        <tr class="hiddenRow collapse comment commenttable-th">
+            <th>User</th>
+            <th>Comment</th>
+        </tr>
+        <tbody class="hiddenRow collapse comment" data-bind="foreach: viewModel.Comments">
+            <tr>
+                <td class="commenttable-td commenttable-usercol">
+                    <p data-bind="text: Name" class="commentttable-name"></p>
+                    <p data-bind="text: moment(DateTime()).format('DD.MM.YY HH:mm')"></p>
+                </td>
+                <td data-bind="html: Text" class="commenttable-td commenttable-comment"></td>
+            </tr>
+        </tbody>
+    </table>
+    <br />
+</div>
+<div class="row collapse comment">
+    <textarea id="editor" name="editor"></textarea>
+    <br />
+</div>
+<div class="row collapse comment">
+    <button class="btn btn-success" id="addCommentBtn" onClick="onAddCommentClick()">Add</button>
+    <button id="hideCommentsBtn" class="btn btn-primary btn-md accordion-toggle" data-toggle="collapse" data-target=".comment">Hide comments</button>
 </div>
 
 <script type="text/javascript">
@@ -137,7 +259,7 @@
     var deletedTags = [];
     var viewModelJs = @Html.Raw(Json.Encode(Model));
     var viewModel = ko.mapping.fromJS(viewModelJs);
-    
+
     viewModel.parentChanged = ko.observable(false);
     viewModel.dependsOnChanged = ko.observable(false);
     viewModel.DeletedAR = ko.observableArray();
@@ -150,7 +272,7 @@
             viewModel.AccessRights()[i].SelfAssessmentDescr = viewModel.SelfAssessmentDescription;
         }
     }
-    
+
     viewModel.dependsOnDDText = ko.computed(function () {
         return $("#selectdependsOnIssue option[value='" + viewModel.Issue.DependsOn() + "']").text();
     });
@@ -184,8 +306,30 @@
         viewModel.Issue.Tags = ko.observableArray();
     }
 
+    //Phenomenon dashboard VM
+    viewModel.newGroupthinkNotifications = ko.computed(function(){
+        var cnt = 0;
+        for (var i = 0; i < viewModel.GroupthinkNotifications().length; i++){
+            if (viewModel.GroupthinkNotifications()[i].Read() == false){
+                cnt++;
+            }
+        }
+        return cnt;
+    });
+
+    viewModel.newGroupshiftNotifications = ko.computed(function(){
+        return 1;
+    });
+
+    viewModel.newPhenomenonNotifications = ko.computed(function(){
+        var sum = viewModel.newGroupthinkNotifications() + viewModel.newGroupshiftNotifications();
+        return sum;
+    });
+    //phenomenon dashboard VM end
+
+
     ko.applyBindings(viewModel);
-    
+
 
     renderMenues()
     makePermissions()
@@ -213,6 +357,10 @@
             for (j = 0; j < tmpVM.AccessRights[i].SelfAssessmentHistory.length; j++){
                 tmpVM.AccessRights[i].SelfAssessmentHistory[j] = viewModelJs.AccessRights[i].SelfAssessmentHistory[j];
             }
+        }
+
+        for (i = 0; i < tmpVM.Comments.length; i++){
+            tmpVM.Comments[i].Text = '';
         }
 
         ko.utils.postJson("/Issue/Creating?issueId=" + tmpVM.Issue.Id, { CreatingVM: tmpVM })
@@ -268,6 +416,117 @@
         if (viewModelJs.AccessRight == 'V'){
             $('#selectRootIssue').selectpicker('hide');
             $('#selectdependsOnIssue').selectpicker('hide');
+        }
+    }
+
+    $('.comment').on('hide.bs.collapse', function (e) {
+       $('#showCommentsBtn').show();
+        
+    })
+    $('.comment').on('show.bs.collapse	', function (e) {
+        $('#showCommentsBtn').hide();
+    })
+
+    CKEDITOR.replace('editor',
+        {
+            customConfig: '/ckeditor/config.js'
+        });
+
+    function onAddCommentClick() {
+        var txt = document.getElementById('editor');
+        var d = new Date();
+        var n = d.getTime();
+        var comment =
+                {
+                    DateTime: n,
+                    IssueId: viewModelJs.Issue.Id,
+                    UserId: 0,
+                    Type: 'Issue' + viewModelJs.Issue.Id,
+                    Text: CKEDITOR.instances['editor'].getData(),
+                    Name: 'Me'
+                }
+        $.ajax({
+            url: '@Url.Action("AddComment", "Issue")',
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(comment),
+            async: true,
+            processData: false,
+            complete: function (r) {
+                if (r.status = 200) {
+                    var cmt =
+                        {
+                            DateTime: ko.observable(n),
+                            IssueId: ko.observable(viewModelJs.Issue.Id),
+                            UserId: ko.observable(0),
+                            Type: ko.observable('Issue' + viewModelJs.Issue.Id),
+                            Text: ko.observable(CKEDITOR.instances['editor'].getData()),
+                            Name: ko.observable('Me')   
+                        }
+                    viewModel.Comments.push(cmt);
+                    CKEDITOR.instances['editor'].setData('');
+                } else {
+                    alert("Could not add the comment!");
+                }
+            }
+        })
+    }
+
+    //groupthink event
+    function onGroupthinkMakeClick(){
+        var notification = 
+            {
+                Id: -1,
+                IssueId: viewModelJs.Issue.Id,
+                UserId: 0,
+                Type: 'Groupthink',
+                Text: document.getElementById('groupthinkText').value,
+                Read: false,
+                AddedDate: 1
+            }
+        $.ajax({
+            url: '@Url.Action("AddNotification", "Issue")',
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(notification),
+            async: true,
+            processData: false,
+            complete: function (r) {
+                if (r.status = 200) {
+                    window.location.replace("#close")
+                    document.getElementById('groupthinkText').value = '';
+                    alert("notification made")
+                } else {
+                    alert("Could not add the comment!");
+                }
+            }
+        })
+    }
+
+    function onGtNotificationChange(notId){
+        var inputCheckbox = document.getElementById("gtNotification" + notId)
+        for (var i = 0; i < viewModel.GroupthinkNotifications().length; i++){
+            if (viewModel.GroupthinkNotifications()[i].Id() == notId && inputCheckbox.checked == true){
+                $.ajax({
+                    url: '/Issue/MarkNotificationAsRead?notificationId=' + notId,
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    async: true,
+                    processData: false,
+                    complete: function (r) {
+                        if (r.status != 200) {
+                            alert("Error happend!");
+                            viewModel.GroupthinkNotifications()[i].Read(false);
+                        }else{
+                            viewModel.GroupthinkNotifications()[i].Read(true);
+                        }
+                    }
+                })
+
+                break;
+            }
         }
     }
 

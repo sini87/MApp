@@ -19,6 +19,8 @@ namespace MApp.DA
         public int UserId { get; set; }
         public string Type { get; set; }
         public string Text { get; set; }
+        public Nullable<bool> Read { get; set; }
+        public Nullable<System.DateTime> AddedDate { get; set; }
     
         public virtual Issue Issue { get; set; }
         public virtual User User { get; set; }

@@ -53,19 +53,23 @@
                         </tbody>
                     </table>
                     
-                    
-                    <div data-bind="attr: { id: 'modal' + Id()}" class="modalDialog">
-                        <div>
-                            <a href="#close" title="Close" class="closemd">X</a>
-                            <h4 data-bind="text: 'Commenting ' + Name()"></h4>
-
-                            <form>
-                                <textarea data-bind="attr: { id: 'editor' + Id(), name: 'editor' + Id()}">
-                                    
-                                </textarea>
-                            </form>
-
-                            <button class="btn btn-success" data-bind="attr: { Id: 'saveCommentBtns' + Id(), onClick: 'onSaveCommentClick(' + Id() + ')'}">Save</button>
+                    <div class="modal fade" data-bind="attr: { id: 'commentModal' + Id()}" role="dialog">
+                        <div class="modal-dialog modal-lg">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="mdclose" data-dismiss="modal">&times;</button>
+                                    <label class="modal-title h4md" data-bind="text: 'Commenting ' + Name()"></label>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <textarea data-bind="attr: { id: 'editor' + Id(), name: 'editor' + Id()}"></textarea>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-primary" data-bind="attr: { Id: 'saveCommentBtns' + Id(), onClick: 'onSaveCommentClick(' + Id() + ')'}">Save</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -75,7 +79,7 @@
                         <a class="btn btn-danger btn-xs hyperlink-btn" href="#" data-bind="click: $parent.removeAlternative">Remove</a>
                     </div>
                     <div data-bind="if: Id() > 0">
-                        <a data-bind="attr: { href: '#modal' + Id(), Id: 'openModalBtn' + Id() }" class="btn btn-primary btn-xs hyperlink-btn">Add new comment</a>
+                        <button class="btn btn-primary btn-xs" data-toggle="modal" data-bind="attr: { 'data-target': '#commentModal' + Id() }">Add new comment</button>
                     </div>
                 </td>
             </tr>
@@ -86,11 +90,11 @@
 @if (Model.AccessRight == "C" || Model.AccessRight == "O")
 {
     <button id="addNewAlternative" class="btn btn-primary btn-md" onclick="onAddNewAlternativeClick()" data-bind="enable: viewModel.Issue.Status() =='BRAINSTORMING1' || viewModel.Issue.Status() =='BRAINSTORMING2'">Add new Alternative</button>
-    <button id="save" class="btn btn-success btn-md" onclick="onSaveClick()">Save</button>
+    <button id="save" class="btn btn-primary btn-md" onclick="onSaveClick()">Save</button>
 }
 @if (Model.AccessRight == "O")
 {
-    <button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.Issue.Status() != 'FINISHED' && viewModel.Issue.Status() != 'DECIDING' && viewModel.Issue.Status() != 'EVALUATING'">Next Stage</button>
+    <button id="nextstage" type="button" class="btn btn-primary" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.Issue.Status() != 'FINISHED' && viewModel.Issue.Status() != 'DECIDING' && viewModel.Issue.Status() != 'EVALUATING'">Next Stage</button>
 }
 
 
@@ -98,22 +102,6 @@
 <script>
     var viewModelJs = @Html.Raw(Json.Encode(Model));
     var viewModel = ko.mapping.fromJS(viewModelJs);
-
-    //for (var i = 0; i < viewModelJs.Alternatives.length; i++){
-    //    viewModel.Alternatives()[i].Comments = ko.observableArray();
-    //    for (var j = 0; j < viewModelJs.Alternatives[i].Comments.length; j++){
-    //        var jsComment = viewModelJs.Alternatives[i].Comments[j];
-    //        var obsComment = {
-    //            DateTime: ko.observable(jsComment.DateTime),
-    //            IssueId: ko.observable(jsComment.IssueId),
-    //            UserId: ko.observable(jsComment.UserId),
-    //            Type: ko.observable(jsComment.Alternative),
-    //            Text: ko.observable(jsComment.Text),
-    //            Name: ko.observable(jsComment.Name)
-    //        }
-    //        viewModel.Alternatives()[i].Comments().push(obsComment)
-    //    }
-    //}
 
     ko.applyBindings(viewModel);
 
@@ -203,9 +191,24 @@
                     }
 
                     CKEDITOR.instances['editor' + altId].setData('');
-                    window.location.href = '#close';
+                    $('#commentModal' + altId).modal('hide');
                 }else{
-                    alert("Could not add the comment!" );
+                    $.notify({
+                        icon: 'glyphicon glyphicon-danger-sign',
+                        title: 'System Notificaion',
+                        message: 'Something went wrong! Could not add the comment.'
+                    },{
+                        delay: 1500,
+                        type: 'danger',
+                        placement: {
+                            from: "bottom",
+                            align: "center"
+                        },
+                        animate: {
+                            enter: "animated fadeInUp",
+                            exit: "animated fadeOutDown"
+                        }
+                    });
                 }
             }
         })

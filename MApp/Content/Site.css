@@ -1,12 +1,14 @@
 ﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
+    font-family: Verdana,sans-serif;
 }
 
 /* Set padding to keep content from hitting the edges */
 .body-content {
     padding-left: 15px;
     padding-right: 15px;
+
 }
 
 /* Set width on the form input elements since they're 100% wide by default */
@@ -79,6 +81,12 @@ textarea {
     text-align: center;
     margin: auto;
   height:100%;
+}
+
+.navbar {
+    font-size: 17px;
+    letter-spacing: 1px;
+    font-family: "Segoe UI",Arial,sans-serif;
 }
 
 .table-nonfluid {
@@ -181,6 +189,10 @@ textarea {
     text-align: center;
 }
 
+.table {
+    background-color: #F9F9F9;
+}
+
 .hyperlink-btn {
     margin: 5px 0;
 }
@@ -247,10 +259,6 @@ textarea {
     overflow-y: scroll;
 }
 
-.modalDialotNotification{
-    width: 300px;
-}
-
 .modalDialog .datecolumn{
     width:112px;
 }
@@ -262,8 +270,8 @@ textarea {
 
 .modalDialog > div {
 	width: 600px;
-    width: auto;
     max-width: 800px;
+    min-width: 300px;
 	position: relative;
 	margin: 10% auto;
 	padding: 5px 20px 13px 20px;
@@ -372,3 +380,57 @@ textarea {
     cursor: pointer;
     text-decoration:none;
 }
+
+/*Bootstrap Modal*/
+.mdclose{
+    background-position: 0px 0px;
+    border-collapse: collapse;
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    display: block;
+    float: right;
+    height: 21px;
+    opacity: 0.2;
+    text-shadow: rgb(255, 255, 255) 0px 1px 0px;
+    width: 12.2656px;
+    z-index: 0;
+    column-rule-color: rgb(255, 255, 255);
+    perspective-origin: 6.125px 10.5px;
+    transform-origin: 6.125px 10.5px;
+    background: rgba(0, 0, 0, 0) none repeat scroll 0px 0px / auto padding-box border-box;
+    border: 0px none rgb(255, 255, 255);
+    font: normal normal bold normal 21px / 21px 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin: -2px 0px 0px;
+    outline: rgb(255, 255, 255) none 0px;
+    padding: 0px;
+}
+
+.mdclose:hover{
+    opacity: .5;
+}
+
+.h4md {
+    box-sizing: border-box;
+    height: 19px;
+    width: 396px;
+    column-rule-color: rgb(51, 51, 51);
+    perspective-origin: 198px 9.5px;
+    transform-origin: 198px 9.5px;
+    border: 0px none rgb(51, 51, 51);
+    font: normal normal 500 normal 18px / 19.8px 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin: 10px 0px;
+    outline: rgb(51, 51, 51) none 0px;
+}
+
+.modal-header, h4md {
+      background-color: #5cb85c;
+      color:white !important;
+      text-align: center;
+      font-size: 30px;
+  }
+
+.anchor:hover {
+    cursor: pointer;
+    text-decoration:none;
+}
+/*Bootstrap Modal end*/

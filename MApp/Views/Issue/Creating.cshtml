@@ -100,37 +100,49 @@
             
             @*Groupthink notifications*@
             <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() == 'O'">
-                <a class="phenomenon-link" href="#groupThinkAllNotModalDialog">Groupthink notifications</a>
+                <a class="phenomenon-link" data-toggle="modal" data-target="#groupThinkAllNotModalDialog">Grouphtink notifications</a>
                 <span class="label label-default phenomenon-badge" data-bind="text: viewModel.newGroupthinkNotifications"></span>
-                <div id="groupThinkAllNotModalDialog" class="modalDialog">
-                    <div>
-                        <a href="#close" title="Close" class="closemd">X</a>
-                        <h4>Groupthink notifications</h4>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <td class="datecolumn">Date</td>
-                                    <td>Description</td>
-                                    <td>Read</td>
-                                </tr>
-                            </thead>
-                            <tbody data-bind="foreach: viewModel.GroupthinkNotifications">
-                                <tr>
-                                    <td data-bind="text: moment(AddedDate()).format('DD.MM.YY HH:mm')"></td>
-                                    <td data-bind="text: Text"></td>
-                                    <td>
-                                        <!-- ko if: !Read() -->
-                                            <input type="checkbox" data-bind="checked: Read, attr: { id: 'gtNotification' + Id(), onClick: 'onGtNotificationChange(' + Id() + ')'}" />
-                                        <!-- /ko -->
-                                        <!-- ko if: Read() -->
-                                            <input type="checkbox" data-bind="checked: Read" disabled />
-                                        <!-- /ko -->
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <div class="modal fade" id="groupThinkAllNotModalDialog" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Groupthink notifications</h4>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <td class="datecolumn">Date</td>
+                                            <td>Description</td>
+                                            <td>Read</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach: viewModel.GroupthinkNotifications">
+                                        <tr>
+                                            <td data-bind="text: moment(AddedDate()).format('DD.MM.YY HH:mm')"></td>
+                                            <td data-bind="text: Text"></td>
+                                            <td class="td-center-top">
+                                                <!-- ko if: !Read() -->
+                                                <input type="checkbox" data-bind="checked: Read, attr: { id: 'gtNotification' + Id(), onClick: 'onGtNotificationChange(' + Id() + ')'}" />
+                                                <!-- /ko -->
+                                                <!-- ko if: Read() -->
+                                                <input type="checkbox" data-bind="checked: Read" disabled />
+                                                <!-- /ko -->
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                
+                            </div>
+                        </div>
+
                     </div>
                 </div>
+
             </div>
 
             @*Groupshift notifications*@
@@ -138,19 +150,31 @@
             
             @*make groupthink notification only for contributors*@
             <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() == 'C'">
-                <a class="phenomenon-link" href="#groupThinkModalDialog">Make Groupthink notification</a>
-                <div id="groupThinkModalDialog" class="modalDialog">
-                    <div>
-                        <a href="#close" title="Close" class="closemd">X</a>
-                        <h4>Make Groupthink notification to issue owner</h4>
-                        <div class="form-group">
-                            <textarea id="groupthinkText"></textarea>
+                <a class="phenomenon-link" data-toggle="modal" data-target="#makeGTNotifDialog">Make Groupthink notification</a>
+                <div class="modal fade" id="makeGTNotifDialog" role="dialog">
+                    <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Make Groupthink notification to issue owner</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <textarea id="groupthinkText" class="form-control textarea-desc" rows="5"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button id="groupthinkMake" onclick="onGroupthinkMakeClick()" class="btn btn-success">Make notification</button>
+                            </div>
                         </div>
-                        <button id="groupthinkMake" onclick="onGroupthinkMakeClick()" class="btn btn-success">Make notification</button>
+
                     </div>
                 </div>
             </div>
-        </div>
+
+        </div> <!-- phenomenon end-->
 
         <div>
             <label for="tokenfield">Issue Tags</label>
@@ -179,30 +203,39 @@
                 <tbody data-bind="foreach: viewModel.AccessRights">
                     <tr>
                         <td>
-                            <a data-bind="text: Name, attr: { href: '#modal' + UserId() }"></a>
-                            <div data-bind="attr: { id: 'modal' + UserId()}" class="modalDialog">
-                                <div>
-                                    <a href="#close" title="Close" class="closemd">X</a>
-                                    <h4 data-bind="text: Name() + ' - Selfassessment'"></h4>
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <td class="datecolumn">Date</td>
-                                                <td>Value</td>
-                                                <td>Description</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody data-bind="foreach: SelfAssessmentHistory">
-                                            <tr>
-                                                <td data-bind="text: moment(ChangeDate()).format('DD.MM.YY HH:mm')"></td>
-                                                <td data-bind="text: SelfAssessmentValue"></td>
-                                                <td data-bind="text: SelfAssessmentDescr"></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                            <a class="anchor" data-toggle="modal" data-bind="text: Name, attr: { 'data-target': '#selfassessmentMD' + UserId() }"></a>
+                            <div class="modal fade" data-bind="attr: { id: 'selfassessmentMD' + UserId() }" role="dialog">
+                                <div class="modal-dialog">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="mdclose" data-dismiss="modal">&times;</button>
+                                            <label class="modal-title h4md" data-bind="text: Name() + ' selfassessment changes'"></label>
+                                        </div>
+                                        <div class="modal-body">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <td class="datecolumn">Date</td>
+                                                        <td>Value</td>
+                                                        <td>Description</td>
+                                                    </tr>
+                                                </thead>
+                                                <tbody data-bind="foreach: SelfAssessmentHistory">
+                                                    <tr>
+                                                        <td data-bind="text: moment(ChangeDate()).format('DD.MM.YY HH:mm')"></td>
+                                                        <td data-bind="text: SelfAssessmentValue"></td>
+                                                        <td data-bind="text: SelfAssessmentDescr"></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </td>
+
                         <td data-bind="text: Right"></td>
                         <td class="td-center-top">
                             <div class="ttip">
@@ -220,10 +253,10 @@
 </div>
 
 <div class="row">
-    <button id="save" type="button" class="btn btn-success" onclick="javascript: onSaveClick()" data-bind="visible: viewModelJs.AccessRight == 'O' || viewModelJs.AccessRight == 'C'">Save</button>
-    <button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.AccessRight() == 'O', enable: viewModelJs.Issue.Id != -1">Next Stage</button>
-    <button id="delete" type="button" class="btn btn-danger" onclick="javascript: onDeleteClick()" data-bind="visible: viewModelJs.AccessRight == 'O', enable: viewModelJs.Issue.Id != -1">Delete</button>
+    <button id="save" type="button" class="btn btn-primary" onclick="javascript: onSaveClick()" data-bind="visible: viewModelJs.AccessRight == 'O' || viewModelJs.AccessRight == 'C'">Save</button>
+    <button id="nextstage" type="button" class="btn btn-primary" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.AccessRight() == 'O', enable: viewModelJs.Issue.Id != -1">Next Stage</button>
     <button id="showCommentsBtn" class="btn btn-primary btn-md accordion-toggle" data-toggle="collapse" data-target=".comment" data-bind="enable: viewModelJs.Issue.Id != -1">Show comments</button>
+    <button id="delete" type="button" class="btn btn-danger" onclick="javascript: onDeleteClick()" data-bind="visible: viewModelJs.AccessRight == 'O', enable: viewModelJs.Issue.Id != -1">Delete</button>
 </div>
 
 <div class="row collapse comment">
@@ -250,7 +283,7 @@
     <br />
 </div>
 <div class="row collapse comment">
-    <button class="btn btn-success" id="addCommentBtn" onClick="onAddCommentClick()">Add</button>
+    <button class="btn btn-primary" id="addCommentBtn" onClick="onAddCommentClick()">Add</button>
     <button id="hideCommentsBtn" class="btn btn-primary btn-md accordion-toggle" data-toggle="collapse" data-target=".comment">Hide comments</button>
 </div>
 
@@ -495,11 +528,42 @@
             processData: false,
             complete: function (r) {
                 if (r.status = 200) {
-                    window.location.replace("#close")
+                    $('#makeGTNotifDialog').modal('hide');
                     document.getElementById('groupthinkText').value = '';
-                    alert("notification made")
+                    
+                    $.notify({
+                        icon: 'glyphicon glyphicon-info-sign',
+                        title: '<strong>System Notificaion</strong>',
+                        message: 'Issue owner is notified!'
+                    },{
+                        delay: 1500,
+                        placement: {
+                            from: "bottom",
+                            align: "center"
+                        },
+                        animate: {
+                            enter: "animated fadeInUp",
+                            exit: "animated fadeOutDown"
+                        }
+                    });
+                    
                 } else {
-                    alert("Could not add the comment!");
+                    $.notify({
+                        icon: 'glyphicon glyphicon-danger-sign',
+                        title: 'System Notificaion',
+                        message: 'Something went wrong!'
+                    },{
+                        delay: 1500,
+                        type: 'danger',
+                        placement: {
+                            from: "bottom",
+                            align: "center"
+                        },
+                        animate: {
+                            enter: "animated fadeInUp",
+                            exit: "animated fadeOutDown"
+                        }
+                    });
                 }
             }
         })
@@ -528,6 +592,11 @@
                 break;
             }
         }
+    }
+
+    function addAlert(message, alertType) {
+        $('#alerts').append(
+            '<div class="alert ' + alertType + '">' + message + '</div>');
     }
 
     $(document).ready(function () {

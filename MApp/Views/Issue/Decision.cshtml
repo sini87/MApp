@@ -61,12 +61,12 @@ else
     </div>
     if (Model.Issue.Status != "FINISHED")
     {
-        <button id="save" type="button" class="btn btn-success" onclick="javascript: onSaveClick()">Make Decision</button>
+        <button id="save" type="button" class="btn btn-primary" onclick="javascript: onSaveClick()">Make Decision</button>
     }
     else
     {
-        <button id="makeDecisionBtn" type="button" class="btn btn-success" onclick="javascript: onSaveClick()" data-bind="visible: viewModel.overthink">Overthink Decision</button>
-        <button id="updateDecisionBtn" type="button" class="btn btn-success" onclick="javascript: onUpdateClick()" data-bind="visible: viewModel.update">Update Explanation</button>
+        <button id="makeDecisionBtn" type="button" class="btn btn-primary" onclick="javascript: onSaveClick()" data-bind="visible: viewModel.overthink">Overthink Decision</button>
+        <button id="updateDecisionBtn" type="button" class="btn btn-primary" onclick="javascript: onUpdateClick()" data-bind="visible: viewModel.update">Update Explanation</button>
     }
 }
 else

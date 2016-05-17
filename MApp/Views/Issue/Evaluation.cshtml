@@ -41,11 +41,11 @@
         </tbody>
     </table>
 
-    <button id="save" onclick="onClickSave()" class="btn btn-success btn-md">save</button>
+    <button id="save" onclick="onClickSave()" class="btn btn-primary btn-md">save</button>
 }
 @if (Model.AccessRight == "O")
 {
-    <button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()">Next Stage</button>
+    <button id="nextstage" type="button" class="btn btn-primary" onclick="javascript: onNextStageClick()">Next Stage</button>
 }
 
 @if (Model.RatedUsers.Count > 0)

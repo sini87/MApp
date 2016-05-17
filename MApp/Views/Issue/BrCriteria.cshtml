@@ -52,16 +52,23 @@
                         </tbody>
                     </table>
 
-                    <div data-bind="attr: { id: 'modal' + Id()}" class="modalDialog">
-                        <div>
-                            <a href="#close" title="Close" class="closemd">X</a>
-                            <h4 data-bind="text: 'Commenting ' + Name()"></h4>
-
-                            <form>
-                                <textarea data-bind="attr: { id: 'editor' + Id(), name: 'editor' + Id()}"></textarea>
-                            </form>
-
-                            <button class="btn btn-success" data-bind="attr: { Id: 'saveCommentBtns' + Id(), onClick: 'onSaveCommentClick(' + Id() + ')'}">Save</button>
+                    <div class="modal fade" data-bind="attr: { id: 'commentModal' + Id()}" role="dialog">
+                        <div class="modal-dialog modal-lg">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="mdclose" data-dismiss="modal">&times;</button>
+                                    <label class="modal-title h4md" data-bind="text: 'Commenting ' + Name()"></label>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <textarea data-bind="attr: { id: 'editor' + Id(), name: 'editor' + Id()}"></textarea>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-primary" data-bind="attr: { Id: 'saveCommentBtns' + Id(), onClick: 'onSaveCommentClick(' + Id() + ')'}">Save</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -69,7 +76,7 @@
                 <td align="center" class="commenttable-btncol">
                     <button class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeCriterion, visible: viewModel.AccessRight() != 'V', enable: viewModel.Issue.Status() =='BRAINSTORMING1'">Remove</button>
                     <div data-bind="if: Id() > 0">
-                        <a data-bind="attr: { href: '#modal' + Id(), Id: 'openModalBtn' + Id() }" class="btn btn-primary btn-xs hyperlink-btn">Add new comment</a>
+                        <button class="btn btn-primary btn-xs" data-toggle="modal" data-bind="attr: { 'data-target': '#commentModal' + Id() }">Add new comment</button>
                     </div>
                 </td>
             </tr>
@@ -81,11 +88,11 @@
 @if (Model.AccessRight == "C" || Model.AccessRight == "O")
 {
     <button id="addNewCriterion" class="btn btn-primary btn-md" onclick="onAddNewCriterionClick()" data-bind="enable: viewModel.Issue.Status() == 'BRAINSTORMING1'">Add new Criterion</button>
-    <button id="save" class="btn btn-success btn-md" onclick="onSaveClick()">Save</button>
+    <button id="save" class="btn btn-primary btn-md" onclick="onSaveClick()">Save</button>
 }
 @if (Model.AccessRight == "O")
 {
-    <button id="nextstage" type="button" class="btn btn-success" onclick="javascript: onNextStageClick()">Next Stage</button>
+    <button id="nextstage" type="button" class="btn btn-primary" onclick="javascript: onNextStageClick()">Next Stage</button>
 }
 
 
@@ -181,9 +188,24 @@
                     }
 
                     CKEDITOR.instances['editor' + critId].setData('');
-                    window.location.href = '#close';
+                    $('#commentModal' + critId).modal('hide');
                 } else {
-                    alert("Could not add the comment!");
+                    $.notify({
+                        icon: 'glyphicon glyphicon-danger-sign',
+                        title: 'System Notificaion',
+                        message: 'Something went wrong! Cloud not add the comment.'
+                    }, {
+                        delay: 1500,
+                        type: 'danger',
+                        placement: {
+                            from: "bottom",
+                            align: "center"
+                        },
+                        animate: {
+                            enter: "animated fadeInUp",
+                            exit: "animated fadeOutDown"
+                        }
+                    });
                 }
             }
         })

@@ -48,10 +48,38 @@
     <h4>you are not allowed to vote!</h4>
 }
 
-
 <button id="save" class="btn btn-primary btn-md" onclick="onSaveClick()" data-bind="enable: viewModel.PercentSum() == 100, visible: viewModelJs.AccessRight != 'V'">Save</button>
 <button id="next" class="btn btn-primary btn-md" onclick="onNextStageClick()" data-bind="enable: viewModel.PercentSum() == 100, visible: viewModelJs.AccessRight == 'O'">Next Stage</button>
 
+@if (Model.OtherWeights.Count() == 0)
+{
+    <h4>No votes yet!</h4>
+}
+else
+{
+    <table id="critRatingTab" class="table table-hover table-striped table-condensed table-nonfluid">
+        <thead>
+            <th>User</th>
+            <!-- ko foreach: viewModel.UserWeights -->
+                <th data-bind="text: Name"></th>
+            <!-- /ko -->
+        </thead>
+        <tbody>
+            <!-- ko foreach: viewModel.VotedUsers -->
+                <tr>
+                    <td data-bind="text: Name"></td>
+                    <!-- ko foreach: UserCriterionWeights -->
+                        <td data-bind="text: Weight().toFixed(2) + ' %'"></td>
+                    <!-- /ko -->
+                </tr>
+            <!-- /ko -->
+        </tbody>
+    </table>
+}
+
+
+<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+<script src="~/signalr/hubs"></script>
 <script>
     var viewModelJs = @Html.Raw(Json.Encode(Model));
     var viewModel = ko.mapping.fromJS(viewModelJs);
@@ -114,7 +142,64 @@
         ko.utils.postJson("/Issue/NextStage", { issueId: viewModel.Issue.Id, status: viewModel.Issue.Status })
     };
 
-    function onAddCommentClick() {
+    //SignalR
+    $(function () {
+        var notificationHub = $.connection.notificationHub;
+        // Create a function that the hub can call back to display messages.
+        notificationHub.client.updateCriteriaWeights = function (weights, user) {
+            if (viewModel.UserId() != user.Id){
+                var result = $.grep(viewModel.VotedUsers(), function (e) { return e.UserId() == user.Id; });
+                //new vote
+                if (result.length == 0) {
+                    var obsW = ko.observableArray()
+                    for(var i = 0; i < weights.length; i++){
+                        var v = {
+                            UserId: ko.observable(user.Id),
+                            CriterionId: ko.observable(weights[i].CriterionId),
+                            Weight: ko.observable(weights[i].Weight),
+                            Name: ko.observable(user.Name)
+                        }
+                        obsW.push(v)
+                    }
+                    var userWithCW = {
+                        UserId: ko.observable(user.Id),
+                        Name: ko.observable(user.Name),
+                        UserCriterionWeights: obsW
+                    }
+                    viewModel.VotedUsers.push(userWithCW)
 
-    }
+                    $.notify({
+                        icon: 'glyphicon glyphicon-info-sign',
+                        title: 'System Notificaion',
+                        message: user.Name + ' has weighted!'
+                    },{
+                        delay: notDelay,
+                        type: 'info',
+                        placement: notPlacementCorner,
+                        animate: notAnimateCorner
+                    });
+                }else{ //vote updated
+                    var userWithCW = result[0]
+                    for(var i = 0; i < weights.length; i++){
+                        userWithCW.UserCriterionWeights()[i].Weight(parseFloat(weights[i].Weight))
+                    }
+
+                    $.notify({
+                        icon: 'glyphicon glyphicon-info-sign',
+                        title: 'System Notificaion',
+                        message: user.Name + ' has updated weights!'
+                    },{
+                        delay: notDelay,
+                        type: 'info',
+                        placement: notPlacementCorner,
+                        animate: notAnimateCorner
+                    });
+                }
+            }
+        };
+        
+        $.connection.hub.start().done(function () {
+            
+        });
+    })
 </script>

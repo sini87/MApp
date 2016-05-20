@@ -841,6 +841,7 @@
     <Compile Include="Hubs\AlternativeHub.cs" />
     <Compile Include="Hubs\CommentHub.cs" />
     <Compile Include="Hubs\CriterionHub.cs" />
+    <Compile Include="Hubs\NotificationHub.cs" />
     <Compile Include="ViewModel\BrAlternativesVM.cs" />
     <Compile Include="ViewModel\BrCriteriaVM.cs" />
     <Compile Include="ViewModel\CriteriaWeightsVM.cs" />

@@ -216,6 +216,17 @@ namespace MApp.Web.Controllers
             vm.Issue = ic.GetIssue(issueId);
             vm.UserWeights = icw.GetUserWeights(issueId, userId);
             vm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
+            vm.OtherWeights = icw.GetIssueWeights(issueId, userId);
+            vm.VotedUsers = new List<UserWithCW>();
+            vm.UserId = userId;
+            int i = 0;
+            foreach (List<CriterionWeightModel> cwmL in vm.OtherWeights)
+            {
+                vm.VotedUsers.Add(new UserWithCW(cwmL.FirstOrDefault().UserId, cwmL.FirstOrDefault().Name));
+                vm.VotedUsers[i].UserCriterionWeights = vm.OtherWeights[i];
+                i++;
+            }
+
             return View(vm);
         }
 
@@ -224,6 +235,10 @@ namespace MApp.Web.Controllers
         {
             IssueCriterionWeight icw = new IssueCriterionWeight();
             icw.SaveCriterionWeights(criteriaWeightsVM.UserWeights, criteriaWeightsVM.Issue.Id, GetUserIdFromClaim());
+
+            var context = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+            context.Clients.All.updateCriteriaWeights(criteriaWeightsVM.UserWeights, new UserShortModel(criteriaWeightsVM.UserId, GetUserNameFromClaim()));
+
             return View(criteriaWeightsVM);
         }
 

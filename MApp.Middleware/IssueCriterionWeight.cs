@@ -37,7 +37,7 @@ namespace MApp.Middleware
             {
                 cwm.Name = cList.Where(x => x.Id == cwm.CriterionId).FirstOrDefault().Name;
             }
-            return list;
+            return list.OrderBy(x => x.CriterionId).ToList();
         }
 
         public void SaveCriterionWeights(List<CriterionWeightModel> criteriaWeights, int issueId, int userId)
@@ -45,6 +45,32 @@ namespace MApp.Middleware
             CriterionWeightModel cwm = new CriterionWeightModel();
             List<CriterionWeight> entityList = cwm.ToEntityList(criteriaWeights);
             CriterionWeightOp.SaveCriterionWeights(entityList, issueId, userId);
+        }
+
+        public List<CriterionWeightModel>[] GetIssueWeights(int issueId, int userId)
+        {
+            CriterionWeightModel cwm = new CriterionWeightModel();
+            List<CriterionWeightModel> allWeightsList = cwm.ToModelList(CriterionWeightOp.GetIssueWeights(issueId, userId), cwm);
+            allWeightsList = allWeightsList.Where(x => x.UserId != userId).ToList() ;
+            IssueCreating ic = new IssueCreating();
+            List<UserShortModel> allUsers = ic.GetAllUsers();
+            List<int> distinctUsers = allWeightsList.GroupBy(x => x.UserId).Select(grp => grp.First()).Select(x => x.UserId).ToList();
+            List<CriterionWeightModel>[] arrayList = new List<CriterionWeightModel>[distinctUsers.Count];
+
+            int cnt = 0;
+            foreach(int uId in distinctUsers)
+            {
+                arrayList[cnt] = new List<CriterionWeightModel>();
+                string name = allUsers.Where(x => x.Id == uId).FirstOrDefault().Name;
+                foreach(CriterionWeightModel model in allWeightsList.Where(x => x.UserId == uId).OrderBy(x => x.CriterionId))
+                {
+                    model.Name = name;
+                    arrayList[cnt].Add(model);
+                }
+                cnt++;
+            }
+
+            return arrayList;
         }
     }
 }

@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-
-namespace MApp.App_Start
+[assembly: OwinStartup(typeof(MApp.Web.App_Start.Startup))]
+namespace MApp.Web.App_Start
 {
     public class Startup
     {
@@ -17,6 +17,7 @@ namespace MApp.App_Start
                 AuthenticationType = "ApplicationCookie",
                 LoginPath = new PathString("/auth/login")
             });
+            app.MapSignalR();
         }
     }
 }

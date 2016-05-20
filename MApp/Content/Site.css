@@ -439,3 +439,14 @@ textarea {
   position: absolute;
   left: 285px;
 }
+
+/**notification style*/
+[data-notify="title"] {
+	color: black;
+	font-weight: bold;
+    display: inline-block;
+    font-size: 110%;
+}
+[data-notify="message"] {
+	font-size: 100%;
+}

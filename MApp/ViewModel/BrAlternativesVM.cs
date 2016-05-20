@@ -12,5 +12,6 @@ namespace MApp.Web.ViewModel
         public List<AlternativeModel> Alternatives { get; set; }
         public List<int> DeletedAlternatives { get; set; }
         public string AccessRight { get; set; }
+        public int UserId { get; set; }
     }
 }

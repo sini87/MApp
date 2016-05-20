@@ -1,8 +1,10 @@
 ﻿using MApp.Middleware;
 using MApp.Middleware.Models;
 using MApp.Web.CustomLibraries;
+using MApp.Web.Hubs;
 using MApp.Web.Models;
 using MApp.Web.ViewModel;
+using Microsoft.AspNet.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +22,13 @@ namespace MApp.Web.Controllers
             var claimsIdentity = User.Identity as ClaimsIdentity;
             int userId = Convert.ToInt32(claimsIdentity.FindFirst(ClaimTypes.SerialNumber).Value);
             return userId;
+        }
+
+        private string GetUserNameFromClaim()
+        {
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            string username = claimsIdentity.FindFirst(ClaimTypes.Name).Value;
+            return username;
         }
 
         // GET: Issue
@@ -164,6 +173,7 @@ namespace MApp.Web.Controllers
             IssueBrAlternative iba = new IssueBrAlternative();
             vm.Alternatives = iba.GetIssueAlternatives(issueId, userId);
             vm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
+            vm.UserId = userId;
             return View(vm);
         }
 
@@ -264,6 +274,12 @@ namespace MApp.Web.Controllers
 
             IssueCreating ic = new IssueCreating();
             ic.AddCommentToAlternative(commentModel, GetUserIdFromClaim());
+
+            commentModel.UserId = GetUserIdFromClaim();
+            commentModel.Name = GetUserNameFromClaim();
+            var context = GlobalHost.ConnectionManager.GetHubContext<CommentHub>();
+            context.Clients.All.addNewCommentToAlternative(commentModel);
+
             return new HttpResponseMessage();
         }
 

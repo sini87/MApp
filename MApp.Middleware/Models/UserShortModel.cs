@@ -18,11 +18,19 @@ namespace MApp.Middleware.Models
         [Required]
         [DisplayName("Last Name")]
         public string LastName { get; set; }
+        private string name = null;
         public string Name
         {
             get
             {
-                return FirstName + " " + LastName;
+                if (name == null)
+                {
+                    return FirstName + " " + LastName;
+                }else
+                {
+                    return name;
+                }
+                
             }
         }
 
@@ -36,6 +44,12 @@ namespace MApp.Middleware.Models
             Id = id;
             FirstName = firstName;
             LastName = lastName;
+        }
+
+        public UserShortModel(int id, string name)
+        {
+            Id = id;
+            this.name = name;
         }
     }
 }

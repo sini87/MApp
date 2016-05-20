@@ -14,9 +14,9 @@ namespace MApp.Web.Hubs
             Clients.All.hello();
         }
 
-        public void AddNewCommentToAlternative(CommentModel comment)
+        public void AddNewComment(CommentModel comment)
         {
-            Clients.All.addNewCommentToAlternative(comment);
+            Clients.All.addNewComment(comment);
         }
     }
 }

@@ -193,6 +193,11 @@ textarea {
     background-color: #F9F9F9;
 }
 
+.table .label {
+    font-size: 12px;
+    color: black;
+}
+
 .hyperlink-btn {
     margin: 5px 0;
 }

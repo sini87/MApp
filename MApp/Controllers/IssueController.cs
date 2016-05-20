@@ -150,6 +150,7 @@ namespace MApp.Web.Controllers
             IssueBrCriteria ibc = new IssueBrCriteria();
             viewModel.IssueCriteria = ibc.GetIssueCriteria(issueId, userId);
             viewModel.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
+            viewModel.UserId = userId;
             return View(viewModel);
         }
 
@@ -159,6 +160,15 @@ namespace MApp.Web.Controllers
             IssueBrCriteria ibc = new IssueBrCriteria();
             ibc.UpdateCriteria(brCriteriaVM.IssueCriteria, brCriteriaVM.DeletedCriteria, GetUserIdFromClaim());
             brCriteriaVM.IssueCriteria = ibc.GetIssueCriteria(brCriteriaVM.Issue.Id, GetUserIdFromClaim());
+
+            UserShortModel user = new UserShortModel(brCriteriaVM.UserId, GetUserNameFromClaim());           
+            var context = GlobalHost.ConnectionManager.GetHubContext<CriterionHub>();            
+            context.Clients.All.updateCriteria(brCriteriaVM.IssueCriteria, user);
+            if (brCriteriaVM.DeletedCriteria != null && brCriteriaVM.DeletedCriteria.Count > 0)
+            {
+                context.Clients.All.deleteCriteria(brCriteriaVM.DeletedCriteria, user);
+            }
+
             brCriteriaVM.DeletedCriteria = new List<int>();
             return View(brCriteriaVM);
         }
@@ -184,6 +194,15 @@ namespace MApp.Web.Controllers
             int userId = GetUserIdFromClaim();
             iba.UpdateAlternatives(brAlternativesVM.Alternatives, brAlternativesVM.DeletedAlternatives, userId);
             brAlternativesVM.Alternatives = iba.GetIssueAlternatives(brAlternativesVM.Issue.Id, userId);
+
+            UserShortModel user = new UserShortModel(brAlternativesVM.UserId, GetUserNameFromClaim());
+            var context = GlobalHost.ConnectionManager.GetHubContext<AlternativeHub>();
+            context.Clients.All.updateAlternatives(brAlternativesVM.Alternatives, user);
+            if (brAlternativesVM.DeletedAlternatives != null && brAlternativesVM.DeletedAlternatives.Count > 0)
+            {
+                context.Clients.All.deleteAlternatives(brAlternativesVM.DeletedAlternatives, user);
+            }
+
             brAlternativesVM.DeletedAlternatives = new List<int>();
             return View(brAlternativesVM);
         }
@@ -278,7 +297,7 @@ namespace MApp.Web.Controllers
             commentModel.UserId = GetUserIdFromClaim();
             commentModel.Name = GetUserNameFromClaim();
             var context = GlobalHost.ConnectionManager.GetHubContext<CommentHub>();
-            context.Clients.All.addNewCommentToAlternative(commentModel);
+            context.Clients.All.addNewComment(commentModel);
 
             return new HttpResponseMessage();
         }

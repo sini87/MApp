@@ -35,7 +35,9 @@
                     {
                         <p data-bind="text: Description"></p>
                     }
-                        
+                    
+                    <label data-bind="text: 'Comments: ' + Comments().length" class="label"></label>
+                       
                     <table class="commenttable" data-bind="attr: { style: Comments().length == 0 ? 'display:none' : 'display:table'}">
                         <tr class="hiddenRow collapse comment commenttable-th">
                             <th class="commenttable-usercol">User</th>
@@ -221,4 +223,128 @@
             collapsed = true;
         }
     }
+</script>
+
+@* SignalR *@
+<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+<script src="~/signalr/hubs"></script>
+<script>
+    $(function () {
+        // Reference the auto-generated proxy for the hub.
+        var commentHub = $.connection.commentHub;
+        // Create a function that the hub can call back to display messages.
+        commentHub.client.addNewComment = function (comment) {
+            if (comment.Type.startsWith('Criterion') && comment.UserId != viewModelJs.UserId){
+                var strId = comment.Type.replace("Criterion","")
+                var id = parseInt(strId)
+                for (var i = 0; i < viewModel.IssueCriteria().length; i++) {
+                    var crit = viewModel.IssueCriteria()[i]
+                    if (crit.Id() == id){
+                        comment.DateTime = ko.observable(comment.DateTime)
+                        crit.Comments.push(comment)
+
+                        $.notify({
+                            icon: 'glyphicon glyphicon-info-sign',
+                            title: 'System Notificaion',
+                            message: 'Comment was added to ' + crit.Name() + '!'
+                        },{
+                            delay: notDelay,
+                            type: 'info',
+                            placement: notPlacementCorner,
+                            animate: notAnimateCorner
+                        });
+                    }
+                }
+            }
+
+        };
+
+        //signalR CriteronHub
+        var criterionHub = $.connection.criterionHub;
+        criterionHub.client.deleteCriteria = function (criteria, user) {
+            if (viewModel.UserId() != user.Id) {
+                for (var i = 0; i < criteria.length; i++) {
+                    var id = criteria[i]
+                    var result = $.grep(viewModel.IssueCriteria(), function (e) { return e.Id() == id; });
+                    if (result.length == 1) {
+                        var crit = viewModel.IssueCriteria.remove(function (item) {
+                            return item.Id() == id;
+                        });
+
+                        $.notify({
+                            icon: 'glyphicon glyphicon-info-sign',
+                            title: 'System Notificaion',
+                            message: crit[0].Name() + ' was deleted by ' + user.Name + '!'
+                        }, {
+                            delay: notDelay,
+                            type: 'info',
+                            placement: notPlacementCorner,
+                            animate: notAnimateCorner
+                        });
+                    }
+                }
+            }
+        }
+
+        criterionHub.client.updateCriteria = function (criteria, user) {
+            if (viewModel.UserId() != user.Id) {
+                for (var i = 0; i < criteria.length; i++) {
+                    var uCrit = criteria[i]
+                    var result = $.grep(viewModel.IssueCriteria(), function (e) { return e.Id() == uCrit.Id; });
+                    if (result.length == 0) {
+                        var newCrit = {
+                            Id: ko.observable(uCrit.Id),
+                            Name: ko.observable(uCrit.Name),
+                            Description: ko.observable(uCrit.Description),
+                            IssueId: ko.observable(viewModel.Issue.Id),
+                            Weigh: ko.observable(0),
+                            WeightPC: ko.observable(0),
+                            Comments: ko.observableArray()
+                        }
+                        viewModel.IssueCriteria.push(newCrit)
+
+                        $.notify({
+                            icon: 'glyphicon glyphicon-info-sign',
+                            title: 'System Notificaion',
+                            message: newCrit.Name() + ' was added by ' + user.Name + '!'
+                        }, {
+                            delay: notDelay,
+                            type: 'info',
+                            placement: notPlacementCorner,
+                            animate: notAnimateCorner
+                        });
+                    } else if (result.length == 1) {
+                        var updated = false;
+                        var oldCrit = result[0]
+                        var name = oldCrit.Name()
+                        if (oldCrit.Name() != uCrit.Name) {
+                            oldCrit.Name(uCrit.Name)
+                            updated = true;
+                        }
+                        if (oldCrit.Description() != uCrit.Description) {
+                            oldCrit.Description(uCrit.Description)
+                            updated = true;
+                        }
+
+                        if (updated) {
+                            $.notify({
+                                icon: 'glyphicon glyphicon-info-sign',
+                                title: 'System Notificaion',
+                                message: name + ' was updated by ' + user.Name + '!'
+                            }, {
+                                delay: notDelay,
+                                type: 'info',
+                                placement: notPlacementCorner,
+                                animate: notAnimateCorner
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        $.connection.hub.start().done(function () {
+
+        });
+    });
 </script>

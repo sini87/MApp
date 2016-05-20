@@ -235,7 +235,7 @@
         // Reference the auto-generated proxy for the hub.
         var commentHub = $.connection.commentHub;
         // Create a function that the hub can call back to display messages.
-        commentHub.client.addNewCommentToAlternative = function (comment) {
+        commentHub.client.addNewComment = function (comment) {
             if (comment.Type.startsWith('Alternative') && comment.UserId != viewModelJs.UserId){
                 var strId = comment.Type.replace("Alternative","")
                 var id = parseInt(strId)
@@ -260,7 +260,91 @@
             }
                 
         };
-            
+        
+        //signalR AlternativeHub
+        var alternativeHub = $.connection.alternativeHub;
+        alternativeHub.client.deleteAlternatives = function (alternatives, user) {
+            if (viewModel.UserId() != user.Id) {
+                for (var i = 0; i < alternatives.length; i++) {
+                    var id = alternatives[i]
+                    var result = $.grep(viewModel.Alternatives(), function (e) { return e.Id() == id; });
+                    if (result.length == 1) {
+                        var alt = viewModel.Alternatives.remove(function (item) {
+                            return item.Id() == id;
+                        });
+
+                        $.notify({
+                            icon: 'glyphicon glyphicon-info-sign',
+                            title: 'System Notificaion',
+                            message: alt[0].Name() + ' was deleted by ' + user.Name + '!'
+                        }, {
+                            delay: notDelay,
+                            type: 'info',
+                            placement: notPlacementCorner,
+                            animate: notAnimateCorner
+                        });
+                    }
+                }
+            }
+        }
+
+        alternativeHub.client.updateAlternatives = function (alternatives, user) {
+            if (viewModel.UserId() != user.Id) {
+                for (var i = 0; i < alternatives.length; i++) {
+                    var uAlt = alternatives[i]
+                    var result = $.grep(viewModel.Alternatives(), function (e) { return e.Id() == uAlt.Id; });
+                    if (result.length == 0) {
+                        var newAlt = {
+                            Id: ko.observable(uAlt.Id),
+                            Name: ko.observable(uAlt.Name),
+                            Description: ko.observable(uAlt.Description),
+                            IssueId: ko.observable(viewModel.Issue.Id),
+                            Weigh: ko.observable(0),
+                            WeightPC: ko.observable(0),
+                            Comments: ko.observableArray()
+                        }
+                        viewModel.Alternatives.push(newAlt)
+
+                        $.notify({
+                            icon: 'glyphicon glyphicon-info-sign',
+                            title: 'System Notificaion',
+                            message: newAlt.Name() + ' was added by ' + user.Name + '!'
+                        }, {
+                            delay: notDelay,
+                            type: 'info',
+                            placement: notPlacementCorner,
+                            animate: notAnimateCorner
+                        });
+                    } else if (result.length == 1) {
+                        var updated = false;
+                        var oldAlt = result[0]
+                        var name = oldAlt.Name()
+                        if (oldAlt.Name() != uAlt.Name) {
+                            oldAlt.Name(uAlt.Name)
+                            updated = true;
+                        }
+                        if (oldAlt.Description() != uAlt.Description) {
+                            oldAlt.Description(uAlt.Description)
+                            updated = true;
+                        }
+
+                        if (updated) {
+                            $.notify({
+                                icon: 'glyphicon glyphicon-info-sign',
+                                title: 'System Notificaion',
+                                message: name + ' was updated by ' + user.Name + '!'
+                            }, {
+                                delay: notDelay,
+                                type: 'info',
+                                placement: notPlacementCorner,
+                                animate: notAnimateCorner
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
         // Start the connection.
         $.connection.hub.start().done(function () {
             

@@ -15,5 +15,6 @@ namespace MApp.Web.ViewModel
         public List<CriterionModel> IssueCriteria { get; set; }
         public List<int> DeletedCriteria { get; set; }
         public string AccessRight { get; set; }
+        public int UserId { get; set; }
     }
 }

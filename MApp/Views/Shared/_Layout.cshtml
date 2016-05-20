@@ -3,11 +3,8 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <title>@ViewBag.Title - MApp GDM</title>
     
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
     <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
     <link href="~/Content/jquery-ui.css" rel="stylesheet" type="text/css" />
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -83,7 +80,7 @@
                         </li>
                         
                         <li>
-                            <a href="@Url.Action("Creating", "Issue", new { issueId = -1 })"><span class="glyphicon glyphicon-plus"></span> Create New Issue</a>
+                            <a href="@Url.Action("Creating", "Issue", new { issueId = -1 })"><span class="glyphicon glyphicon-plus"></span> New Issue</a>
                         </li>
                         
                         <li id="creating-menu">
@@ -110,7 +107,7 @@
                 {
                     <ul class="nav navbar-nav navbar-left">
                         <li>
-                            @Html.ActionLink("MApp", "Auth","Login", new { @class = "nav navbar-nav navbar-left" })
+                            <a href="@Url.Action("Index", "Issue")"><span class="glyphicon glyphicon-home"></span> MApp</a>
                         </li>
                     </ul>
                 }

@@ -96,6 +96,10 @@
       <HintPath>..\packages\PerpetuumSoft.Knockout.0.5.7.2\lib\net40\PerpetuumSoft.Knockout.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Portable.Licensing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Portable.Licensing.1.1.0\lib\portable-net40+sl4+wp7+win8\Portable.Licensing.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Speedy, Version=4.0.5945.42553, Culture=neutral, PublicKeyToken=107627dc0526abd8, processorArchitecture=MSIL">
       <HintPath>..\packages\Speedy.4.0.5945.42553\lib\net452\Speedy.dll</HintPath>
       <Private>True</Private>
@@ -121,6 +125,14 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="T4MVCExtensions, Version=3.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\packages\T4MVCExtensions.3.6.5\lib\net40\T4MVCExtensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="TwitterBootstrapMVC5, Version=3.17.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TwitterBootstrapMVC5.3.17.0\lib\net40\TwitterBootstrapMVC5.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="WebGrease, Version=1.5.2.14234, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
       <Private>True</Private>
@@ -690,6 +702,9 @@
     <Content Include="ckeditor\skins\bootstrapck\scss\config\_config.scss" />
     <Content Include="ckeditor\skins\bootstrapck\scss\config\_defaults.scss" />
     <Content Include="ckeditor\skins\bootstrapck\scss\dialog\dialog.scss" />
+    <None Include="Properties\PublishProfiles\Amazon AWS old.pubxml" />
+    <None Include="Properties\PublishProfiles\AWS.pubxml" />
+    <None Include="Properties\PublishProfiles\Default Settings.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrapValidator.js" />
     <Content Include="Scripts\bootstrapValidator.min.js" />
@@ -789,6 +804,7 @@
     <Content Include="Scripts\summernote\summernote.css" />
     <Content Include="Scripts\summernote\summernote.js" />
     <Content Include="Scripts\summernote\summernote.min.js" />
+    <Content Include="Scripts\TwitterBootstrapMvcJs.js" />
     <Content Include="Scripts\typeahead.bundle.js" />
     <Content Include="Scripts\typeahead.bundle.min.js" />
     <Content Include="Scripts\typeahead.jquery.js" />

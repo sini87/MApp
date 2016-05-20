@@ -1,16 +1,158 @@
-﻿@model MApp.Web.Models.RegistrationModel
+﻿@using PerpetuumSoft.Knockout
+@model MApp.Middleware.Models.UserModel
 @{
     ViewBag.Title = "Registration";
+    var ko = Html.CreateKnockoutContext();
 }
 
-<h2>Registration</h2>
-
-@Html.ValidationSummary(true, "", new { @style = "color: red" })
-
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
 @using (Html.BeginForm())
 {
-    @Html.EditorForModel()
-    <p>
-        <button type="submit">Sign up</button>
-    </p>
+    <div class="container">
+        <div class="row main">
+            <div class="panel-heading">
+                <div class="panel-title text-center">
+                    <h1 class="title">Registration</h1>
+                    <hr />
+                </div>
+            </div> 
+            <div class="main-login main-center">
+                <div class="form-group">
+                    <label for="email" class="cols-sm-2 control-label">First Name</label>
+                    <div class="cols-sm-10">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
+                            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })
+                            @*<input type="text" class="form-control" name="firstname" id="firstname" placeholder="Enter your First Name" data-bind="inputText: viewModel.FirstName" />*@
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="cols-sm-2 control-label">Last Name</label>
+                    <div class="cols-sm-10">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
+                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
+                            @*<input type="text" class="form-control" name="lastname" id="lastname" placeholder="Enter your Last Name" data-bind="inputText: viewModel.LastName" />*@
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="cols-sm-2 control-label">Your Email</label>
+                    <div class="cols-sm-10">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
+                            @*<input type="text" class="form-control" name="email" id="email" placeholder="Enter your Email" data-bind="inputText: viewModel.Email" />*@
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group has-feedback" data-bind="attr: {class: viewModel.PassCheck}">
+                    <label for="password" class="cols-sm-2 control-label">Password</label>
+                    <div class="cols-sm-10">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Password", data_bind = "textInput: viewModel.Password" })
+                            @*<input type="password" class="form-control" name="password" id="password" placeholder="Enter your Password" data-bind="textInput: viewModel.Password" />*@
+                            <i data-bind="attr: {class: viewModel.PassCheckIcon }"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group has-feedback" data-bind="attr: {class: viewModel.PassCheck}">
+                    <label for="confirm" class="cols-sm-2 control-label">Confirm Password</label>
+                    <div class="cols-sm-10">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+                            <input type="password" class="form-control" name="confirm" id="confirm" placeholder="Confirm your Password" data-bind="textInput: viewModel.PasswordConfirm" onfocus="javascript: onPassConfirmFocus()" />
+                            <span data-bind="attr: {class: viewModel.PassCheckIcon }"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="cols-sm-2 control-label">Your Secret Question</label>
+                    <div class="cols-sm-10">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-question-circle fa" aria-hidden="true"></i></span>
+                            @Html.TextBoxFor(m => m.SecretQuestion, new { @class = "form-control", placeholder = "Question" })
+                            @*<input type="text" class="form-control" name="question" id="question" placeholder="Enter Your Secret Question" data-bind="inputText: viewModel.SecretQuestion" />*@
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="cols-sm-2 control-label">Your Answer</label>
+                    <div class="cols-sm-10">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-envelope-o fa" aria-hidden="true"></i></span>
+                            @Html.TextBoxFor(m => m.Answer, new { @class = "form-control", placeholder = "Answer" })
+                            @*<input type="text" class="form-control" name="answer" id="answer" placeholder="Enter Your Answer" data-bind="inputText: viewModel.SecretQuestion" />*@
+                        </div>
+                    </div>
+                </div>
+
+                    
+                
+            </div>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary btn-lg btn-block login-button">Register</button>
+        </div>
+    </div>
 }
+
+
+<script>
+    var viewModelJs = @Html.Raw(Json.Encode(Model));
+    var viewModel = ko.mapping.fromJS(viewModelJs);
+
+    viewModel.FirstName = ko.observable('')
+    viewModel.LastName = ko.observable('')
+    viewModel.Email = ko.observable('')
+    viewModel.SecretQuestion = ko.observable('')
+    viewModel.Answer = ko.observable('')
+    viewModel.StakeholderDescription = ko.observable('')
+    viewModel.Password = ko.observable('')
+    viewModel.PasswordConfirm = ko.observable('')
+    viewModel.PassCheckEntered = ko.observable(false)
+    viewModel.StakeholderDescription = ko.observableArray();
+    viewModel.Properties = ko.observableArray();
+
+    viewModel.PassCheck = ko.computed(function(){
+        if (viewModel.PassCheckEntered()){
+            if (viewModel.Password() == viewModel.PasswordConfirm()){
+                return 'form-group has-feedback has-success';
+            }else{
+                return 'form-group has-feedback has-error';
+            }
+        }else{
+            return 'form-group';
+        }
+    })
+
+    viewModel.PassCheckIcon = ko.computed(function() {
+        if (viewModel.PassCheckEntered()){
+            if (viewModel.Password() == viewModel.PasswordConfirm() && viewModel.Password().length >= 3)
+                return 'glyphicon glyphicon-ok form-control-feedback';
+            else
+                return 'glyphicon glyphicon-times form-control-feedback';
+        }
+        return 'form-control-feedback'
+    });
+
+    function onPassConfirmFocus(){
+        viewModel.PassCheckEntered(true)
+    }
+
+    //function onSignUpClick(){
+    //    var tmpVM = ko.toJS(viewModel)
+    //    //tmpVM.Properties = [{"Id":1,"Name":"Java Skills"}]
+    //    ko.utils.postJson("/Auth/Registration", tmpVM)
+    //}
+
+    ko.applyBindings(viewModel)
+</script>

@@ -434,3 +434,8 @@ textarea {
     text-decoration:none;
 }
 /*Bootstrap Modal end*/
+
+.input-group .glyphicon{
+  position: absolute;
+  left: 285px;
+}

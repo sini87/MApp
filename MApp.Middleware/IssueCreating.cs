@@ -274,9 +274,9 @@ namespace MApp.Middleware
         /// adds a new groupthink notification
         /// </summary>
         /// <param name="notification"></param>
-        public void MakeNotification(NotificationModel notification)
+        public int SendNotification(NotificationModel notification)
         {
-            NotificationOp.AddNotification(notification.ToEntity(notification));
+            return NotificationOp.AddNotification(notification.ToEntity(notification));
         }
 
         /// <summary>

@@ -18,5 +18,10 @@ namespace MApp.Web.Hubs
         {
             Clients.All.updateRatings(userRatings, user);
         }
+
+        public void SendNotification(NotificationModel notification)
+        {
+            Clients.All.sendNotification(notification);
+        }
     }
 }

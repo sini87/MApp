@@ -20,11 +20,11 @@ namespace MApp.DA.Repository
             return list;
         }
 
-        public static void AddNotification(Notification notification)
+        public static int AddNotification(Notification notification)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
             Notification newNot = ctx.Notification.Create();
-
+            int id;
             newNot.IssueId = notification.IssueId;
             newNot.UserId = notification.UserId;
             newNot.Type = notification.Type;
@@ -33,7 +33,9 @@ namespace MApp.DA.Repository
             newNot.AddedDate = System.DateTime.Now;
             ctx.Entry(newNot).State = EntityState.Added;
             ctx.SaveChanges();
+            id = newNot.Id;
             ctx.Dispose();
+            return id;
         }
 
         /// <summary>

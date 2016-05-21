@@ -109,6 +109,10 @@ textarea {
     min-height: 100px;
 }
 
+.textarea-decision{
+    background-color: black;
+}
+
 .status-label{
     padding-right: 25px;
 }
@@ -345,9 +349,11 @@ textarea {
 */
 
 .phenomenon {
-    background: #ff5733;
     border-radius: 15px;
     width: 250px;
+    border-color: #CCCCCC;
+    border-style: solid;
+    border-width: 1px;
 }
 
 .phenomenon-badge-header {
@@ -366,6 +372,14 @@ textarea {
    display:block;
    float:right;
    margin:5px 25px 0 2px;
+}
+
+.phenomenon-badge-backGreen{
+    background-color: #4be815;
+}
+
+.phenomenon-badge-backRed{
+    background-color: #d90404;
 }
 
 .phenomenon-elem {
@@ -454,4 +468,12 @@ textarea {
 }
 [data-notify="message"] {
 	font-size: 100%;
+}
+
+[data-notify="container"]{
+    max-width: 300px;
+}
+
+[data-notify="container"].alert-info {
+    background-color: rgb(241, 242, 240);
 }

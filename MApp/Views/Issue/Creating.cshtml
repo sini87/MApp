@@ -94,14 +94,14 @@
             <div class="row phenomenon-header">
                 <label>Phenomenon</label>
                 <!-- ko if: viewModel.AccessRight() == 'O' -->
-                    <span class="label label-default phenomenon-badge-header" data-bind="text: viewModel.newPhenomenonNotifications"></span>
+                    <span class="label label-default phenomenon-badge-header" data-bind="text: viewModel.newPhenomenonNotifications, css: { 'label-success': viewModel.newGroupthinkNotifications() == 0, 'label-danger': viewModel.newGroupthinkNotifications() != 0 }"></span>
                 <!-- /ko -->
             </div>
             
             @*Groupthink notifications*@
             <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() == 'O'">
                 <a class="phenomenon-link" data-toggle="modal" data-target="#groupThinkAllNotModalDialog">Grouphtink notifications</a>
-                <span class="label label-default phenomenon-badge" data-bind="text: viewModel.newGroupthinkNotifications"></span>
+                <span class="label phenomenon-badge" data-bind="text: viewModel.newGroupthinkNotifications, css: { 'label-success': viewModel.newGroupthinkNotifications() == 0, 'label-danger': viewModel.newGroupthinkNotifications() != 0 }"></span>
                 <div class="modal fade" id="groupThinkAllNotModalDialog" role="dialog">
                     <div class="modal-dialog">
                         <!-- Modal content-->
@@ -146,11 +146,11 @@
             </div>
 
             @*Groupshift notifications*@
-            <div class="row phenomenon-elem"><a class="phenomenon-link">Groupshift warning</a><span class="label label-default phenomenon-badge" data-bind="text: viewModel.newGroupshiftNotifications"></span></div>
+            <div class="row phenomenon-elem"><a class="phenomenon-link">Groupshift warning</a><span class="label label-default phenomenon-badge" data-bind="text: viewModel.newGroupshiftNotifications, css: { 'label-success': viewModel.newGroupshiftNotifications() == 0, 'label-danger': viewModel.newGroupshiftNotifications() != 0 }"></span></div>
             
             @*make groupthink notification only for contributors*@
             <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() == 'C'">
-                <a class="phenomenon-link" data-toggle="modal" data-target="#makeGTNotifDialog">Make Groupthink notification</a>
+                <a class="phenomenon-link" data-toggle="modal" data-target="#makeGTNotifDialog">Send Groupthink notification</a>
                 <div class="modal fade" id="makeGTNotifDialog" role="dialog">
                     <div class="modal-dialog">
 
@@ -158,7 +158,7 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Make Groupthink notification to issue owner</h4>
+                                <h4 class="modal-title">Send Groupthink notification to issue owner</h4>
                             </div>
                             <div class="modal-body">
                                 <div class="form-group">
@@ -166,7 +166,7 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button id="groupthinkMake" onclick="onGroupthinkMakeClick()" class="btn btn-success">Make notification</button>
+                                <button id="groupthinkMake" onclick="onGroupthinkMakeClick()" class="btn btn-success">Send notification</button>
                             </div>
                         </div>
 
@@ -259,6 +259,8 @@
     <button id="delete" type="button" class="btn btn-danger" onclick="javascript: onDeleteClick()" data-bind="visible: viewModelJs.AccessRight == 'O', enable: viewModelJs.Issue.Id != -1">Delete</button>
 </div>
 
+<h4 class="comment collapse in" data-bind="text: 'Comments: ' + viewModel.Comments().length"></h4> 
+
 <div class="row collapse comment">
     <h4 class="collapse comment">Comments</h4>
     <table class="commenttable" data-bind="attr: { style: viewModel.Comments().length == 0 ? 'display:none' : 'display:table'}">
@@ -287,6 +289,9 @@
     <button id="hideCommentsBtn" class="btn btn-primary btn-md accordion-toggle" data-toggle="collapse" data-target=".comment">Hide comments</button>
 </div>
 
+@*signalR reference*@
+<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+<script src="~/signalr/hubs"></script>
 <script type="text/javascript">
     var addedTags = [];
     var deletedTags = [];
@@ -351,7 +356,7 @@
     });
 
     viewModel.newGroupshiftNotifications = ko.computed(function(){
-        return 1;
+        return 0;
     });
 
     viewModel.newPhenomenonNotifications = ko.computed(function(){
@@ -516,7 +521,7 @@
                 Type: 'Groupthink',
                 Text: document.getElementById('groupthinkText').value,
                 Read: false,
-                AddedDate: 1
+                AddedDate: (new Date()).getTime()
             }
         $.ajax({
             url: '@Url.Action("AddNotification", "Issue")',
@@ -594,11 +599,6 @@
         }
     }
 
-    function addAlert(message, alertType) {
-        $('#alerts').append(
-            '<div class="alert ' + alertType + '">' + message + '</div>');
-    }
-
     $(document).ready(function () {
         var token = [];
         var engine;
@@ -665,4 +665,64 @@
         });
     });
 
+    //SignalR
+    $(function () {
+        // Reference the auto-generated proxy for the hub.
+        var commentHub = $.connection.commentHub;
+        // Create a function that the hub can call back to display messages.
+        commentHub.client.addNewComment = function (comment) {
+            if (comment.Type.startsWith('Issue') && comment.UserId != viewModelJs.UserId){
+                var strId = comment.Type.replace("Issue","")
+                var id = parseInt(strId)                
+                
+                comment.DateTime = ko.observable(comment.DateTime)
+                viewModel.Comments.push(comment)
+
+                $.notify({
+                    icon: 'glyphicon glyphicon-info-sign',
+                    title: 'System Notificaion',
+                    message: comment.Name + ' added a comment'
+                },{
+                    delay: notDelay,
+                    type: 'info',
+                    placement: notPlacementCorner,
+                    animate: notAnimateCorner
+                });   
+            }
+        };
+
+        var notificationHub = $.connection.notificationHub;
+        notificationHub.client.sendNotification = function(notification) {
+            if (viewModel.UserId() != notification.UserId){
+                var knotification = {
+                    Id:  ko.observable(notification.Id),
+                    IssueId: ko.observable(notification.IssueId),
+                    UserId: ko.observable(notification.UserId),
+                    Type: ko.observable(notification.Type),
+                    Text: ko.observable(notification.Text),
+                    Read: ko.observable(notification.Read),
+                    AddedDate: ko.observable(notification.AddedDate)
+                }
+                if (notification.Type == 'Groupthink' && viewModelJs.AccessRight == 'O'){
+                    viewModel.GroupthinkNotifications.push(knotification)
+
+                    $.notify({
+                        icon: 'glyphicon glyphicon-warning-sign',
+                        title: 'System Notificaion',
+                        message: 'Some user send you a Groupthink warning!'
+                    },{
+                        delay: notDelay,
+                        type: 'danger',
+                        placement: notPlacementCorner,
+                        animate: notAnimateCorner
+                    });
+                }
+            }
+        };
+
+        // Start the connection.
+        $.connection.hub.start().done(function () {
+            
+        });
+    })
 </script>

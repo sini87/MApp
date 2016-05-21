@@ -290,7 +290,7 @@ namespace MApp.Web.Controllers
             IssueDecision id = new IssueDecision();
             int userId = GetUserIdFromClaim();
             dvm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
-            dvm.Alternatives = iba.GetIssueAlternatives(issueId, userId);
+            dvm.Alternatives = iba.GetIssueAlternatives(issueId, userId).OrderByDescending(x => x.Rating).ToList();
             dvm.Issue = ic.GetIssue(issueId);
             dvm.OldDecisions = id.GetOldDecisions(issueId, userId);
             dvm.Decision = id.GetDecision(issueId, userId);
@@ -336,7 +336,11 @@ namespace MApp.Web.Controllers
         {
             IssueCreating ic = new IssueCreating();
             notificationModel.UserId = GetUserIdFromClaim();
-            ic.MakeNotification(notificationModel);
+            notificationModel.Id = ic.SendNotification(notificationModel);
+
+            var context = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+            context.Clients.All.sendNotification(notificationModel);
+
             return new HttpResponseMessage();
         }
 

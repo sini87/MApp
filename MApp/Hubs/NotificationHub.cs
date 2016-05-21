@@ -13,5 +13,10 @@ namespace MApp.Web.Hubs
         {
             Clients.All.updateCriteriaWeights(weights, user);
         }
+
+        public void UpdateEvaluation(List<RatingModel> userRatings, UserShortModel user)
+        {
+            Clients.All.updateRatings(userRatings, user);
+        }
     }
 }

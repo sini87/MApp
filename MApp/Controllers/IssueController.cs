@@ -255,8 +255,10 @@ namespace MApp.Web.Controllers
             evm.Criterias = ie.GetIssueCrtieria(issueId, userId);
             evm.Alternatives = ie.GetIssueAlternatives(issueId, userId);
             evm.RatedUsers = ie.GetRatedUsersForIssue(issueId, userId);
+            evm.RatedUserCnt = evm.RatedUsers.Count;
 
             evm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
+            evm.UserId = userId;
             return View(evm);
         }
 
@@ -265,6 +267,18 @@ namespace MApp.Web.Controllers
         {
             IssueEvaluation ie = new IssueEvaluation();
             ie.SaveUserRatings(evaluationVM.UserRatings);
+
+            List<RatingModel> userRatings = new List<RatingModel>();
+            for(int i = 0; i < evaluationVM.UserRatings.Count(); i++)
+            {
+                foreach(RatingModel rat in evaluationVM.UserRatings[i])
+                {
+                    userRatings.Add(rat);
+                }
+            }
+            var context = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+            context.Clients.All.updateRatings(userRatings, new UserShortModel(evaluationVM.UserId, GetUserNameFromClaim()));
+
             return View(evaluationVM);
         }
 

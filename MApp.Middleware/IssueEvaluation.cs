@@ -53,14 +53,16 @@ namespace MApp.Middleware
 
         public List<AlternativeModel> GetIssueAlternatives(int issueId, int userId)
         {
-            IssueBrAlternative iba = new IssueBrAlternative();
-            return iba.GetIssueAlternatives(issueId, userId);
+            AlternativeModel am = new AlternativeModel();
+            List<AlternativeModel> list = am.ToModelList(AlternativeOp.GetIssueAlternatives(issueId, userId),am);
+            return list;
         }
 
         public List<CriterionModel> GetIssueCrtieria(int issueId, int userId)
         {
-            IssueBrCriteria ibc = new IssueBrCriteria();
-            return ibc.GetIssueCriteria(issueId, userId);
+            CriterionModel cm = new CriterionModel();
+            List<CriterionModel> list = cm.ToModelList(CriterionOp.GetIssueCriterions(issueId, userId), cm);
+            return list;
         }
 
         public void SaveUserRatings(List<RatingModel>[] ratings)

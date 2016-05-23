@@ -33,6 +33,7 @@ namespace MApp.Middleware.Models
         public int UserId { get; set; }
         public string Right { get; set; }
         public string Name { get; set; }
+        public int IssueId { get; set; }
         public double? SelfAssessmentValue { get; set; }
         public string SelfAssessmentDescr { get; set; }
         public List<SelfAssessmentHEntry> SelfAssessmentHistory { get; set; }
@@ -82,7 +83,7 @@ namespace MApp.Middleware.Models
 
             ar.SelfAssessmentValue = SelfAssessmentValue;
             ar.SelfAssesmentDescr = SelfAssessmentDescr;
-
+            ar.IssueId = model.IssueId;
             return ar;
         }
 
@@ -91,6 +92,7 @@ namespace MApp.Middleware.Models
             AccessRightModel arm = new AccessRightModel(entity.UserId,entity.Right);
             arm.SelfAssessmentDescr = entity.SelfAssesmentDescr;
             arm.Right = entity.Right;
+            arm.IssueId = entity.IssueId;
             if (entity.SelfAssessmentValue == null)
                 arm.SelfAssessmentValue = 0;
             else

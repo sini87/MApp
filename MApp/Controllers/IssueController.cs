@@ -5,6 +5,7 @@ using MApp.Web.Hubs;
 using MApp.Web.Models;
 using MApp.Web.ViewModel;
 using Microsoft.AspNet.SignalR;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,6 +64,7 @@ namespace MApp.Web.Controllers
                 vm.SelfAssessmentValue = Convert.ToInt32(arm.SelfAssessmentValue);
                 vm.Comments = ic.GetIssueComments(issueId, userId);
                 vm.GroupthinkNotifications = ic.GetGroupthinkNotifications(issueId, userId);
+                vm.GroupshiftProperties = ic.GetGropshiftProperties(issueId);
             }
             else
             {
@@ -76,6 +78,7 @@ namespace MApp.Web.Controllers
                 vm.Issue.Id = -1;
                 vm.Comments = new List<CommentModel>();
                 vm.GroupthinkNotifications = new List<NotificationModel>();
+                vm.GroupshiftProperties = new List<KeyValuePair<string, List<string>>>();
             }
             vm.AllUsers = vm.AllUsers.Where(x => x.Id != userId).ToList();
 
@@ -350,6 +353,58 @@ namespace MApp.Web.Controllers
             IssueCreating ic = new IssueCreating();
             ic.MarkNotificationAsRead(notificationId);
             return new HttpResponseMessage();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="accessRight"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public HttpResponseMessage AddAccessRight(AccessRightModel accessRight)
+        {
+            HttpResponseMessage msg = new HttpResponseMessage();
+            IssueCreating ic = new IssueCreating();
+            if (ic.AddAccessRight(accessRight))
+            {
+                msg.StatusCode = System.Net.HttpStatusCode.OK;
+            }else
+            {
+                msg.StatusCode = System.Net.HttpStatusCode.InternalServerError;
+            }
+            return msg;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="accessRight"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public HttpResponseMessage RemoveAccessRight(AccessRightModel accessRight)
+        {
+            HttpResponseMessage msg = new HttpResponseMessage();
+            IssueCreating ic = new IssueCreating();
+            if (ic.RemoveAccessRight(accessRight))
+            {
+                msg.StatusCode = System.Net.HttpStatusCode.OK;
+            }
+            else
+            {
+                msg.StatusCode = System.Net.HttpStatusCode.InternalServerError;
+            }
+            return msg;
+        }
+
+        [HttpPost]
+        public JsonResult GetGroupshiftProperties(int issueId)
+        {
+            IssueCreating ic = new IssueCreating();
+            var result = new JsonResult
+            {
+                Data = JsonConvert.SerializeObject(ic.GetGropshiftProperties(issueId))
+            };
+            return result;
         }
     }
 }

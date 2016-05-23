@@ -94,7 +94,7 @@
             <div class="row phenomenon-header">
                 <label>Phenomenon</label>
                 <!-- ko if: viewModel.AccessRight() == 'O' -->
-                    <span class="label label-default phenomenon-badge-header" data-bind="text: viewModel.newPhenomenonNotifications, css: { 'label-success': viewModel.newGroupthinkNotifications() == 0, 'label-danger': viewModel.newGroupthinkNotifications() != 0 }"></span>
+                    <span class="label label-default phenomenon-badge-header" data-bind="text: viewModel.newPhenomenonNotifications, css: { 'label-success': viewModel.newPhenomenonNotifications() == 0, 'label-danger': viewModel.newPhenomenonNotifications() != 0 }"></span>
                 <!-- /ko -->
             </div>
             
@@ -145,9 +145,44 @@
 
             </div>
 
-            @*Groupshift notifications*@
-            <div class="row phenomenon-elem"><a class="phenomenon-link">Groupshift warning</a><span class="label label-default phenomenon-badge" data-bind="text: viewModel.newGroupshiftNotifications, css: { 'label-success': viewModel.newGroupshiftNotifications() == 0, 'label-danger': viewModel.newGroupshiftNotifications() != 0 }"></span></div>
-            
+            @*Groupshift notifications only for owners*@
+            <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() == 'O'">
+                <a class="phenomenon-link" data-toggle="modal" data-target="#groupshiftDialog">Groupshift warning</a>
+                <span class="label label-default phenomenon-badge" data-bind="text: viewModel.newGroupshiftNotifications, css: { 'label-success': viewModel.newGroupshiftNotifications() == 0, 'label-danger': viewModel.newGroupshiftNotifications() != 0 }"></span>
+                <div class="modal fade" id="groupshiftDialog" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Groupshift warnings</h4>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table table-condensed">
+                                    <thead>
+                                        <th>Property</th>
+                                        <th>Users</th>
+                                    </thead>
+                                    <tbody data-bind="foreach: viewModel.GroupshiftProperties">
+                                        <tr>
+                                            <td data-bind="text: Key" class="td-top"></td>
+                                            <td>
+                                                <!-- ko foreach: Value -->
+                                                <div data-bind="text: $data"><br/></div>
+                                                <!-- /ko -->
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
             @*make groupthink notification only for contributors*@
             <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() == 'C'">
                 <a class="phenomenon-link" data-toggle="modal" data-target="#makeGTNotifDialog">Send Groupthink notification</a>
@@ -356,7 +391,7 @@
     });
 
     viewModel.newGroupshiftNotifications = ko.computed(function(){
-        return 0;
+        return viewModel.GroupshiftProperties().length;
     });
 
     viewModel.newPhenomenonNotifications = ko.computed(function(){
@@ -372,9 +407,62 @@
     renderMenues()
     makePermissions()
 
+    //event when delete accessright is pressed
+    //remove right
     viewModel.removeRight = function () {
-        viewModel.DeletedAR.push({ UserId: this.UserId(), Right: this.Right(), Name: this.Name() });
-        viewModel.AccessRights.remove(this);
+        if (viewModel.Issue.Id() != -1){
+            var link = this;
+            var accessRight = {
+                UserId: this.UserId(),
+                Right: this.Right(),
+                Name: this.Name(),
+                SelfAssessmentValue: 0,
+                SelfAssessmentDescr: "",
+                IssueId: viewModel.Issue.Id()
+            }
+            $.ajax({
+                url: '@Url.Action("RemoveAccessRight", "Issue")',
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                data: JSON.stringify(accessRight),
+                async: true,
+                processData: false,
+                complete: function (r) {
+                    if (r.responseText.match("^StatusCode: 200")) {
+                        viewModel.DeletedAR.push({ UserId: accessRight.UserId, Right: accessRight.Right, Name: accessRight.Name });
+                        viewModel.AccessRights.remove(link);
+                        var u = {
+                            Name: ko.observable(accessRight.Name),
+                            Id: ko.observable(accessRight.UserId)
+                        }
+                        viewModel.AllUsers.push(u)
+                        $('#selectUser').selectpicker('refresh');
+                        reloadGroupshift();
+                    } else {
+                        $.notify({
+                            icon: 'glyphicon glyphicon-danger-sign',
+                            title: 'System Notificaion',
+                            message: 'Something went wrong. Could not add User!'
+                        },{
+                            delay: notDelay,
+                            type: 'danger',
+                            placement: notPlacement,
+                            animate: notAnimate
+                        });
+                    }
+                }
+            })
+        }else{
+            viewModel.DeletedAR.push({ UserId: this.UserId(), Right: this.Right(), Name: this.Name() });
+            viewModel.AccessRights.remove(this);
+            var u = {
+                Name: ko.observable(this.Name()),
+                Id: ko.observable(this.UserId())
+            }
+            viewModel.AllUsers.push(u)
+            $('#selectUser').selectpicker('refresh');
+        }
     };
 
     $('#selectRootIssue').on('hidden.bs.select', function (e) {
@@ -417,13 +505,14 @@
         ko.utils.postJson("/Issue/NextStage", { issueId: viewModel.Issue.Id, status: viewModel.Issue.Status })
     };
 
+    // event on adding a new right
     function onAddRightClick() {
         var uid = $('#selectUser').selectpicker('option:selected').val();
         if (uid != 0) {
             var uText = ""
-            for (index = 0; index < viewModelJs.AllUsers.length; ++index) {
-                if (viewModelJs.AllUsers[index].Id == uid) {
-                    uText = viewModelJs.AllUsers[index].Name
+            for (index = 0; index < viewModel.AllUsers().length; ++index) {
+                if (viewModel.AllUsers()[index].Id() == uid) {
+                    uText = viewModel.AllUsers()[index].Name()
                 }
             }
             var ar = {
@@ -434,14 +523,69 @@
                 SelfAssessmentDescr: ko.observable(""),
                 SelfAssessmentHistory: ko.observableArray()
             }
-            viewModel.AccessRights.push(ar);
-            viewModel.AllUsers.splice($('#selectUser').selectpicker('option :selected').index(), 1)
-            $('#selectUser').find('[value=' + uid + ']').remove();
-            $('#selectUser').selectpicker('refresh');
 
-            viewModel.AddedAR.push({ UserId: uid, Right: $('#selectRight').selectpicker('option :selected').val(), Name: uText });
+            var added = false;
+            //is issue is already created then adding new right will be done with ajax
+            if (viewModelJs.Issue.Id != -1){
+                var accessRight = {
+                    UserId: uid,
+                    Right: $('#selectRight').selectpicker('option :selected').val(),
+                    Name: uText,
+                    SelfAssessmentValue: 0,
+                    SelfAssessmentDescr: "",
+                    IssueId: viewModel.Issue.Id()
+                }
+                $.ajax({
+                    url: '@Url.Action("AddAccessRight", "Issue")',
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    data: JSON.stringify(accessRight),
+                    async: true,
+                    processData: false,
+                    complete: function (r) {
+                        if (r.responseText.match("^StatusCode: 200")) {
+                            viewModel.AccessRights.push(ar);
+                            viewModel.AllUsers.splice($('#selectUser').selectpicker('option :selected').index() - 1, 1)
+                            $('#selectUser').find('[value=' + uid + ']').remove();
+                            $('#selectUser').selectpicker('refresh');
+
+                            viewModel.AddedAR.push({ UserId: uid, Right: $('#selectRight').selectpicker('option :selected').val(), Name: uText });
+                            reloadGroupshift()
+                        } else {
+                            $.notify({
+                                icon: 'glyphicon glyphicon-danger-sign',
+                                title: 'System Notificaion',
+                                message: 'Something went wrong. Could not add User!'
+                            },{
+                                delay: notDelay,
+                                type: 'danger',
+                                placement: notPlacement,
+                                animate: notAnimate
+                            });
+                        }
+                    }
+                })
+            }else{
+                viewModel.AccessRights.push(ar);
+                viewModel.AllUsers.splice($('#selectUser').selectpicker('option :selected').index(), 1)
+                $('#selectUser').find('[value=' + uid + ']').remove();
+                $('#selectUser').selectpicker('refresh');
+
+                viewModel.AddedAR.push({ UserId: uid, Right: $('#selectRight').selectpicker('option :selected').val(), Name: uText });
+            }
+            
         } else {
-            alert('Please select User first');
+            $.notify({
+                icon: 'glyphicon glyphicon-info-sign',
+                title: 'Hint',
+                message: 'Please select user first!'
+            },{
+                delay: notDelay,
+                type: 'info',
+                placement: notPlacement,
+                animate: notAnimate
+            });
         }
 
     };
@@ -535,39 +679,28 @@
                 if (r.status = 200) {
                     $('#makeGTNotifDialog').modal('hide');
                     document.getElementById('groupthinkText').value = '';
-                    
+
                     $.notify({
                         icon: 'glyphicon glyphicon-info-sign',
-                        title: '<strong>System Notificaion</strong>',
+                        title: 'System Notificaion',
                         message: 'Issue owner is notified!'
                     },{
-                        delay: 1500,
-                        placement: {
-                            from: "bottom",
-                            align: "center"
-                        },
-                        animate: {
-                            enter: "animated fadeInUp",
-                            exit: "animated fadeOutDown"
-                        }
+                        delay: notDelay,
+                        type: 'info',
+                        placement: notPlacement,
+                        animate: notAnimate
                     });
                     
                 } else {
                     $.notify({
                         icon: 'glyphicon glyphicon-danger-sign',
                         title: 'System Notificaion',
-                        message: 'Something went wrong!'
+                        message: 'Issue owner is notified!'
                     },{
-                        delay: 1500,
+                        delay: notDelay,
                         type: 'danger',
-                        placement: {
-                            from: "bottom",
-                            align: "center"
-                        },
-                        animate: {
-                            enter: "animated fadeInUp",
-                            exit: "animated fadeOutDown"
-                        }
+                        placement: notPlacement,
+                        animate: notAnimate
                     });
                 }
             }
@@ -597,6 +730,33 @@
                 break;
             }
         }
+    }
+
+    //this function will be called when an accessright is addedd or removed
+    function reloadGroupshift(){
+        $.ajax({
+            url: '/Issue/GetGroupshiftProperties?issueId=' + viewModelJs.Issue.Id,
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            async: true,
+            processData: false,
+            complete: function (jqXHR, textStatus) {
+                //notific when groupshift
+            },
+            success: function(data, textStatus, jqXHR){
+                viewModel.GroupshiftProperties.removeAll()
+                var gP = JSON.parse(data)
+                var obs = ko.mapping.fromJS(gP)
+                if (data != "[]"){
+                    for (var i = 0; i < obs().length; i++){
+                        viewModel.GroupshiftProperties.push(obs()[i])
+                    }
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+
+            }
+        })
     }
 
     $(document).ready(function () {

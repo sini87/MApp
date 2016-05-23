@@ -287,5 +287,22 @@ namespace MApp.Middleware
         {
             NotificationOp.MarkNotificationAsRead(notificationId);
         }
+
+        public bool AddAccessRight(AccessRightModel accessRight)
+        {
+            AccessRightModel arm = new AccessRightModel();
+            return AccessRightOp.AddAccessRight(arm.ToEntity(accessRight));
+        }
+
+        public bool RemoveAccessRight(AccessRightModel accessRight)
+        {
+            AccessRightModel arm = new AccessRightModel();
+            return AccessRightOp.RemoveAccessRight(arm.ToEntity(accessRight));
+        }
+
+        public List<KeyValuePair<string,List<String>>> GetGropshiftProperties(int issueId)
+        {
+            return NotificationOp.GetGroupshiftProperties(issueId);
+        }
     }
 }

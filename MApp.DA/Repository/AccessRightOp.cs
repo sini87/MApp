@@ -209,5 +209,55 @@ namespace MApp.DA.Repository
 
             return list;
         }
+
+        public static bool AddAccessRight(AccessRight accessRight)
+        {
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            accessRight.MailNotification = false;
+            accessRight.NotificationLevel = "";
+            accessRight.SelfAssessmentValue = 0;
+            ctx.AccessRight.Add(accessRight);
+            ctx.Entry(accessRight).State = EntityState.Added;
+            try
+            {
+                ctx.SaveChanges();
+            }
+            catch (DbEntityValidationException ex)
+            {
+                Console.WriteLine(ex.Message);
+                ctx.AccessRight.Remove(accessRight);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                ctx.AccessRight.Remove(accessRight);
+                return false;
+            }
+            GrantAccess(accessRight.UserId, accessRight.IssueId, ctx);
+            ctx.Dispose();
+            return true;
+        }
+
+        public static bool RemoveAccessRight(AccessRight accessRight)
+        {
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            try
+            {
+                using (var dbContextTransaction = ctx.Database.BeginTransaction())
+                {
+                    ctx.Database.ExecuteSqlCommand("delete from [appSchema].[HAccessRight] WHERE UserId = {0} AND IssueId ={1}", accessRight.UserId, accessRight.IssueId);
+                    ctx.Database.ExecuteSqlCommand("delete from [appSchema].[AccessRight] WHERE UserId = {0} AND IssueId ={1}", accessRight.UserId, accessRight.IssueId);
+                    dbContextTransaction.Commit();
+                }
+                ctx.Dispose();
+                return true;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
     }
 }

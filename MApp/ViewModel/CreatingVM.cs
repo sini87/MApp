@@ -27,5 +27,6 @@ namespace MApp.Web.ViewModel
         public string SelfAssessmentDescription { get; set; }
         public List<CommentModel> Comments { get; set; }
         public List<NotificationModel> GroupthinkNotifications { get; set; }
+        public List<KeyValuePair<string,List<string>>> GroupshiftProperties { get; set; }
     }
 }

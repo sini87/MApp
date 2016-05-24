@@ -76,3 +76,25 @@ function doLinks(issue) {
         }
     }
 }
+
+//mark comments as read/seen
+//type can be Issue, Alternative, Criterion
+function onShowCommentsBtnClick(type) {
+    var param = {
+        issueId: viewModel.Issue.Id(),
+        type: type
+    }
+    $.ajax({
+        url: '/Issue/MarkCommentsAsRead',
+        type: 'POST',
+        contentType: "application/json; charset=utf-8",
+        async: true,
+        processData: false,
+        data: JSON.stringify(param),
+        complete: function (r) {
+            if (r.status != 200) {
+                alert("Error happend!");
+            }
+        }
+    })
+}

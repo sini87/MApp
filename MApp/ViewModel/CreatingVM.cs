@@ -28,5 +28,7 @@ namespace MApp.Web.ViewModel
         public List<CommentModel> Comments { get; set; }
         public List<NotificationModel> GroupthinkNotifications { get; set; }
         public List<KeyValuePair<string,List<string>>> GroupshiftProperties { get; set; }
+        public KeyValuePair<string,int> UserWithMostChanges { get; set; }
+        public List<KeyValuePair<UserShortModel,int>> AllUserChangeCounts { get; set; }
     }
 }

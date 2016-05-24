@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity;
 using System.Linq;
 using System.Text;
@@ -29,9 +30,9 @@ namespace MApp.DA.Repository
         /// </summary>
         /// <param name="issueId"></param>
         /// <returns></returns>
-        public static List<Tag> GetIssueTags (int issueId)
+        public static List<Tag> GetIssueTags(int issueId)
         {
-            List <Tag> list = new List<Tag>();
+            List<Tag> list = new List<Tag>();
             ApplicationDBEntities ctx = new ApplicationDBEntities();
 
             foreach (TagIssue ti in ctx.TagIssue.AsNoTracking().Where(ti => ti.IssueId == issueId).ToList())
@@ -44,11 +45,13 @@ namespace MApp.DA.Repository
             return list;
         }
 
-        public static void AddTagsToIssue(List<Tag> tagList, int issueId)
+        public static void AddTagsToIssue(List<Tag> tagList, int issueId, int userId)
         {
             string sql;
             ApplicationDBEntities ctx = new ApplicationDBEntities();
-
+            ApplicationDBEntities ctx2 = new ApplicationDBEntities();
+            DbCommand cmd;
+            ctx2.Database.Connection.Open();
             foreach (Tag tag in tagList)
             {
                 using (var dbContextTransaction = ctx.Database.BeginTransaction())
@@ -60,12 +63,26 @@ namespace MApp.DA.Repository
                         dbContextTransaction.Commit();
                         tag.Id = res.FirstOrDefault();
                     }
-                    sql = "INSERT INTO appSchema.[TagIssue] VALUES (" + tag.Id + "," + issueId +")";
-                    ctx.Database.ExecuteSqlCommand(sql, tag.Id,issueId  );
+                    sql = "INSERT INTO appSchema.[TagIssue] VALUES (" + tag.Id + "," + issueId + ")";
+                    cmd = ctx2.Database.Connection.CreateCommand();
+                    cmd.CommandText = sql;
+                    cmd.CommandType = System.Data.CommandType.Text;
+                    
                     try
                     {
-                        dbContextTransaction.Commit();
-                    }catch(Exception ex)
+                        cmd.ExecuteNonQuery();
+
+                        //changes to history table
+                        HTagIssue htagIssue = new HTagIssue();
+                        htagIssue.ChangeDate = DateTime.Now;
+                        htagIssue.TagId = tag.Id;
+                        htagIssue.IssueId = issueId;
+                        htagIssue.UserId = userId;
+                        htagIssue.Action = "tag added (" + tag.Name + ")";
+                        ctx2.Entry(htagIssue).State = EntityState.Added;
+                        ctx2.SaveChanges();
+                    }
+                    catch (Exception ex)
                     {
                         Console.WriteLine(ex.Message);
                     }
@@ -73,6 +90,8 @@ namespace MApp.DA.Repository
             }
 
             ctx.Dispose();
+            ctx2.Database.Connection.Close();
+            ctx2.Dispose();
         }
 
         /// <summary>
@@ -80,7 +99,7 @@ namespace MApp.DA.Repository
         /// </summary>
         /// <param name="tagList"></param>
         /// <param name="issueId"></param>
-        public static void RemoveTagsFromIssue(List<Tag> tagList, int issueId)
+        public static void RemoveTagsFromIssue(List<Tag> tagList, int issueId, int userId)
         {
             TagIssue help;
             ApplicationDBEntities ctx = new ApplicationDBEntities();
@@ -90,6 +109,15 @@ namespace MApp.DA.Repository
                 help = ctx.TagIssue.Find(tag.Id, issueId);
                 ctx.TagIssue.Remove(help);
                 ctx.Entry(help).State = EntityState.Deleted;
+                ctx.SaveChanges();
+
+                HTagIssue htagIssue = new HTagIssue();
+                htagIssue.ChangeDate = DateTime.Now;
+                htagIssue.TagId = tag.Id;
+                htagIssue.IssueId = issueId;
+                htagIssue.UserId = userId;
+                htagIssue.Action = "tag deleted (" + tag.Name + ")";
+                ctx.Entry(htagIssue).State = EntityState.Added;
                 ctx.SaveChanges();
             }
 

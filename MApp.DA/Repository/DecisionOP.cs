@@ -33,10 +33,22 @@ namespace MApp.DA.Repository
         public static List<HDecision> GetOldDecisions(int issueId, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
+            List<HDecision> rlist = new List<HDecision>();
+
             List<HDecision> list = ctx.HDecision.AsNoTracking().Where(x => x.IssueId == issueId).OrderByDescending(x => x.ChangeDate).ToList();
+            if (list.Count > 1)
+            {
+                HDecision youngest = list[0];
+                for (int i = list.Count - 1; i > 0; i--)
+                {
+                    list[i].ChangeDate = list[i - 1].ChangeDate;
+                }
+                list.Remove(youngest);
+                rlist = list;
+            }
             ctx.Dispose();
 
-            return list;
+            return rlist;
         }
 
         /// <summary>
@@ -47,30 +59,32 @@ namespace MApp.DA.Repository
         public static void MakeDecision(Decision decision, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
-
+            HDecision dec = new HDecision();
             if (ctx.Decision.Where(x => x.IssueId == decision.IssueId).Count() == 0)
             {
                 ctx.Decision.Add(decision);
                 ctx.Entry(decision).State = EntityState.Added;
-            }else
+                dec.Action = "Decision made";
+            }
+            else
             {
                 Decision existingD = ctx.Decision.Find(decision.IssueId);
-                HDecision dec = new HDecision();
-                dec.ChangeDate = DateTime.Now;
-                dec.IssueId = decision.IssueId;
-                dec.UserId = userId;
-                dec.Action = "Decision reconsidered";
-                dec.AlternativeId = existingD.AlternativeId;
-                dec.Explanation = existingD.Explanation;
-                ctx.HDecision.Add(dec);
-                ctx.Entry(dec).State = EntityState.Added;
 
                 existingD.AlternativeId = decision.AlternativeId;
                 existingD.Explanation = decision.Explanation;
                 ctx.Entry(existingD).State = EntityState.Modified;
+                dec.Action = "Decision changed";
             }
-            ctx.SaveChanges();
 
+            dec.ChangeDate = DateTime.Now;
+            dec.IssueId = decision.IssueId;
+            dec.UserId = userId;
+            dec.AlternativeId = decision.AlternativeId;
+            dec.Explanation = decision.Explanation;
+            ctx.HDecision.Add(dec);
+            ctx.Entry(dec).State = EntityState.Added;
+
+            ctx.SaveChanges();
             ctx.Dispose();
         }
 

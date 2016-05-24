@@ -65,6 +65,16 @@ namespace MApp.Web.Controllers
                 vm.Comments = ic.GetIssueComments(issueId, userId);
                 vm.GroupthinkNotifications = ic.GetGroupthinkNotifications(issueId, userId);
                 vm.GroupshiftProperties = ic.GetGropshiftProperties(issueId);
+                ic.MarkAsRead(issueId, userId);
+                vm.UserWithMostChanges = ic.UserWithMostChanges(issueId);
+                if (vm.AccessRight == "O")
+                {
+                    vm.AllUserChangeCounts = ic.GetAllChangeCountsByUser(issueId);
+                }
+                else
+                {
+                    vm.AllUserChangeCounts = new List<KeyValuePair<UserShortModel, int>>();
+                }
             }
             else
             {
@@ -154,6 +164,7 @@ namespace MApp.Web.Controllers
             viewModel.IssueCriteria = ibc.GetIssueCriteria(issueId, userId);
             viewModel.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
             viewModel.UserId = userId;
+            ibc.MarkAsRead(issueId, userId);
             return View(viewModel);
         }
 
@@ -187,6 +198,7 @@ namespace MApp.Web.Controllers
             vm.Alternatives = iba.GetIssueAlternatives(issueId, userId);
             vm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
             vm.UserId = userId;
+            iba.MarkAsRead(issueId, userId);
             return View(vm);
         }
 
@@ -365,7 +377,7 @@ namespace MApp.Web.Controllers
         {
             HttpResponseMessage msg = new HttpResponseMessage();
             IssueCreating ic = new IssueCreating();
-            if (ic.AddAccessRight(accessRight))
+            if (ic.AddAccessRight(accessRight, GetUserIdFromClaim()))
             {
                 msg.StatusCode = System.Net.HttpStatusCode.OK;
             }else
@@ -385,7 +397,7 @@ namespace MApp.Web.Controllers
         {
             HttpResponseMessage msg = new HttpResponseMessage();
             IssueCreating ic = new IssueCreating();
-            if (ic.RemoveAccessRight(accessRight))
+            if (ic.RemoveAccessRight(accessRight, GetUserIdFromClaim()))
             {
                 msg.StatusCode = System.Net.HttpStatusCode.OK;
             }
@@ -405,6 +417,27 @@ namespace MApp.Web.Controllers
                 Data = JsonConvert.SerializeObject(ic.GetGropshiftProperties(issueId))
             };
             return result;
+        }
+
+        public HttpResponseMessage MarkCommentsAsRead(int issueId, string type)
+        {
+            HttpResponseMessage msg = new HttpResponseMessage();
+            int userId = GetUserIdFromClaim();
+            if (type == "Issue")
+            {
+                IssueCreating ic = new IssueCreating();
+                ic.MarkCommentsAsRead(issueId, userId);
+            }else if (type == "Alternative")
+            {
+                IssueBrAlternative iba = new IssueBrAlternative();
+                iba.MarkCommentsAsRead(issueId, userId);
+            }
+            else if (type == "Criterion")
+            {
+                IssueBrCriteria ibc = new IssueBrCriteria();
+                ibc.MarkCommentsAsRead(issueId, userId);
+            }
+            return msg;
         }
     }
 }

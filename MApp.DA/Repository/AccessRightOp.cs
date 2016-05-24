@@ -45,7 +45,7 @@ namespace MApp.DA.Repository
         public static void UpdateRights(List<AccessRight> addedList, List<AccessRight> deletedList, List<AccessRight> editedList, int issueId, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
-
+            User u;
             List<AccessRight> intAddList = addedList.Intersect(ctx.AccessRight).ToList();
             deletedList = deletedList.Distinct().ToList();
             addedList = addedList.Except(intAddList).ToList();
@@ -59,10 +59,23 @@ namespace MApp.DA.Repository
                 ar.SelfAssessmentValue = 0;
                 ctx.AccessRight.Add(ar);
                 ctx.Entry(ar).State = EntityState.Added;
+
+                HAccessRight har = new HAccessRight();
+                har.ChangeDate = DateTime.Now;
+                har.IssueId = ar.IssueId;
+                har.UserId = userId;
+                u = ctx.User.Find(ar.UserId);
+                har.Action = u.FirstName + " " + u.LastName + " added";
+                har.SelfAssesmentDescr = "";
+                har.SelfAssessmentValue = 0;
+                ctx.HAccessRight.Add(har);
+                ctx.Entry(har).State = EntityState.Added;
+
                 try
                 {
                     ctx.SaveChanges();
-                }catch(DbEntityValidationException ex)
+                }
+                catch (DbEntityValidationException ex)
                 {
                     Console.WriteLine(ex.Message);
                     ctx.AccessRight.Remove(ar);
@@ -73,7 +86,7 @@ namespace MApp.DA.Repository
                     ctx.AccessRight.Remove(ar);
                 }
                 GrantAccess(ar.UserId, issueId, ctx);
-                
+
             }
 
             foreach (AccessRight ar in deletedList)
@@ -87,7 +100,7 @@ namespace MApp.DA.Repository
                     }
                 }
             }
-            
+
 
             if (editedList == null)
             {
@@ -200,17 +213,17 @@ namespace MApp.DA.Repository
             ctx.Dispose();
         }
 
-        public static List<HAccessRight> GetAccessRightsHistorical (int userId, int issueId)
+        public static List<HAccessRight> GetAccessRightsHistorical(int userId, int issueId)
         {
             List<HAccessRight> list;
             ApplicationDBEntities ctx = new ApplicationDBEntities();
-            list = ctx.HAccessRight.Where(x => x.UserId == userId && x.IssueId == issueId).OrderByDescending(x => x.ChangeDate).AsNoTracking().ToList();
+            list = ctx.HAccessRight.Where(x => x.UserId == userId && x.IssueId == issueId && x.Action == "Selfassessment updated").OrderByDescending(x => x.ChangeDate).AsNoTracking().ToList();
             ctx.Dispose();
 
             return list;
         }
 
-        public static bool AddAccessRight(AccessRight accessRight)
+        public static bool AddAccessRight(AccessRight accessRight, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
             accessRight.MailNotification = false;
@@ -218,6 +231,19 @@ namespace MApp.DA.Repository
             accessRight.SelfAssessmentValue = 0;
             ctx.AccessRight.Add(accessRight);
             ctx.Entry(accessRight).State = EntityState.Added;
+
+            User u = ctx.User.Find(accessRight.UserId);
+
+            HAccessRight har = new HAccessRight();
+            har.ChangeDate = DateTime.Now;
+            har.IssueId = accessRight.IssueId;
+            har.UserId = userId;
+            har.Action = u.FirstName + " " + u.LastName + " added";
+            har.SelfAssesmentDescr = "";
+            har.SelfAssessmentValue = 0;
+            ctx.HAccessRight.Add(har);
+            ctx.Entry(har).State = EntityState.Added;
+
             try
             {
                 ctx.SaveChanges();
@@ -239,7 +265,7 @@ namespace MApp.DA.Repository
             return true;
         }
 
-        public static bool RemoveAccessRight(AccessRight accessRight)
+        public static bool RemoveAccessRight(AccessRight accessRight, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
             try
@@ -249,11 +275,24 @@ namespace MApp.DA.Repository
                     ctx.Database.ExecuteSqlCommand("delete from [appSchema].[HAccessRight] WHERE UserId = {0} AND IssueId ={1}", accessRight.UserId, accessRight.IssueId);
                     ctx.Database.ExecuteSqlCommand("delete from [appSchema].[AccessRight] WHERE UserId = {0} AND IssueId ={1}", accessRight.UserId, accessRight.IssueId);
                     dbContextTransaction.Commit();
+
+                    HAccessRight har = new HAccessRight();
+                    har.ChangeDate = DateTime.Now;
+                    har.IssueId = accessRight.IssueId;
+                    har.UserId = userId;
+                    User u = ctx.User.Find(accessRight.UserId);
+                    u = ctx.User.Find(accessRight.UserId);
+                    har.Action = u.FirstName + " " + u.LastName + " removed";
+                    har.SelfAssesmentDescr = "";
+                    har.SelfAssessmentValue = 0;
+                    ctx.HAccessRight.Add(har);
+                    ctx.Entry(har).State = EntityState.Added;
+                    ctx.SaveChanges();
                 }
                 ctx.Dispose();
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return false;

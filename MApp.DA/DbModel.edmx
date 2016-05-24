@@ -99,6 +99,7 @@
           <Property Name="ChangeDate" Type="datetime" Nullable="false" />
           <Property Name="AlternativeId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="IssueId" Type="int" Nullable="false" />
           <Property Name="Action" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="30" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="150" />
@@ -180,7 +181,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="TName" Type="varchar" MaxLength="40" Nullable="false" />
-          <Property Name="Condition" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="FK" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="Read" Type="bit" Nullable="false" />
         </EntityType>
@@ -304,6 +305,20 @@
           </Key>
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="PropertyId" Type="int" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'ApplicationDB.appSchema.Changes_View' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="Changes_View">
+          <Key>
+            <PropertyRef Name="ChangeDate" />
+            <PropertyRef Name="IssueId" />
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="Action" />
+          </Key>
+          <Property Name="ChangeDate" Type="datetime" Nullable="false" />
+          <Property Name="IssueId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Action" Type="varchar" MaxLength="79" Nullable="false" />
         </EntityType>
         <Association Name="FK_AccessRight_Issue">
           <End Role="Issue" Type="Self.Issue" Multiplicity="1">
@@ -431,18 +446,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_HAlternative_Alternative">
-          <End Role="Alternative" Type="Self.Alternative" Multiplicity="1" />
-          <End Role="HAlternative" Type="Self.HAlternative" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Alternative">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="HAlternative">
-              <PropertyRef Name="AlternativeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_HAlternative_User">
           <End Role="User" Type="Self.User" Multiplicity="1" />
           <End Role="HAlternative" Type="Self.HAlternative" Multiplicity="*" />
@@ -452,18 +455,6 @@
             </Principal>
             <Dependent Role="HAlternative">
               <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_HCriterion_Criterion">
-          <End Role="Criterion" Type="Self.Criterion" Multiplicity="1" />
-          <End Role="HCriterion" Type="Self.HCriterion" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Criterion">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="HCriterion">
-              <PropertyRef Name="CriterionId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -538,20 +529,6 @@
             <Dependent Role="HReview">
               <PropertyRef Name="IssueId" />
               <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_HTagIssue_TagIssue">
-          <End Role="TagIssue" Type="Self.TagIssue" Multiplicity="1" />
-          <End Role="HTagIssue" Type="Self.HTagIssue" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="TagIssue">
-              <PropertyRef Name="TagId" />
-              <PropertyRef Name="IssueId" />
-            </Principal>
-            <Dependent Role="HTagIssue">
-              <PropertyRef Name="TagId" />
-              <PropertyRef Name="IssueId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -853,6 +830,14 @@
           <EntitySet Name="User" EntityType="Self.User" Schema="appSchema" store:Type="Tables" />
           <EntitySet Name="UserGroup" EntityType="Self.UserGroup" Schema="appSchema" store:Type="Tables" />
           <EntitySet Name="UserProperty" EntityType="Self.UserProperty" Schema="appSchema" store:Type="Tables" />
+          <EntitySet Name="Changes_View" EntityType="Self.Changes_View" store:Type="Views" store:Schema="appSchema">
+            <DefiningQuery>SELECT 
+    [Changes_View].[ChangeDate] AS [ChangeDate], 
+    [Changes_View].[IssueId] AS [IssueId], 
+    [Changes_View].[UserId] AS [UserId], 
+    [Changes_View].[Action] AS [Action]
+    FROM [appSchema].[Changes_View] AS [Changes_View]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_AccessRight_Issue" Association="Self.FK_AccessRight_Issue">
             <End Role="Issue" EntitySet="Issue" />
             <End Role="AccessRight" EntitySet="AccessRight" />
@@ -889,17 +874,9 @@
             <End Role="AccessRight" EntitySet="AccessRight" />
             <End Role="HAccessRight" EntitySet="HAccessRight" />
           </AssociationSet>
-          <AssociationSet Name="FK_HAlternative_Alternative" Association="Self.FK_HAlternative_Alternative">
-            <End Role="Alternative" EntitySet="Alternative" />
-            <End Role="HAlternative" EntitySet="HAlternative" />
-          </AssociationSet>
           <AssociationSet Name="FK_HAlternative_User" Association="Self.FK_HAlternative_User">
             <End Role="User" EntitySet="User" />
             <End Role="HAlternative" EntitySet="HAlternative" />
-          </AssociationSet>
-          <AssociationSet Name="FK_HCriterion_Criterion" Association="Self.FK_HCriterion_Criterion">
-            <End Role="Criterion" EntitySet="Criterion" />
-            <End Role="HCriterion" EntitySet="HCriterion" />
           </AssociationSet>
           <AssociationSet Name="FK_HCriterion_User" Association="Self.FK_HCriterion_User">
             <End Role="User" EntitySet="User" />
@@ -924,10 +901,6 @@
           <AssociationSet Name="FK_HReview_Review" Association="Self.FK_HReview_Review">
             <End Role="Review" EntitySet="Review" />
             <End Role="HReview" EntitySet="HReview" />
-          </AssociationSet>
-          <AssociationSet Name="FK_HTagIssue_TagIssue" Association="Self.FK_HTagIssue_TagIssue">
-            <End Role="TagIssue" EntitySet="TagIssue" />
-            <End Role="HTagIssue" EntitySet="HTagIssue" />
           </AssociationSet>
           <AssociationSet Name="FK_HTagIssue_User" Association="Self.FK_HTagIssue_User">
             <End Role="User" EntitySet="User" />
@@ -1136,6 +1109,7 @@
           <Property Name="Rating" Type="Double" />
           <NavigationProperty Name="Alternative" Relationship="Self.FK_HAlternative_Alternative" FromRole="HAlternative" ToRole="Alternative" />
           <NavigationProperty Name="User" Relationship="Self.FK_HAlternative_User" FromRole="HAlternative" ToRole="User" />
+          <Property Name="IssueId" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="HCriterion">
           <Key>
@@ -1214,16 +1188,6 @@
           <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="TagIssue" Relationship="Self.FK_HTagIssue_TagIssue" FromRole="HTagIssue" ToRole="TagIssue" />
           <NavigationProperty Name="User" Relationship="Self.FK_HTagIssue_User" FromRole="HTagIssue" ToRole="User" />
-        </EntityType>
-        <EntityType Name="InformationRead">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="TName" Type="String" MaxLength="40" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Condition" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Read" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Issue">
           <Key>
@@ -1887,7 +1851,6 @@
           <EntitySet Name="HIssue" EntityType="Self.HIssue" />
           <EntitySet Name="HReview" EntityType="Self.HReview" />
           <EntitySet Name="HTagIssue" EntityType="Self.HTagIssue" />
-          <EntitySet Name="InformationRead" EntityType="Self.InformationRead" />
           <EntitySet Name="Issue" EntityType="Self.Issue" />
           <EntitySet Name="Notification" EntityType="Self.Notification" />
           <EntitySet Name="PairwiseComparisonAC" EntityType="Self.PairwiseComparisonAC" />
@@ -2054,7 +2017,31 @@
             <End Role="Property" EntitySet="Property" />
             <End Role="User" EntitySet="User" />
           </AssociationSet>
+          <EntitySet Name="Changes_View" EntityType="ApplicationDBModel.Changes_View" />
+          <EntitySet Name="InformationRead" EntityType="ApplicationDBModel.InformationRead" />
         </EntityContainer>
+        <EntityType Name="Changes_View">
+          <Key>
+            <PropertyRef Name="ChangeDate" />
+            <PropertyRef Name="IssueId" />
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="Action" />
+          </Key>
+          <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IssueId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Action" Type="String" Nullable="false" MaxLength="79" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="InformationRead">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TName" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="FK" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Read" Type="Boolean" Nullable="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2152,6 +2139,7 @@
           <EntitySetMapping Name="HAlternative">
             <EntityTypeMapping TypeName="ApplicationDBModel.HAlternative">
               <MappingFragment StoreEntitySet="HAlternative">
+                <ScalarProperty Name="IssueId" ColumnName="IssueId" />
                 <ScalarProperty Name="ChangeDate" ColumnName="ChangeDate" />
                 <ScalarProperty Name="AlternativeId" ColumnName="AlternativeId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
@@ -2227,17 +2215,6 @@
                 <ScalarProperty Name="IssueId" ColumnName="IssueId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="Action" ColumnName="Action" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="InformationRead">
-            <EntityTypeMapping TypeName="ApplicationDBModel.InformationRead">
-              <MappingFragment StoreEntitySet="InformationRead">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="TName" ColumnName="TName" />
-                <ScalarProperty Name="Condition" ColumnName="Condition" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="Read" ColumnName="Read" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -2364,6 +2341,27 @@
               <ScalarProperty Name="Id" ColumnName="UserId" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="Changes_View">
+            <EntityTypeMapping TypeName="ApplicationDBModel.Changes_View">
+              <MappingFragment StoreEntitySet="Changes_View">
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="IssueId" ColumnName="IssueId" />
+                <ScalarProperty Name="ChangeDate" ColumnName="ChangeDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InformationRead">
+            <EntityTypeMapping TypeName="ApplicationDBModel.InformationRead">
+              <MappingFragment StoreEntitySet="InformationRead">
+                <ScalarProperty Name="Read" ColumnName="Read" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="FK" ColumnName="FK" />
+                <ScalarProperty Name="TName" ColumnName="TName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

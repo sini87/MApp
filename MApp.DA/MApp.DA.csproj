@@ -57,6 +57,9 @@
     <Compile Include="Alternative.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Changes_View.cs">
+      <DependentUpon>DbModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Comment.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
@@ -140,6 +143,7 @@
     <Compile Include="Repository\AccessRightOp.cs" />
     <Compile Include="Repository\CriterionWeightOp.cs" />
     <Compile Include="Repository\DecisionOp.cs" />
+    <Compile Include="Repository\InformationReadOp.cs" />
     <Compile Include="Repository\NotificationOp.cs" />
     <Compile Include="Repository\RatingOp.cs" />
     <Compile Include="Repository\IssueOp.cs" />

@@ -209,6 +209,89 @@
                 </div>
             </div>
 
+            @*Activity Index*@
+            @*Best user in changes*@
+            <!-- ko if: viewModel.AccessRight() != 'O'-->
+                <div class="row phenomenon-elem" data-bind="text: 'Most changes: ' + viewModel.UserWithMostChanges.Key() + ' ' + viewModel.UserWithMostChanges.Value()"></div>
+            <!-- /ko -->
+            <!-- ko if: viewModel.AccessRight() == 'O'-->
+                <div class="row phenomenon-elem">
+                    <a class="phenomenon-link" data-toggle="modal" data-target="#allChangesDialog" data-bind="text: 'Most changes: ' + viewModel.UserWithMostChanges.Key() + ' ' + viewModel.UserWithMostChanges.Value()"></a>
+                    <div class="modal fade" id="allChangesDialog" role="dialog">
+                        <div class="modal-dialog">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Change Activity of Users</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <table class="table">
+                                        <thead>
+                                            <th>User</th>
+                                            <th>Changes</th>
+                                        </thead>
+                                        <tbody data-bind="foreach: viewModel.AllUserChangeCounts">
+                                            <tr>
+                                                <td data-bind="text: Key.Name"></td>
+                                                <td data-bind="text: Value"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="modal-footer">
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            <!-- /ko -->
+            @*Me in Changes*@
+            <div class="row phenomenon-elem" data-bind="text: 'My changes ', visible: viewModel.AccessRight() != 'V'">
+                <a class="phenomenon-link" data-toggle="modal" data-target="#myChangesDialog" data-bind="text: 'My changes: '"></a>
+                <div class="modal fade" id="myChangesDialog" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">My last changes</h4>
+                            </div>
+                            <div class="modal-body">
+                                
+                            </div>
+                            <div class="modal-footer">
+                                
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            @*Information read/seen*@
+            <div class="row phenomenon-elem" data-bind="text: 'read items ' + ' of'">
+                <a class="phenomenon-link" data-toggle="modal" data-target="#myInfosToReadDialog" data-bind="text: 'My changes: '"></a>
+                <div class="modal fade" id="myInfosToReadDialog" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Information which i have not seen</h4>
+                            </div>
+                            <div class="modal-body">
+
+                            </div>
+                            <div class="modal-footer">
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         </div> <!-- phenomenon end-->
 
         <div>
@@ -288,9 +371,9 @@
 </div>
 
 <div class="row">
-    <button id="save" type="button" class="btn btn-primary" onclick="javascript: onSaveClick()" data-bind="visible: viewModelJs.AccessRight == 'O' || viewModelJs.AccessRight == 'C'">Save</button>
+    <button id="save" type="button" class="btn btn-primary" onclick="javascript: onSaveClick()" data-bind="visible: viewModelJs.AccessRight == 'O' || viewModelJs.AccessRight == 'C', enable: viewModel.titleEmpty">Save</button>
     <button id="nextstage" type="button" class="btn btn-primary" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.AccessRight() == 'O', enable: viewModelJs.Issue.Id != -1">Next Stage</button>
-    <button id="showCommentsBtn" class="btn btn-primary btn-md accordion-toggle" data-toggle="collapse" data-target=".comment" data-bind="enable: viewModelJs.Issue.Id != -1">Show comments</button>
+    <button id="showCommentsBtn" class="btn btn-primary btn-md accordion-toggle" data-toggle="collapse" data-target=".comment" data-bind="enable: viewModelJs.Issue.Id != -1" onclick="onShowCommentsBtnClick('Issue')">Show comments</button>
     <button id="delete" type="button" class="btn btn-danger" onclick="javascript: onDeleteClick()" data-bind="visible: viewModelJs.AccessRight == 'O', enable: viewModelJs.Issue.Id != -1">Delete</button>
 </div>
 
@@ -378,6 +461,14 @@
     if (viewModelJs.Issue.Id == -1){
         viewModel.Issue.Tags = ko.observableArray();
     }
+
+    viewModel.titleEmpty = ko.computed(function(){
+        if (viewModel.Issue.Title != null && viewModel.Issue.Title() != null && viewModel.Issue.Title().length > 0){
+            return true;
+        }else{
+            return false;
+        }
+    });
 
     //Phenomenon dashboard VM
     viewModel.newGroupthinkNotifications = ko.computed(function(){
@@ -568,7 +659,7 @@
                 })
             }else{
                 viewModel.AccessRights.push(ar);
-                viewModel.AllUsers.splice($('#selectUser').selectpicker('option :selected').index(), 1)
+                viewModel.AllUsers.splice($('#selectUser').selectpicker('option :selected').index() - 1, 1)
                 $('#selectUser').find('[value=' + uid + ']').remove();
                 $('#selectUser').selectpicker('refresh');
 

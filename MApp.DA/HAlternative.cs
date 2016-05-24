@@ -22,6 +22,7 @@ namespace MApp.DA
         public string Description { get; set; }
         public string Reason { get; set; }
         public Nullable<double> Rating { get; set; }
+        public int IssueId { get; set; }
     
         public virtual Alternative Alternative { get; set; }
         public virtual User User { get; set; }

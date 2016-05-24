@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,11 +43,26 @@ namespace MApp.DA.Repository
                 return;
             }
 
-            foreach(int id in criterionIdList)
+            foreach (int id in criterionIdList)
             {
                 crit = ctx.Criterion.Find(id);
                 ctx.Criterion.Remove(crit);
                 ctx.Entry(crit).State = EntityState.Deleted;
+                ctx.SaveChanges();
+
+                //changes to historytable
+                HCriterion hcrit = new HCriterion();
+                hcrit.ChangeDate = DateTime.Now;
+                hcrit.CriterionId = id;
+                hcrit.UserId = userId;
+                hcrit.Action = "criterion deleted (" + crit.Name + ")";
+                hcrit.Name = crit.Name;
+                hcrit.Description = crit.Description;
+                hcrit.Issue = crit.Issue;
+                hcrit.Weight = crit.Weight;
+                hcrit.WeightPC = crit.WeightPC;
+                ctx.HCriterion.Add(hcrit);
+                ctx.Entry(hcrit).State = EntityState.Added;
                 ctx.SaveChanges();
             }
 
@@ -67,7 +84,7 @@ namespace MApp.DA.Repository
                 return;
             }
 
-            foreach(Criterion crit in criterionList)
+            foreach (Criterion crit in criterionList)
             {
                 addingCrit = ctx.Criterion.Create();
                 addingCrit.Description = crit.Description;
@@ -78,6 +95,29 @@ namespace MApp.DA.Repository
                 ctx.Criterion.Add(addingCrit);
                 ctx.Entry(addingCrit).State = EntityState.Added;
                 ctx.SaveChanges();
+
+                //changes to history table
+                HCriterion hcrit = new HCriterion();
+                hcrit.ChangeDate = DateTime.Now;
+                hcrit.CriterionId = addingCrit.Id;
+                hcrit.UserId = userId;
+                hcrit.Action = "criterion added (" + addingCrit.Name + ")";
+                hcrit.Name = addingCrit.Name;
+                hcrit.Description = addingCrit.Description;
+                hcrit.Issue = addingCrit.Issue;
+                ctx.HCriterion.Add(hcrit);
+                ctx.Entry(hcrit).State = EntityState.Added;
+                ctx.SaveChanges();
+
+                //mark new criterion as read
+                ApplicationDBEntities ctx2 = new ApplicationDBEntities();
+                DbCommand cmd = ctx.Database.Connection.CreateCommand();
+                ctx.Database.Connection.Open();
+                cmd.CommandText = "UPDATE appSchema.InformationRead SET [Read] = 1 WHERE UserId = " + userId + " AND TName LIKE 'Criterion' AND FK LIKE '" + addingCrit.Id + "'";
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.ExecuteNonQuery();
+                ctx2.Database.Connection.Close();
+                ctx2.Dispose();
             }
 
             ctx.Dispose();
@@ -119,7 +159,22 @@ namespace MApp.DA.Repository
                     try
                     {
                         ctx.SaveChanges();
-                    }catch(Exception ex)
+
+                        HCriterion hcrit = new HCriterion();
+                        hcrit.ChangeDate = DateTime.Now;
+                        hcrit.CriterionId = crit.Id;
+                        hcrit.UserId = userId;
+                        hcrit.Action = "criterion updated (" + crit.Name + ")";
+                        hcrit.Name = crit.Name;
+                        hcrit.Description = crit.Description;
+                        hcrit.Issue = crit.Issue;
+                        hcrit.Weight = crit.Weight;
+                        hcrit.WeightPC = crit.WeightPC;
+                        ctx.HCriterion.Add(hcrit);
+                        ctx.Entry(hcrit).State = EntityState.Added;
+                        ctx.SaveChanges();
+                    }
+                    catch (Exception ex)
                     {
                         DbConnection.Instance.DisposeAndReload();
                     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity;
 using System.Linq;
 using System.Text;
@@ -30,7 +31,7 @@ namespace MApp.DA.Repository
         /// </summary>
         /// <param name="alternativeIdList">list of to deleting alternative ids</param>
         /// <param name="userId"></param>
-        public static void DeleteAlternatives (List<int> alternativeIdList, int userId)
+        public static void DeleteAlternatives(List<int> alternativeIdList, int userId)
         {
             Alternative alt;
             ApplicationDBEntities ctx = new ApplicationDBEntities();
@@ -46,6 +47,20 @@ namespace MApp.DA.Repository
                 ctx.Alternative.Remove(alt);
                 ctx.Entry(alt).State = EntityState.Deleted;
                 ctx.SaveChanges();
+
+                HAlternative halt = new HAlternative();
+                halt.ChangeDate = DateTime.Now;
+                halt.AlternativeId = alt.Id;
+                halt.UserId = userId;
+                halt.Action = "alternative deleted (" + alt.Name + ")";
+                halt.Name = alt.Name;
+                halt.Description = alt.Description;
+                halt.Reason = alt.Reason;
+                halt.Rating = alt.Rating;
+                halt.IssueId = alt.IssueId;
+                ctx.HAlternative.Add(halt);
+                ctx.Entry(halt).State = EntityState.Added;
+                ctx.SaveChanges();
             }
 
             ctx.Dispose();
@@ -57,7 +72,7 @@ namespace MApp.DA.Repository
         /// </summary>
         /// <param name="alternativeList"></param>
         /// <param name="userId">user who is performing this operation</param>
-        public static void AddAlternatives (List<Alternative> alternativeList, int userId)
+        public static void AddAlternatives(List<Alternative> alternativeList, int userId)
         {
             Alternative addedAlt;
             ApplicationDBEntities ctx = new ApplicationDBEntities();
@@ -77,6 +92,30 @@ namespace MApp.DA.Repository
                 ctx.Alternative.Add(addedAlt);
                 ctx.Entry(addedAlt).State = EntityState.Added;
                 ctx.SaveChanges();
+
+                //insert into change-table
+                HAlternative halt = new HAlternative();
+                halt.ChangeDate = DateTime.Now;
+                halt.AlternativeId = addedAlt.Id;
+                halt.UserId = userId;
+                halt.IssueId = alt.IssueId;
+                halt.Action = "alternative added (" + addedAlt.Name + ")";
+                halt.Name = addedAlt.Name;
+                halt.Description = addedAlt.Description;
+                halt.Reason = addedAlt.Reason;
+                ctx.HAlternative.Add(halt);
+                ctx.Entry(halt).State = EntityState.Added;
+                ctx.SaveChanges();
+
+                //mark new alternative as read
+                ApplicationDBEntities ctx2 = new ApplicationDBEntities();
+                DbCommand cmd = ctx.Database.Connection.CreateCommand();
+                ctx.Database.Connection.Open();
+                cmd.CommandText = "UPDATE appSchema.InformationRead SET [Read] = 1 WHERE UserId = " + userId + " AND TName LIKE 'Alternative' AND FK LIKE '" + addedAlt.Id + "'";
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.ExecuteNonQuery();
+                ctx2.Database.Connection.Close();
+                ctx2.Dispose();
             }
 
             ctx.Dispose();
@@ -124,6 +163,20 @@ namespace MApp.DA.Repository
                 if (updated)
                 {
                     ctx.Entry(updateAlt).State = EntityState.Modified;
+                    ctx.SaveChanges();
+
+                    HAlternative halt = new HAlternative();
+                    halt.ChangeDate = DateTime.Now;
+                    halt.AlternativeId = updateAlt.Id;
+                    halt.UserId = useId;
+                    halt.Action = "alternative updated (" + updateAlt.Name + ")";
+                    halt.Name = updateAlt.Name;
+                    halt.Description = updateAlt.Description;
+                    halt.Reason = updateAlt.Reason;
+                    halt.Rating = updateAlt.Rating;
+                    halt.IssueId = updateAlt.IssueId;
+                    ctx.HAlternative.Add(halt);
+                    ctx.Entry(halt).State = EntityState.Added;
                     ctx.SaveChanges();
                 }
             }

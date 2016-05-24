@@ -66,7 +66,7 @@ namespace MApp.DA.Repository
         /// </summary>
         /// <param name="issueId"></param>
         /// <returns></returns>
-        public static List<KeyValuePair<string,List<string>>> GetGroupshiftProperties(int issueId)
+        public static List<KeyValuePair<string, List<string>>> GetGroupshiftProperties(int issueId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
             List<KeyValuePair<string, List<string>>> list = new List<KeyValuePair<string, List<string>>>();
@@ -86,14 +86,16 @@ namespace MApp.DA.Repository
                 + "GROUP BY p.Name, p.Id "
                 + "ORDER BY 'Percentage' DESC";
 
-            DbCommand cmd = ctx.Database.Connection.CreateCommand();
-            ctx.Database.Connection.Open();
+            ApplicationDBEntities ctx2 = new ApplicationDBEntities();
+            DbCommand cmd = ctx2.Database.Connection.CreateCommand();
+            ctx2.Database.Connection.Open();
             string propertyName;
             double val;
             int propertyId;
             KeyValuePair<string, List<string>> kvp;
             cmd.CommandText = query;
-            using (var reader = cmd.ExecuteReader()){
+            using (var reader = cmd.ExecuteReader())
+            {
                 while (reader.Read())
                 {
                     val = reader.GetDouble(0);
@@ -101,29 +103,90 @@ namespace MApp.DA.Repository
                     {
                         propertyName = reader.GetString(1);
                         propertyId = reader.GetInt32(2);
-                        
+
                         List<User> userList;
                         List<string> userNameList = new List<string>();
                         string queryUser = "SELECT * from appSchema.[User] u WHERE u.Id in " +
                             "(Select up.UserId from " +
-                            "UserProperty up, AccessRight ar " + 
+                            "UserProperty up, AccessRight ar " +
                             "Where up.PropertyId = {0} AND " +
-                            "ar.UserId = up.UserId AND "+
+                            "ar.UserId = up.UserId AND " +
                             "ar.IssueId = {1})";
                         userList = ctx.Database.SqlQuery<User>(queryUser, propertyId, issueId).ToList();
-                        foreach(User u in userList)
+                        foreach (User u in userList)
                         {
                             userNameList.Add(u.FirstName + " " + u.LastName);
                         }
                         kvp = new KeyValuePair<string, List<string>>(propertyName, userNameList);
                         list.Add(kvp);
-                    }else
+                    }
+                    else
                     {
                         reader.Close();
+                        cmd.Dispose();
                         break;
                     }
                 }
+
             }
+            ctx.Dispose();
+            ctx2.Dispose();
+            return list;
+        }
+
+        /// <summary>
+        /// returns user with most changes made to an issue
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <returns>key value pair, key is user name and value the count of changes</returns>
+        public static KeyValuePair<string,int> UserWithMostChanges(int issueId)
+        {
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            KeyValuePair<string, int> kvp = new KeyValuePair<string, int>();
+
+            var changes = ctx.Changes_View.AsNoTracking().Where(x => x.IssueId == 10).GroupBy(info => info.UserId)
+                .Select(group => new
+                {
+                    UserId = group.Key,
+                    Count = group.Count()
+                })
+                    .OrderByDescending(x => x.Count);
+            if (changes.Count() > 0)
+            {
+                User u = new User();
+                var x = changes.FirstOrDefault();
+                u = ctx.User.Find(x.UserId);
+                kvp = new KeyValuePair<string, int>(u.FirstName + " " + u.LastName, x.Count);
+            }
+
+            ctx.Dispose();
+            return kvp;
+        }
+
+        /// <summary>
+        /// returns users with the count of changes they made
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <returns>list of key value pairs, key is the userId and value the count of changes</returns>
+        public static List<KeyValuePair<int,int>> GetAllChangeCountsByUser(int issueId)
+        {
+            List<KeyValuePair<int, int>> list = new List<KeyValuePair<int, int>>();
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            var best = ctx.Changes_View.AsNoTracking().Where(x => x.IssueId == 10).GroupBy(info => info.UserId)
+                .Select(group => new
+                {
+                    UserId = group.Key,
+                    Count = group.Count()
+                })
+                    .OrderBy(x => x.Count);
+
+            KeyValuePair<int, int> kvp;
+            foreach (var vp in best)
+            {
+                kvp = new KeyValuePair<int, int>(vp.UserId, vp.Count);
+                list.Add(kvp);
+            }
+
             ctx.Dispose();
             return list;
         }

@@ -69,5 +69,25 @@ namespace MApp.Middleware
 
             return list;
         }
+
+        /// <summary>
+        /// marks issue alternatives as read/seen
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
+        public void MarkAsRead(int issueId, int userId)
+        {
+            InformationReadOp.MarkAlternatives(issueId, userId);
+        }
+
+        /// <summary>
+        /// marks alternative comments as read
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
+        public void MarkCommentsAsRead(int issueId, int userId)
+        {
+            InformationReadOp.MarkAlternativeComments(issueId, userId);
+        }
     }
 }

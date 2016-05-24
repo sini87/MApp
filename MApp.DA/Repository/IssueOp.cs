@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,7 +30,7 @@ namespace MApp.DA.Repository
                                where AccessRight.UserId == userId
                                select new
                                {
-                                   AccessRight.IssueId  
+                                   AccessRight.IssueId
                                }).Contains(new { IssueId = Issue.Id })
                         select Issue;
             List<Issue> list = new List<Issue>();
@@ -80,47 +82,90 @@ namespace MApp.DA.Repository
             Issue updateIssue;
             ApplicationDBEntities ctx = new ApplicationDBEntities();
             updateIssue = ctx.Issue.Find(issue.Id);
+            List<string> updatedFields = new List<string>();
 
             bool updated = false;
             if (issue.Title != updateIssue.Title)
             {
                 updateIssue.Title = issue.Title;
                 updated = true;
+                updatedFields.Add("title");
             }
             if (updateIssue.Description != issue.Description)
             {
                 updateIssue.Description = issue.Description;
                 updated = true;
+                updatedFields.Add("description");
             }
             if (updateIssue.AnonymousPosting != issue.AnonymousPosting)
             {
                 updateIssue.AnonymousPosting = issue.AnonymousPosting;
                 updated = true;
+                updatedFields.Add("anonymous posting");
             }
             if (updateIssue.Status != issue.Status)
             {
                 updateIssue.Status = issue.Status;
                 updated = true;
+                updatedFields.Add("status");
             }
             if (updateIssue.Parent != issue.Parent)
             {
                 updateIssue.Parent = issue.Parent;
                 updated = true;
+                updatedFields.Add("parent issue");
             }
             if (updateIssue.DependsOn != issue.DependsOn)
             {
                 updateIssue.DependsOn = issue.DependsOn;
                 updated = true;
+                updatedFields.Add("depends on issue");
             }
             if (updateIssue.Setting != issue.Setting)
             {
                 updateIssue.Setting = issue.Setting;
                 updated = true;
+                updatedFields.Add("setting");
             }
             if (updated)
             {
                 ctx.Entry(updateIssue).State = EntityState.Modified;
+
+                HIssue hissue = new HIssue();
+                hissue.ChangeDate = DateTime.Now;
+                hissue.IssueId = issue.Id;
+                hissue.UserId = userId;
+                hissue.Action = "Issue updated (";
+                bool first = true;
+                foreach (string str in updatedFields)
+                {
+                    if (first)
+                    {
+                        hissue.Action = hissue.Action + str;
+                        first = false;
+                    }
+                    else
+                    {
+                        hissue.Action = hissue.Action + " ," + str;
+                    }
+                }
+                hissue.Action = hissue.Action + ")";
+                hissue.Status = issue.Status;
+                hissue.Title = issue.Title;
+                hissue.Description = issue.Description;
+                hissue.Setting = issue.Setting;
+                hissue.Status = issue.Status;
+                hissue.AnonymousPosting = issue.AnonymousPosting;
+                hissue.Parent = issue.Parent;
+                hissue.DependsOn = issue.DependsOn;
+                hissue.GroupThink = issue.GroupThink;
+                hissue.ReviewRating = issue.ReviewRating;
+                ctx.HIssue.Add(hissue);
+                ctx.Entry(hissue).State = EntityState.Added;
+
                 ctx.SaveChanges();
+
+
             }
 
             ctx.Dispose();
@@ -164,8 +209,52 @@ namespace MApp.DA.Repository
                 ar.MailNotification = false;
                 ctx.AccessRight.Add(ar);
                 ctx.Entry(ar).State = EntityState.Added;
+
+                HAccessRight har = new HAccessRight();
+                har.ChangeDate = DateTime.Now;
+                har.IssueId = ar.IssueId;
+                har.UserId = userId;
+                har.Action = "selfassessment added";
+                har.SelfAssesmentDescr = selfAssessmentDescription;
+                har.SelfAssessmentValue = selfAssessmentValue;
+                ctx.HAccessRight.Add(har);
+                ctx.Entry(har).State = EntityState.Added;
+
+                HIssue hissue = new HIssue();
+                hissue.ChangeDate = DateTime.Now;
+                hissue.IssueId = issueId;
+                hissue.UserId = userId;
+                hissue.Action = "issue created";
+                hissue.Status = issue.Status;
+                hissue.Title = issue.Title;
+                hissue.Description = issue.Description;
+                hissue.Setting = issue.Setting;
+                hissue.Status = issue.Status;
+                hissue.AnonymousPosting = issue.AnonymousPosting;
+                hissue.Parent = issue.Parent;
+                hissue.DependsOn = issue.DependsOn;
+                hissue.GroupThink = issue.GroupThink;
+                hissue.ReviewRating = issue.ReviewRating;
+                ctx.HIssue.Add(hissue);
+                ctx.Entry(hissue).State = EntityState.Added;
+
                 ctx.SaveChanges();
-            }catch(Exception ex)
+
+                //mark issue as read
+                ApplicationDBEntities ctx2 = new ApplicationDBEntities();
+                DbCommand cmd = ctx.Database.Connection.CreateCommand();
+                ctx.Database.Connection.Open();
+                cmd.CommandText = "UPDATE appSchema.InformationRead SET [Read] = 1 WHERE UserId = " + userId + " AND TName LIKE 'Alternative' AND FK LIKE '" + issueId + "'";
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.ExecuteNonQuery();
+                ctx2.Database.Connection.Close();
+                ctx2.Dispose();
+            }
+            catch (DbEntityValidationException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -182,7 +271,7 @@ namespace MApp.DA.Repository
         public static List<Issue> RootIssues(int? issueId, ApplicationDBEntities ctx)
         {
             List<Issue> parentList = new List<Issue>();
-            
+
             if (issueId == -1)
                 return parentList;
             int? parent = ctx.Issue.Where(x => x.Id == issueId).FirstOrDefault().Parent;
@@ -207,7 +296,7 @@ namespace MApp.DA.Repository
         /// </summary>
         /// <param name="issueId"></param>
         /// <returns>returns true if delete was successful</returns>
-        public static bool DeleteIssue (int issueId)
+        public static bool DeleteIssue(int issueId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
             Issue issue = ctx.Issue.Find(issueId);
@@ -217,7 +306,8 @@ namespace MApp.DA.Repository
             {
                 ctx.SaveChanges();
                 return true;
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -256,6 +346,25 @@ namespace MApp.DA.Repository
                     break;
             }
             ctx.Entry(issue).State = EntityState.Modified;
+            ctx.SaveChanges();
+
+            HIssue hissue = new HIssue();
+            hissue.ChangeDate = DateTime.Now;
+            hissue.IssueId = issueId;
+            hissue.UserId = userId;
+            hissue.Action = "issue moved to next stage";
+            hissue.Status = issue.Status;
+            hissue.Title = issue.Title;
+            hissue.Description = issue.Description;
+            hissue.Setting = issue.Setting;
+            hissue.Status = issue.Status;
+            hissue.AnonymousPosting = issue.AnonymousPosting;
+            hissue.Parent = issue.Parent;
+            hissue.DependsOn = issue.DependsOn;
+            hissue.GroupThink = issue.GroupThink;
+            hissue.ReviewRating = issue.ReviewRating;
+            ctx.HIssue.Add(hissue);
+            ctx.Entry(hissue).State = EntityState.Added;
             ctx.SaveChanges();
 
             ctx.Dispose();

@@ -98,8 +98,8 @@ namespace MApp.Middleware
         public void UpdateIsseuTags(int issueId, List<TagModel> addedTags, List<TagModel> deletedTags, int userId)
         {
             TagModel tm = new TagModel();
-            TagOp.AddTagsToIssue(tm.ToEntityList(addedTags), issueId);
-            TagOp.RemoveTagsFromIssue(tm.ToEntityList(deletedTags.Where(x => x.Id > 0).ToList()), issueId);
+            TagOp.AddTagsToIssue(tm.ToEntityList(addedTags), issueId, userId);
+            TagOp.RemoveTagsFromIssue(tm.ToEntityList(deletedTags.Where(x => x.Id > 0).ToList()), issueId, userId);
         }
 
         /// <summary>
@@ -288,21 +288,100 @@ namespace MApp.Middleware
             NotificationOp.MarkNotificationAsRead(notificationId);
         }
 
-        public bool AddAccessRight(AccessRightModel accessRight)
+        /// <summary>
+        /// adds an access right to the issue
+        /// </summary>
+        /// <param name="accessRight"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public bool AddAccessRight(AccessRightModel accessRight, int userId)
         {
             AccessRightModel arm = new AccessRightModel();
-            return AccessRightOp.AddAccessRight(arm.ToEntity(accessRight));
+            return AccessRightOp.AddAccessRight(arm.ToEntity(accessRight), userId);
         }
 
-        public bool RemoveAccessRight(AccessRightModel accessRight)
+        /// <summary>
+        /// removes an accessright from issue
+        /// </summary>
+        /// <param name="accessRight"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public bool RemoveAccessRight(AccessRightModel accessRight, int userId)
         {
             AccessRightModel arm = new AccessRightModel();
-            return AccessRightOp.RemoveAccessRight(arm.ToEntity(accessRight));
+            return AccessRightOp.RemoveAccessRight(arm.ToEntity(accessRight), userId);
         }
 
+        /// <summary>
+        /// returns a list of key-value pairs
+        /// the key is the name of the property
+        /// the value is a list of users who share the property/skill
+        /// the threshold is currently 50%
+        /// so if 50% of the users of an issue share the same property 
+        /// this method will return these properties with the users
+        /// only 'Owners' and 'Contributors' are considered, not owners
+        /// minimum 2 users must have accessright to the issue
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <returns></returns>
         public List<KeyValuePair<string,List<String>>> GetGropshiftProperties(int issueId)
         {
             return NotificationOp.GetGroupshiftProperties(issueId);
+        }
+
+        /// <summary>
+        /// makrs issue core infomations as read
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
+        public void MarkAsRead(int issueId, int userId)
+        {
+            InformationReadOp.MarkIssue(issueId, userId);
+        }
+
+        /// <summary>
+        /// marks issue comments as read
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
+        public void MarkCommentsAsRead(int issueId, int userId)
+        {
+            InformationReadOp.MarkIssueComments(issueId, userId);
+        }
+
+        /// <summary>
+        /// returns users with the count of changes they made
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <returns>list of key value pairs, key is the userId and value the count of changes</returns>
+        public KeyValuePair<string,int> UserWithMostChanges(int issueId)
+        {
+            return NotificationOp.UserWithMostChanges(issueId);
+        }
+
+        /// <summary>
+        /// returns users with the count of changes they made
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <returns>list of key value pairs, key is the userId and value the count of changes</returns>
+        public List<KeyValuePair<UserShortModel,int>> GetAllChangeCountsByUser(int issueId)
+        {
+            List<KeyValuePair<UserShortModel, int>> list = new List<KeyValuePair<UserShortModel, int>>();
+            List<KeyValuePair<int, int>> countList = NotificationOp.GetAllChangeCountsByUser(issueId);
+            KeyValuePair<UserShortModel, int> userCntKvp;
+
+            if(userList == null || userList.Count() == 0)
+            {
+                GetAllUsers();
+            }
+
+            foreach(KeyValuePair<int,int> cntKvp in countList)
+            {
+                userCntKvp = new KeyValuePair<UserShortModel, int>(userList.Find(x => x.Id == cntKvp.Key), cntKvp.Value);
+                list.Add(userCntKvp);
+            }
+
+            return list;
         }
     }
 }

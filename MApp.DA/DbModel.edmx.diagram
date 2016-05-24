@@ -19,7 +19,6 @@
         <EntityTypeShape EntityType="ApplicationDBModel.HIssue" Width="1.5" PointX="11.25" PointY="22.5" IsExpanded="true" />
         <EntityTypeShape EntityType="ApplicationDBModel.HReview" Width="1.5" PointX="10.5" PointY="31.5" IsExpanded="true" />
         <EntityTypeShape EntityType="ApplicationDBModel.HTagIssue" Width="1.5" PointX="8.25" PointY="17.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="ApplicationDBModel.InformationRead" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="ApplicationDBModel.Issue" Width="1.5" PointX="3.75" PointY="5.625" IsExpanded="true" />
         <EntityTypeShape EntityType="ApplicationDBModel.Notification" Width="1.5" PointX="11.25" PointY="19.25" IsExpanded="true" />
         <EntityTypeShape EntityType="ApplicationDBModel.PairwiseComparisonAC" Width="1.5" PointX="11.25" PointY="27.25" IsExpanded="true" />
@@ -69,6 +68,8 @@
         <AssociationConnector Association="ApplicationDBModel.FK_TagIssue_Tag" ManuallyRouted="false" />
         <AssociationConnector Association="ApplicationDBModel.UserGroup" ManuallyRouted="false" />
         <AssociationConnector Association="ApplicationDBModel.UserProperty" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="ApplicationDBModel.Changes_View" Width="1.5" PointX="3.375" PointY="0.75" />
+        <EntityTypeShape EntityType="ApplicationDBModel.InformationRead" Width="1.5" PointX="0.75" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

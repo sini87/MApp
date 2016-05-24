@@ -39,7 +39,6 @@ namespace MApp.DA
         public virtual DbSet<HIssue> HIssue { get; set; }
         public virtual DbSet<HReview> HReview { get; set; }
         public virtual DbSet<HTagIssue> HTagIssue { get; set; }
-        public virtual DbSet<InformationRead> InformationRead { get; set; }
         public virtual DbSet<Issue> Issue { get; set; }
         public virtual DbSet<Notification> Notification { get; set; }
         public virtual DbSet<PairwiseComparisonAC> PairwiseComparisonAC { get; set; }
@@ -50,5 +49,7 @@ namespace MApp.DA
         public virtual DbSet<Tag> Tag { get; set; }
         public virtual DbSet<TagIssue> TagIssue { get; set; }
         public virtual DbSet<User> User { get; set; }
+        public virtual DbSet<Changes_View> Changes_View { get; set; }
+        public virtual DbSet<InformationRead> InformationRead { get; set; }
     }
 }

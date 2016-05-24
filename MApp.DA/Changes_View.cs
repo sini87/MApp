@@ -12,12 +12,11 @@ namespace MApp.DA
     using System;
     using System.Collections.Generic;
     
-    public partial class InformationRead
+    public partial class Changes_View
     {
-        public int Id { get; set; }
-        public string TName { get; set; }
-        public string FK { get; set; }
+        public System.DateTime ChangeDate { get; set; }
+        public int IssueId { get; set; }
         public int UserId { get; set; }
-        public bool Read { get; set; }
+        public string Action { get; set; }
     }
 }

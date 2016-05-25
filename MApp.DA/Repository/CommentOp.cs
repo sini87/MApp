@@ -136,7 +136,7 @@ namespace MApp.DA.Repository
             ApplicationDBEntities ctx = new ApplicationDBEntities();
             using (var dbContextTransaction = ctx.Database.BeginTransaction())
             {
-                sql = "Select * from Comment " +
+                sql = "Select * from appSchema.Comment " +
                     "Where Type LIKE 'Issue" + issueId + "'";
                 list = ctx.Database.SqlQuery<Comment>(sql, issueId).ToList();
             }

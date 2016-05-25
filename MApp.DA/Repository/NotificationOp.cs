@@ -76,9 +76,9 @@ namespace MApp.DA.Repository
                 return list;
             }
 
-            string query = "select CAST(count(*) AS FLOAT) / CAST((Select count(*) FROM AccessRight Where IssueId = " + issueId + " AND [Right] NOT LIKE 'V') AS FLOAT) "
+            string query = "select CAST(count(*) AS FLOAT) / CAST((Select count(*) FROM appSchema.AccessRight Where IssueId = " + issueId + " AND [Right] NOT LIKE 'V') AS FLOAT) "
                 + "AS 'Percentage', p.Name, p.Id "
-                + "From Property p, userProperty up, AccessRight Ar "
+                + "From appSchema.Property p, appSchema.userProperty up, appSchema.AccessRight Ar "
                 + "where Ar.IssueId = " + issueId + " AND "
                 + "ar.UserId = up.UserId AND "
                 + "up.PropertyId = p.Id AND "
@@ -108,7 +108,7 @@ namespace MApp.DA.Repository
                         List<string> userNameList = new List<string>();
                         string queryUser = "SELECT * from appSchema.[User] u WHERE u.Id in " +
                             "(Select up.UserId from " +
-                            "UserProperty up, AccessRight ar " +
+                            "appSchema.UserProperty up, appSchema.AccessRight ar " +
                             "Where up.PropertyId = {0} AND " +
                             "ar.UserId = up.UserId AND " +
                             "ar.IssueId = {1})";
@@ -131,63 +131,6 @@ namespace MApp.DA.Repository
             }
             ctx.Dispose();
             ctx2.Dispose();
-            return list;
-        }
-
-        /// <summary>
-        /// returns user with most changes made to an issue
-        /// </summary>
-        /// <param name="issueId"></param>
-        /// <returns>key value pair, key is user name and value the count of changes</returns>
-        public static KeyValuePair<string,int> UserWithMostChanges(int issueId)
-        {
-            ApplicationDBEntities ctx = new ApplicationDBEntities();
-            KeyValuePair<string, int> kvp = new KeyValuePair<string, int>();
-
-            var changes = ctx.Changes_View.AsNoTracking().Where(x => x.IssueId == 10).GroupBy(info => info.UserId)
-                .Select(group => new
-                {
-                    UserId = group.Key,
-                    Count = group.Count()
-                })
-                    .OrderByDescending(x => x.Count);
-            if (changes.Count() > 0)
-            {
-                User u = new User();
-                var x = changes.FirstOrDefault();
-                u = ctx.User.Find(x.UserId);
-                kvp = new KeyValuePair<string, int>(u.FirstName + " " + u.LastName, x.Count);
-            }
-
-            ctx.Dispose();
-            return kvp;
-        }
-
-        /// <summary>
-        /// returns users with the count of changes they made
-        /// </summary>
-        /// <param name="issueId"></param>
-        /// <returns>list of key value pairs, key is the userId and value the count of changes</returns>
-        public static List<KeyValuePair<int,int>> GetAllChangeCountsByUser(int issueId)
-        {
-            List<KeyValuePair<int, int>> list = new List<KeyValuePair<int, int>>();
-            ApplicationDBEntities ctx = new ApplicationDBEntities();
-            var best = ctx.Changes_View.AsNoTracking().Where(x => x.IssueId == 10).GroupBy(info => info.UserId)
-                .Select(group => new
-                {
-                    UserId = group.Key,
-                    Count = group.Count()
-                })
-                    .OrderBy(x => x.Count);
-
-            KeyValuePair<int, int> kvp;
-            foreach (var vp in best)
-            {
-                kvp = new KeyValuePair<int, int>(vp.UserId, vp.Count);
-                list.Add(kvp);
-            }
-
-            ctx.Dispose();
             return list;
         }
     }

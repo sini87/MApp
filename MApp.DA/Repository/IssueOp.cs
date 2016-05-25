@@ -242,8 +242,8 @@ namespace MApp.DA.Repository
 
                 //mark issue as read
                 ApplicationDBEntities ctx2 = new ApplicationDBEntities();
-                DbCommand cmd = ctx.Database.Connection.CreateCommand();
-                ctx.Database.Connection.Open();
+                DbCommand cmd = ctx2.Database.Connection.CreateCommand();
+                ctx2.Database.Connection.Open();
                 cmd.CommandText = "UPDATE appSchema.InformationRead SET [Read] = 1 WHERE UserId = " + userId + " AND TName LIKE 'Alternative' AND FK LIKE '" + issueId + "'";
                 cmd.CommandType = System.Data.CommandType.Text;
                 cmd.ExecuteNonQuery();

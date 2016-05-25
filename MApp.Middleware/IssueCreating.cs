@@ -356,7 +356,7 @@ namespace MApp.Middleware
         /// <returns>list of key value pairs, key is the userId and value the count of changes</returns>
         public KeyValuePair<string,int> UserWithMostChanges(int issueId)
         {
-            return NotificationOp.UserWithMostChanges(issueId);
+            return ChangesOp.UserWithMostChanges(issueId);
         }
 
         /// <summary>
@@ -367,7 +367,7 @@ namespace MApp.Middleware
         public List<KeyValuePair<UserShortModel,int>> GetAllChangeCountsByUser(int issueId)
         {
             List<KeyValuePair<UserShortModel, int>> list = new List<KeyValuePair<UserShortModel, int>>();
-            List<KeyValuePair<int, int>> countList = NotificationOp.GetAllChangeCountsByUser(issueId);
+            List<KeyValuePair<int, int>> countList = ChangesOp.GetAllChangeCountsByUser(issueId);
             KeyValuePair<UserShortModel, int> userCntKvp;
 
             if(userList == null || userList.Count() == 0)
@@ -382,6 +382,38 @@ namespace MApp.Middleware
             }
 
             return list;
+        }
+
+        /// <summary>
+        /// returns the count of changes made by user
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public int GetUserChangesCount(int issueId, int userId)
+        {
+            return ChangesOp.GetUserChangesCount(issueId, userId);
+        }
+
+        public int GetInfoCountForUser(int issueId, int userId)
+        {
+            return InformationReadOp.GetInfosCount(issueId, userId);
+        }
+
+        public int GetReadInfoCountForUser(int issueId, int userId)
+        {
+            return InformationReadOp.GetReadInfosCount(issueId, userId);
+        }
+
+        public List<KeyValuePair<string,int>> GetUnreadInformation(int issueId, int userId)
+        {
+            return InformationReadOp.GetUnreadInfos(issueId, userId);
+        }
+
+        public List<UserChangeModel> GetUserChanges(int issueId, int userId)
+        {
+            UserChangeModel ucm = new UserChangeModel();
+            return ucm.ToModelList(ChangesOp.GetUserChanges(issueId, userId), ucm);
         }
     }
 }

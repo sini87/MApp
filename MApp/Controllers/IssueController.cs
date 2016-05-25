@@ -75,6 +75,11 @@ namespace MApp.Web.Controllers
                 {
                     vm.AllUserChangeCounts = new List<KeyValuePair<UserShortModel, int>>();
                 }
+                vm.UserChangesCount = ic.GetUserChangesCount(issueId, userId);
+                vm.InfoCount = ic.GetInfoCountForUser(issueId, userId);
+                vm.ReadInfoCount = ic.GetReadInfoCountForUser(issueId, userId);
+                vm.UnreadInformation = ic.GetUnreadInformation(issueId, userId);
+                vm.UserChanges = ic.GetUserChanges(issueId, userId);
             }
             else
             {
@@ -89,6 +94,11 @@ namespace MApp.Web.Controllers
                 vm.Comments = new List<CommentModel>();
                 vm.GroupthinkNotifications = new List<NotificationModel>();
                 vm.GroupshiftProperties = new List<KeyValuePair<string, List<string>>>();
+                vm.InfoCount = 0;
+                vm.ReadInfoCount = 0;
+                vm.UserChangesCount = 0;
+                vm.UserChanges = new List<UserChangeModel>();
+                vm.UnreadInformation = new List<KeyValuePair<string, int>>();
             }
             vm.AllUsers = vm.AllUsers.Where(x => x.Id != userId).ToList();
 

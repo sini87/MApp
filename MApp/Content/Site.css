@@ -350,7 +350,9 @@ textarea {
 
 .phenomenon {
     border-radius: 15px;
-    width: 250px;
+    width: 220px;
+    max-width: 300px;
+    width: auto;
     border-color: #CCCCCC;
     border-style: solid;
     border-width: 1px;

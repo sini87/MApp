@@ -211,10 +211,10 @@
 
             @*Activity Index*@
             @*Best user in changes*@
-            <!-- ko if: viewModel.AccessRight() != 'O'-->
+            <!-- ko if: viewModel.AccessRight() != 'O' && viewModel.Issue.Id() != -1 -->
                 <div class="row phenomenon-elem" data-bind="text: 'Most changes: ' + viewModel.UserWithMostChanges.Key() + ' ' + viewModel.UserWithMostChanges.Value()"></div>
             <!-- /ko -->
-            <!-- ko if: viewModel.AccessRight() == 'O'-->
+            <!-- ko if: viewModel.AccessRight() == 'O' && viewModel.Issue.Id() != -1-->
                 <div class="row phenomenon-elem">
                     <a class="phenomenon-link" data-toggle="modal" data-target="#allChangesDialog" data-bind="text: 'Most changes: ' + viewModel.UserWithMostChanges.Key() + ' ' + viewModel.UserWithMostChanges.Value()"></a>
                     <div class="modal fade" id="allChangesDialog" role="dialog">
@@ -249,8 +249,8 @@
                 </div>
             <!-- /ko -->
             @*Me in Changes*@
-            <div class="row phenomenon-elem" data-bind="text: 'My changes ', visible: viewModel.AccessRight() != 'V'">
-                <a class="phenomenon-link" data-toggle="modal" data-target="#myChangesDialog" data-bind="text: 'My changes: '"></a>
+            <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() != 'V' && viewModel.Issue.Id() != -1">
+                <a class="phenomenon-link" data-toggle="modal" data-target="#myChangesDialog" data-bind="text: 'My changes: ' + viewModel.UserChangesCount()"></a>
                 <div class="modal fade" id="myChangesDialog" role="dialog">
                     <div class="modal-dialog">
                         <!-- Modal content-->
@@ -260,29 +260,48 @@
                                 <h4 class="modal-title">My last changes</h4>
                             </div>
                             <div class="modal-body">
-                                
+                                <table class="table">
+                                    <thead>
+                                        <th>change date</th>
+                                        <th>Action</th>
+                                    </thead>
+                                    <tbody data-bind="foreach: viewModel.UserChanges">
+                                        <td data-bind="text: moment(ChangeDate()).format('DD.MM.YY HH:mm:ss')"></td>
+                                        <td data-bind="text: Action"></td>
+                                    </tbody>
+                                </table>
                             </div>
                             <div class="modal-footer">
                                 
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
             @*Information read/seen*@
-            <div class="row phenomenon-elem" data-bind="text: 'read items ' + ' of'">
-                <a class="phenomenon-link" data-toggle="modal" data-target="#myInfosToReadDialog" data-bind="text: 'My changes: '"></a>
+            <div class="row phenomenon-elem">
+                <a class="phenomenon-link" data-toggle="modal" data-target="#myInfosToReadDialog" data-bind="text: 'Read ' + viewModel.ReadInfoCount() + ' items of ' + viewModel.InfoCount()"></a>
                 <div class="modal fade" id="myInfosToReadDialog" role="dialog">
                     <div class="modal-dialog">
                         <!-- Modal content-->
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Information which i have not seen</h4>
+                                <h4 class="modal-title">Information which I have not seen yet</h4>
                             </div>
                             <div class="modal-body">
-
+                                <table class="table">
+                                    <thead>
+                                        <th>Information type</th>
+                                        <th>Unseen items</th>
+                                    </thead>
+                                    <tbody data-bind="foreach: viewModel.UnreadInformation">
+                                        <tr>
+                                            <td data-bind="text: Key"></td>
+                                            <td data-bind="text: Value"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                             <div class="modal-footer">
 

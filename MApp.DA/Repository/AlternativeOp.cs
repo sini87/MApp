@@ -38,7 +38,7 @@ namespace MApp.DA.Repository
 
             if (alternativeIdList == null || alternativeIdList.Count() == 0)
             {
-                return;
+                alternativeIdList = new List<int>();
             }
 
             foreach (int id in alternativeIdList)
@@ -79,7 +79,7 @@ namespace MApp.DA.Repository
 
             if (alternativeList == null || alternativeList.Count() == 0)
             {
-                return;
+                alternativeList = new List<Alternative>();
             }
 
             foreach (Alternative alt in alternativeList)
@@ -109,8 +109,8 @@ namespace MApp.DA.Repository
 
                 //mark new alternative as read
                 ApplicationDBEntities ctx2 = new ApplicationDBEntities();
-                DbCommand cmd = ctx.Database.Connection.CreateCommand();
-                ctx.Database.Connection.Open();
+                DbCommand cmd = ctx2.Database.Connection.CreateCommand();
+                ctx2.Database.Connection.Open();
                 cmd.CommandText = "UPDATE appSchema.InformationRead SET [Read] = 1 WHERE UserId = " + userId + " AND TName LIKE 'Alternative' AND FK LIKE '" + addedAlt.Id + "'";
                 cmd.CommandType = System.Data.CommandType.Text;
                 cmd.ExecuteNonQuery();
@@ -134,7 +134,7 @@ namespace MApp.DA.Repository
 
             if (alternativeList == null || alternativeList.Count() == 0)
             {
-                return;
+                alternativeList = new List<Alternative>();
             }
 
             foreach (Alternative alt in alternativeList)

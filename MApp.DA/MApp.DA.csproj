@@ -67,6 +67,7 @@
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Repository\AlternativeOp.cs" />
+    <Compile Include="Repository\ChangesOp.cs" />
     <Compile Include="Repository\CommentOp.cs" />
     <Compile Include="Repository\CriterionOp.cs" />
     <Compile Include="CriterionWeight.cs">

@@ -30,5 +30,10 @@ namespace MApp.Web.ViewModel
         public List<KeyValuePair<string,List<string>>> GroupshiftProperties { get; set; }
         public KeyValuePair<string,int> UserWithMostChanges { get; set; }
         public List<KeyValuePair<UserShortModel,int>> AllUserChangeCounts { get; set; }
+        public int UserChangesCount { get; set; }
+        public List<UserChangeModel> UserChanges { get; set; }
+        public int InfoCount { get; set; }
+        public int ReadInfoCount { get; set; }
+        public List<KeyValuePair<string,int>> UnreadInformation { get; set; }
     }
 }

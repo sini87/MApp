@@ -298,5 +298,34 @@ namespace MApp.DA.Repository
                 return false;
             }
         }
+
+        /// <summary>
+        /// returns true if user has to update selfassessment
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public static bool SelfAssessmentActionRequired(int issueId, int userId)
+        {
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            bool ret;
+            string status = ctx.Issue.Find(issueId).Status;
+            if (status == "CREATING" || status == "BRAINSTORMING1")
+            {
+                if (ctx.AccessRight.Find(userId, issueId).SelfAssessmentValue == 0)
+                {
+                    ret = true;
+                }else
+                {
+                    ret = false;
+                }
+            }
+            else
+            {
+                ret = false;
+            }
+            ctx.Dispose();
+            return ret;
+        }
     }
 }

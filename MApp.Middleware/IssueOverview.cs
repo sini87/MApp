@@ -33,6 +33,43 @@ namespace MApp.Middleware
             return hlist;
         }
 
+        public List<UserIssueModel> GetUIM (int userId)
+        {
+            List<IssueModel> list = GetUserIssues(userId);
+            List<UserIssueModel> uimList = new List<UserIssueModel>();
+            UserIssueModel uim;
+            List<KeyValuePair<string, int>> unreadInfos;
+            int unreadCnt;
+
+            foreach(IssueModel im in list)
+            {
+                uim = new UserIssueModel();
+                uim.Issue = im;
+                uim.SelfAssessmentActionRequired = AccessRightOp.SelfAssessmentActionRequired(im.Id, userId);
+                uim.CriteriaActionRatingRequired = CriterionOp.CriteriaWeightingActionRequired(im.Id, userId);
+                uim.EvaluationActionRequired = RatingOp.GetRatingActionRequired(im.Id, userId);
+
+                uim.UnreadCoreItems = new List<string>();
+                unreadInfos = InformationReadOp.GetUnreadInfos(im.Id, userId);
+                unreadCnt = 0;
+                foreach(KeyValuePair<string,int> kvp in unreadInfos)
+                {
+                    if (kvp.Key.StartsWith("Alternative I") || kvp.Key.StartsWith("Issue I") || kvp.Key.StartsWith("Criteria I"))
+                    {
+                        unreadCnt = unreadCnt + kvp.Value;
+                        if (kvp.Value > 0)
+                        {
+                            uim.UnreadCoreItems.Add(kvp.Value + " " + kvp.Key);
+                        }
+                    }
+                }
+                uim.UnreadCoreItemsCount = unreadCnt;
+                uimList.Add(uim);
+            }
+
+            return uimList;
+        }
+
         private void Traverse(IssueModel root, List<IssueModel> node, ref List<IssueModel> list)
         {
             list.Add(root);

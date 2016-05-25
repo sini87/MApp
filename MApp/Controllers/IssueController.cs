@@ -38,7 +38,7 @@ namespace MApp.Web.Controllers
             int userId = GetUserIdFromClaim();          
             IssueOverview iO = new IssueOverview();
 
-            return View(iO.GetUserIssues(userId));
+            return View(iO.GetUIM(userId));
         }
 
 

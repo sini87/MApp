@@ -242,6 +242,38 @@ textarea {
     z-index: 999;
 }
 
+.ttip-large {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+.ttip-large .tooltiptext {
+    visibility: hidden;
+    width: 200px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -60px;
+}
+
+.ttip-large:hover .tooltiptext {
+    visibility: visible;
+    opacity: 0.9;
+    bottom: 30px;
+    left: 50%;
+    margin-left: -76px;
+    z-index: 999;
+}
+
 /*
     Tooltip end
 */
@@ -494,4 +526,19 @@ textarea {
 
 .lastchange {
     padding-top: 5px;
+}
+
+.actionrequired {
+    color: #d90404;
+    text-decoration:none;
+}
+
+.actionrequired:hover{
+    color: inherit;
+    cursor: pointer;
+    text-decoration:none;
+}
+
+.ttip-large .actionrequired{
+    color: #d90404;
 }

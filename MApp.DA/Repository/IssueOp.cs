@@ -23,7 +23,7 @@ namespace MApp.DA.Repository
         {
             User user = UserOp.GetUser(userId);
             ApplicationDBEntities ctx = new ApplicationDBEntities();
-
+            List<Issue> l = ctx.Database.SqlQuery<Issue>("SELECT * FROM Issue WHERE Id IN (SELECT IssueId FROM AccessRight Where UserId =" + userId + ")").ToList();
             var query = from Issue in ctx.Issue.AsNoTracking()
                         where
                               (from AccessRight in ctx.AccessRight
@@ -41,7 +41,7 @@ namespace MApp.DA.Repository
 
             ctx.Dispose();
 
-            return list;
+            return l;
         }
 
         /// <summary>

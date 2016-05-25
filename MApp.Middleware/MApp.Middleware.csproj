@@ -65,6 +65,7 @@
     <Compile Include="Models\RatingModel.cs" />
     <Compile Include="Models\TagModel.cs" />
     <Compile Include="Models\UserChangeModel.cs" />
+    <Compile Include="Models\UserIssueModel.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Models\UserShortModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

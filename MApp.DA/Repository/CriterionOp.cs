@@ -183,5 +183,49 @@ namespace MApp.DA.Repository
 
             ctx.Dispose();
         }
+
+        /// <summary>
+        /// returns true if user has not rated/weighted criteria
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public static bool CriteriaWeightingActionRequired(int issueId, int userId)
+        {
+            bool ret;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            List<CriterionWeight> list;
+            List<Criterion> critList;
+            Issue issue = ctx.Issue.Find(issueId);
+            string status = issue.Status;
+            if (status == "BRAINSTORMING2")
+            {
+                critList = ctx.Criterion.Where(x => x.Issue == issueId).ToList();
+                if (critList == null || critList.Count == 0)
+                {
+                    ret = false;
+                }
+                else
+                {
+                    int id = critList.First().Id;
+                    list = ctx.CriterionWeight.Where(x => x.UserId == userId && x.CriterionId == id).ToList();
+                    if (list != null && list.Count > 0)
+                    {
+                        ret = false;
+                    }
+                    else
+                    {
+                        ret = true;
+                    }
+                }
+            }
+            else
+            {
+                ret = false;
+            }
+            
+            ctx.Dispose();
+            return ret;
+        }
     }
 }

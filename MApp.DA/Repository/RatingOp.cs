@@ -192,5 +192,44 @@ namespace MApp.DA.Repository
 
             return users;
         }
+
+        /// <summary>
+        /// returns true if user has to evaluate
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public static bool GetRatingActionRequired(int issueId, int userId)
+        {
+            bool ret;
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            if (ctx.Issue.Find(issueId).Status == "EVALUATING")
+            {
+                List<Alternative> aList = ctx.Alternative.Where(x => x.IssueId == issueId).ToList();
+                if (aList.Count != 0)
+                {
+                    int id = aList.FirstOrDefault().Id;
+                    List<Rating> rList = ctx.Rating.Where(x => x.AlternativeId == id).ToList();
+                    if (rList == null || rList.Count == 0)
+                    {
+                        ret = true;
+                    }
+                    else
+                    {
+                        ret = false;
+                    }
+                }else
+                {
+                    ret = false;
+                }
+            }
+            else
+            {
+                ret = false;
+            }
+
+            ctx.Dispose();
+            return ret;
+        }
     }
 }

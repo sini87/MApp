@@ -589,6 +589,7 @@
     <Content Include="ckeditor\skins\office2013\images\refresh.png" />
     <Content Include="ckeditor\skins\office2013\skin.js" />
     <Content Include="ckeditor\styles.js" />
+    <Content Include="Content\animate.css" />
     <Content Include="Content\awesome-bootstrap-checkbox.css" />
     <Content Include="Content\bootstrap-select.css" />
     <Content Include="Content\bootstrap-select.min.css" />
@@ -710,10 +711,7 @@
     <Content Include="ckeditor\skins\bootstrapck\scss\config\_config.scss" />
     <Content Include="ckeditor\skins\bootstrapck\scss\config\_defaults.scss" />
     <Content Include="ckeditor\skins\bootstrapck\scss\dialog\dialog.scss" />
-    <None Include="Properties\PublishProfiles\Amazon AWS old.pubxml" />
-    <None Include="Properties\PublishProfiles\AWS.pubxml" />
-    <None Include="Properties\PublishProfiles\Default Settings.pubxml" />
-    <None Include="Properties\PublishProfiles\eee.pubxml" />
+    <None Include="Properties\PublishProfiles\AWS Webdeploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrapValidator.js" />
     <Content Include="Scripts\bootstrapValidator.min.js" />

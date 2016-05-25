@@ -415,5 +415,35 @@ namespace MApp.Middleware
             UserChangeModel ucm = new UserChangeModel();
             return ucm.ToModelList(ChangesOp.GetUserChanges(issueId, userId), ucm);
         }
+
+        public UserChangeModel GetLastChange(int issueId)
+        {
+            UserChangeModel ucm = new UserChangeModel();
+            ucm = ucm.ToModel(ChangesOp.LastChange(issueId));
+            if (userList == null || userList.Count == 0)
+            {
+                GetAllUsers();
+            }
+            ucm.Name = userList.Find(x => x.Id == ucm.UserId).Name;
+            return ucm;
+        }
+
+        public List<UserChangeModel> GetLast100Changes(int issueId)
+        {
+            List<UserChangeModel> changesList;
+            UserChangeModel ucm = new UserChangeModel();
+            if (userList == null || userList.Count == 0)
+            {
+                GetAllUsers();
+            }
+            changesList = ucm.ToModelList(ChangesOp.GetLast100Changes(issueId), ucm);
+
+            foreach(UserChangeModel change in changesList)
+            {
+                change.Name = userList.Find(x => x.Id == change.UserId).Name;
+            }
+
+            return changesList;
+        }
     }
 }

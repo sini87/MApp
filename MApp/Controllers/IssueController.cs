@@ -80,6 +80,8 @@ namespace MApp.Web.Controllers
                 vm.ReadInfoCount = ic.GetReadInfoCountForUser(issueId, userId);
                 vm.UnreadInformation = ic.GetUnreadInformation(issueId, userId);
                 vm.UserChanges = ic.GetUserChanges(issueId, userId);
+                vm.LastChange = ic.GetLastChange(issueId);
+                vm.Last100Changes = ic.GetLast100Changes(issueId);
             }
             else
             {
@@ -99,6 +101,8 @@ namespace MApp.Web.Controllers
                 vm.UserChangesCount = 0;
                 vm.UserChanges = new List<UserChangeModel>();
                 vm.UnreadInformation = new List<KeyValuePair<string, int>>();
+                vm.Last100Changes = new List<UserChangeModel>();
+                vm.LastChange = new UserChangeModel();
             }
             vm.AllUsers = vm.AllUsers.Where(x => x.Id != userId).ToList();
 

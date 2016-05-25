@@ -95,10 +95,38 @@ namespace MApp.DA.Repository
         public static List<Changes_View> GetUserChanges(int issueId, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
-
             List<Changes_View> list = ctx.Changes_View.AsNoTracking().Where(x => x.IssueId == issueId && x.UserId == userId).OrderByDescending(x => x.ChangeDate).ToList();
-
+            ctx.Dispose();
             return list;
+        }
+
+        /// <summary>
+        /// returns last 100 changes made
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <returns></returns>
+        public static List<Changes_View> GetLast100Changes(int issueId)
+        {
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            List<Changes_View> list = ctx.Changes_View.AsNoTracking().Where(x => x.IssueId == issueId).OrderByDescending(x => x.ChangeDate).ToList();
+            if (list.Count > 100)
+            {
+                list =  list.Take(100).ToList();
+            }
+            ctx.Dispose();
+            return list;
+        }
+
+        public static Changes_View LastChange(int issueId)
+        {
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            List<Changes_View> list = ctx.Changes_View.AsNoTracking().Where(x => x.IssueId == issueId).OrderByDescending(x => x.ChangeDate).ToList();
+            Changes_View cv = new Changes_View();
+            if (list.Count > 0)
+            {
+                cv = list.First();
+            }
+            return cv;
         }
     }
 }

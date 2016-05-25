@@ -89,6 +89,7 @@
 
     </div>
 
+    @*Phenomenon dashboard*@
     <div class="col-md-5">
         <div class="phenomenon">
             <div class="row phenomenon-header">
@@ -312,6 +313,42 @@
                 </div>
             </div>
         </div> <!-- phenomenon end-->
+        
+        <!-- last changes -->
+        <div class="lastchange">
+            <a class="md-link" data-toggle="modal" data-target="#lastChangesDialog" data-bind="text: viewModel.LastChange.Name() + ' ' + moment(viewModel.LastChange.ChangeDate()).format('DD.MM.YY HH:mm') + ': ' + viewModel.LastChange.Action()"></a>
+            <div class="modal fade" id="lastChangesDialog" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Last 100 Changes</h4>
+                        </div>
+                        <div class="modal-body">
+                            <table class="table">
+                                <thead>
+                                    <th>User</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </thead>
+                                <tbody data-bind="foreach: viewModel.Last100Changes">
+                                    <tr>
+                                        <td data-bind="text: Name"></td>
+                                        <td data-bind="text: moment(ChangeDate()).format('DD.MM.YY HH:mm')"></td>
+                                        <td data-bind="text: Action"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
 
         <div>
             <label for="tokenfield">Issue Tags</label>

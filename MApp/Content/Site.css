@@ -479,3 +479,19 @@ textarea {
 [data-notify="container"].alert-info {
     background-color: rgb(241, 242, 240);
 }
+
+/**not style end*/
+
+.md-link {
+    color:inherit;
+}
+
+.md-link:hover{
+    color: inherit;
+    cursor: pointer;
+    text-decoration:none;
+}
+
+.lastchange {
+    padding-top: 5px;
+}

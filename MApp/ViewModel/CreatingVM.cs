@@ -35,5 +35,7 @@ namespace MApp.Web.ViewModel
         public int InfoCount { get; set; }
         public int ReadInfoCount { get; set; }
         public List<KeyValuePair<string,int>> UnreadInformation { get; set; }
+        public UserChangeModel LastChange { get; set; }
+        public List<UserChangeModel> Last100Changes { get; set; }
     }
 }

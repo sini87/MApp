@@ -13,6 +13,7 @@ namespace MApp.Middleware.Models
         public int IssueId { get; set; }
         public int UserId { get; set; }
         public string Action { get; set; }
+        public string Name { get; set; }
 
         public Changes_View ToEntity(UserChangeModel model)
         {

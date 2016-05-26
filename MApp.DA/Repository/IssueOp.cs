@@ -130,7 +130,7 @@ namespace MApp.DA.Repository
             if (updated)
             {
                 ctx.Entry(updateIssue).State = EntityState.Modified;
-
+                ctx.SaveChanges();
                 HIssue hissue = new HIssue();
                 hissue.ChangeDate = DateTime.Now;
                 hissue.IssueId = issue.Id;
@@ -160,10 +160,20 @@ namespace MApp.DA.Repository
                 hissue.DependsOn = issue.DependsOn;
                 hissue.GroupThink = issue.GroupThink;
                 hissue.ReviewRating = issue.ReviewRating;
+
+                //problem with action 
+                hissue.Action = "issue updated";
+
                 ctx.HIssue.Add(hissue);
                 ctx.Entry(hissue).State = EntityState.Added;
-
-                ctx.SaveChanges();
+                try
+                {
+                    ctx.SaveChanges();
+                }catch(DbEntityValidationException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                
 
 
             }

@@ -198,7 +198,8 @@ namespace MApp.DA.Repository
             List<Criterion> critList;
             Issue issue = ctx.Issue.Find(issueId);
             string status = issue.Status;
-            if (status == "BRAINSTORMING2")
+            AccessRight ar = ctx.AccessRight.Find(userId, issueId);
+            if (status == "BRAINSTORMING2" && ar.Right != "V")
             {
                 critList = ctx.Criterion.Where(x => x.Issue == issueId).ToList();
                 if (critList == null || critList.Count == 0)

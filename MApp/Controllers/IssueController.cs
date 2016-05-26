@@ -37,8 +37,8 @@ namespace MApp.Web.Controllers
         {
             int userId = GetUserIdFromClaim();          
             IssueOverview iO = new IssueOverview();
-
-            return View(iO.GetUIM(userId));
+            KeyValuePair<int, List<UserIssueModel>> kvp = new KeyValuePair<int, List<UserIssueModel>>(userId, iO.GetUIM(userId));
+            return View(kvp);
         }
 
 
@@ -123,11 +123,21 @@ namespace MApp.Web.Controllers
             IssueCreating ic = new IssueCreating();
 
             int issueId = creatingVM.Issue.Id;
+            int oldId = creatingVM.Issue.Id;
             int userId = GetUserIdFromClaim();
             creatingVM.Issue.Id = ic.SaveIssue(creatingVM.Issue, userId, creatingVM.SelfAssessmentValue, creatingVM.SelfAssessmentDescription);
             issueId = creatingVM.Issue.Id;
             ic.UpdateIsseuTags(creatingVM.Issue.Id, creatingVM.AddedTags, creatingVM.DeletedTags, userId);
             ic.UpdateAccessRights(creatingVM.AddedAR, creatingVM.DeletedAR, creatingVM.AccessRights, issueId, userId);
+
+            var context = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+            if (oldId < 0)
+            {
+                context.Clients.All.userAddedToIssue(creatingVM.Issue, creatingVM.AccessRights, userId);
+            }
+            context.Clients.All.updateIssue(creatingVM.Issue, creatingVM.AddedTags, creatingVM.DeletedTags, ic.GetIssueTags(issueId), userId, creatingVM.SelfAssessmentValue, creatingVM.SelfAssessmentDescription);
+            context.Clients.All.updateActivity(issueId, userId);
+
             return RedirectToAction("Creating", "Issue", new { issueId = creatingVM.Issue.Id });
         }
 
@@ -196,6 +206,8 @@ namespace MApp.Web.Controllers
             {
                 context.Clients.All.deleteCriteria(brCriteriaVM.DeletedCriteria, user);
             }
+            var ctx2 = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+            ctx2.Clients.All.updateActivity(brCriteriaVM.Issue.Id, brCriteriaVM.UserId);
 
             brCriteriaVM.DeletedCriteria = new List<int>();
             return View(brCriteriaVM);
@@ -233,6 +245,8 @@ namespace MApp.Web.Controllers
             }
 
             brAlternativesVM.DeletedAlternatives = new List<int>();
+            var ctx2 = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+            ctx2.Clients.All.updateActivity(brAlternativesVM.Issue.Id, brAlternativesVM.UserId);
             return View(brAlternativesVM);
         }
 
@@ -267,6 +281,9 @@ namespace MApp.Web.Controllers
 
             var context = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
             context.Clients.All.updateCriteriaWeights(criteriaWeightsVM.UserWeights, new UserShortModel(criteriaWeightsVM.UserId, GetUserNameFromClaim()));
+
+            var ctx2 = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+            ctx2.Clients.All.updateActivity(criteriaWeightsVM.Issue.Id, criteriaWeightsVM.UserId);
 
             return View(criteriaWeightsVM);
         }
@@ -308,6 +325,9 @@ namespace MApp.Web.Controllers
             var context = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
             context.Clients.All.updateRatings(userRatings, new UserShortModel(evaluationVM.UserId, GetUserNameFromClaim()));
 
+            var ctx2 = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+            ctx2.Clients.All.updateActivity(evaluationVM.Issue.Id, evaluationVM.UserId);
+
             return View(evaluationVM);
         }
 
@@ -323,7 +343,7 @@ namespace MApp.Web.Controllers
             dvm.Issue = ic.GetIssue(issueId);
             dvm.OldDecisions = id.GetOldDecisions(issueId, userId);
             dvm.Decision = id.GetDecision(issueId, userId);
-
+            dvm.UserId = GetUserIdFromClaim();
             return View(dvm);
         }
 
@@ -335,6 +355,10 @@ namespace MApp.Web.Controllers
             IssueDecision id = new IssueDecision();
             id.SaveDecision(decisionModel,userId);
             ic.NextStage(decisionModel.IssueId, userId);
+
+            var ctx2 = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+            ctx2.Clients.All.updateActivity(decisionModel.IssueId, userId);
+
             return RedirectToAction("Decision","Issue", new { issueId = decisionModel.IssueId });
         }
 
@@ -356,6 +380,9 @@ namespace MApp.Web.Controllers
             commentModel.Name = GetUserNameFromClaim();
             var context = GlobalHost.ConnectionManager.GetHubContext<CommentHub>();
             context.Clients.All.addNewComment(commentModel);
+
+            var ctx2 = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+            ctx2.Clients.All.updateActivity(commentModel.IssueId, commentModel.UserId);
 
             return new HttpResponseMessage();
         }
@@ -394,7 +421,12 @@ namespace MApp.Web.Controllers
             if (ic.AddAccessRight(accessRight, GetUserIdFromClaim()))
             {
                 msg.StatusCode = System.Net.HttpStatusCode.OK;
-            }else
+                var context = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+                List<AccessRightModel> l = new List<AccessRightModel>();
+                l.Add(accessRight);
+                context.Clients.All.userAddedToIssue(ic.GetIssue(accessRight.IssueId), l, GetUserIdFromClaim());
+            }
+            else
             {
                 msg.StatusCode = System.Net.HttpStatusCode.InternalServerError;
             }
@@ -414,6 +446,9 @@ namespace MApp.Web.Controllers
             if (ic.RemoveAccessRight(accessRight, GetUserIdFromClaim()))
             {
                 msg.StatusCode = System.Net.HttpStatusCode.OK;
+
+                var context = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+                context.Clients.All.userRemovedFromIssue(accessRight.IssueId, accessRight.UserId, GetUserIdFromClaim());
             }
             else
             {
@@ -452,6 +487,63 @@ namespace MApp.Web.Controllers
                 ibc.MarkCommentsAsRead(issueId, userId);
             }
             return msg;
+        }
+
+        /// <summary>
+        /// returns UserIssueModel
+        /// method is called when some user is on the overview page and new issue is added
+        /// which he can access
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult GetUserIssueModel(int issueId, int userId)
+        {
+            IssueOverview io = new IssueOverview();
+            var result = new JsonResult
+            {
+                Data = JsonConvert.SerializeObject(io.GetUserIssueModel(issueId, userId))
+            };
+            return result;
+        }
+
+        [HttpPost]
+        public JsonResult SelfAssessmentRefreshed(int issueId, int userId)
+        {
+            IssueCreating ic = new IssueCreating();
+            var result = new JsonResult
+            {
+                Data = JsonConvert.SerializeObject(ic.GetAccessRight(issueId, userId))
+            };
+            return result;
+        }
+
+        [HttpPost]
+        public JsonResult RefreshActivityIndex(int issueId, int userId, string right)
+        {
+            IssueCreating ic = new IssueCreating();
+            CreatingVM vm = new CreatingVM();
+
+            vm.UserWithMostChanges = ic.UserWithMostChanges(issueId);
+            if (right == "O")
+            {
+                vm.AllUserChangeCounts = ic.GetAllChangeCountsByUser(issueId);
+            }
+            else
+            {
+                vm.AllUserChangeCounts = new List<KeyValuePair<UserShortModel, int>>();
+            }
+            vm.UserChangesCount = ic.GetUserChangesCount(issueId, userId);
+            vm.InfoCount = ic.GetInfoCountForUser(issueId, userId);
+            vm.LastChange = ic.GetLastChange(issueId);
+            vm.Last100Changes = ic.GetLast100Changes(issueId);
+            vm.UnreadInformation = ic.GetUnreadInformation(issueId, userId);
+            var result = new JsonResult
+            {
+                Data = JsonConvert.SerializeObject(vm)
+            };
+            return result;
         }
     }
 }

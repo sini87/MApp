@@ -40,16 +40,20 @@
                         <br />
                         <select class="selectpicker" data-live-search="true" id="selectRootIssue" data-bind="options: viewModel.Issues, optionsText: 'Title', optionsValue: 'Id', value: viewModel.Issue.Parent"></select>
                         <br />
+                        <!-- ko if: viewModel.Issue.Parent() > 0 -->
                         <a data-bind="text: viewModel.Issue.ParentTitle, attr: {href: '?issueId=' + viewModel.Issue.Parent()}, visible: !viewModel.parentChanged() && viewModel.Issue.ParentTitle() != ''"></a>
                         <a data-bind="text: viewModel.parentDDText, attr: {href: '?issueId=' + viewModel.Issue.Parent()}, visible: viewModel.parentDDText() != 'none' && viewModel.parentChanged"></a>
+                        <!-- /ko -->
                     </td>
                     <td class="td-top">
                         <label for="selectdependsOnIssue">Depends on Issue:</label>
                         <br />
                         <select class="selectpicker" data-live-search="true" id="selectdependsOnIssue" data-bind="options: viewModel.Issues, optionsText: 'Title', optionsValue: 'Id', value: viewModel.Issue.DependsOn"></select>
                         <br />
+                        <!-- ko if: viewModel.Issue.DependsOn() > 0-->
                         <a data-bind="text: viewModel.Issue.DependsOnTitle, attr: {href: '?issueId=' + viewModel.Issue.DependsOn()}, visible: !viewModel.dependsOnChanged() && viewModel.Issue.DependsOnTitle() != ''"></a>
                         <a data-bind="text: viewModel.dependsOnDDText, attr: {href: '?issueId=' + viewModel.Issue.DependsOn()}, visible: viewModel.dependsOnDDText() != 'none' && viewModel.dependsOnChanged"></a>
+                        <!-- /ko -->
                     </td>
                 </tr>
             </table>
@@ -942,7 +946,16 @@
             for (i = 0; i < usrProp.length; i++) {
                 if (usrProp[i].Name == e.attrs.label) {
                     tokenExists = true
-                    alert('Property already exists')
+                    $.notify({
+                        icon: 'glyphicon glyphicon-warning-sign',
+                        title: 'System Notificaion',
+                        message: 'Tag already exists'
+                    },{
+                        delay: notDelay,
+                        type: 'info',
+                        placement: notPlacementCorner,
+                        animate: notAnimateCorner
+                    });
                 }
             }
             if (tokenExists) {
@@ -1026,6 +1039,219 @@
                 }
             }
         };
+
+        notificationHub.client.userAddedToIssue = function (issue, accessRights, userId) {
+            for (var i = 0; i < accessRights.length; i++) {
+                //if current user is added to Issue
+                if (accessRights[i].UserId == viewModel.UserId()) {
+                    $.notify({
+                        icon: 'glyphicon glyphicon-info-sign',
+                        title: 'New Issue',
+                        message: 'You were added to issue: ' + issue.Title,
+                        url: '/Issue/Creating?issueId=' + issue.Id
+                    }, {
+                        delay: notDelayLong,
+                        type: 'info',
+                        placement: notPlacementCorner,
+                        animate: notAnimate
+                    });
+                }
+
+                //if user is added to current issue
+                if (issue.Id == viewModel.Issue.Id() && userId != viewModel.UserId()){
+                    var kAr = ko.mapping.fromJS(accessRights[i])
+                    viewModel.AccessRights.push(kAr);
+
+                    //todo
+                    //if user issueowner then combo-manipulations
+
+                    $.notify({
+                        icon: 'glyphicon glyphicon-info-sign',
+                        title: 'User added',
+                        message: accessRights[i].Name + ' is added to issue',
+                    }, {
+                        delay: notDelay,
+                        type: 'info',
+                        placement: notPlacementCorner,
+                        animate: notAnimate
+                    });
+                }
+            }
+        }
+
+        //notification when user is removed form issue
+        notificationHub.client.userRemovedFromIssue = function (issueId, removedUserId, userId){
+            if (viewModel.Issue.Id() == issueId && viewModel.UserId() != userId){
+                var match = ko.utils.arrayFirst(viewModel.AccessRights(), function(item) {
+                    return removedUserId === item.UserId();
+                });
+                if (match != null){
+                    viewModel.AccessRights.remove(match);
+                }
+
+                $.notify({
+                    icon: 'glyphicon glyphicon-info-sign',
+                    title: 'User removed',
+                    message: match.Name() + ' is added to issue',
+                }, {
+                    delay: notDelay,
+                    type: 'info',
+                    placement: notPlacementCorner,
+                    animate: notAnimate
+                });
+            }
+        }
+
+        //notification when issue is updated from somebody
+        notificationHub.client.updateIssue = function(issue, addedTags, removedTags, issueTags, userId, selfAssessmentValue, selfassmentDescr){
+            if (userId == viewModel.UserId()){
+                return;
+            }
+            //update tags
+            if (removedTags.length > 0 || addedTags.length > 0){
+                var tokens = []
+                viewModel.Issue.Tags.removeAll()
+                for (var i = 0; i < issueTags.length; i++){
+                    var token = {
+                        value: issueTags[i].Id,
+                        label: issueTags[i].Name
+                    }
+                    tokens.push(token)
+                    viewModel.Issue.Tags.push(ko.mapping.fromJS(issueTags[i]))
+                }
+                var empty = []
+                $('#tokenfield').tokenfield('setTokens',empty);
+                $('#tokenfield').tokenfield('setTokens',tokens);
+                $.notify({
+                    icon: 'glyphicon glyphicon-info-sign',
+                    title: 'Tags updated',
+                }, {
+                    delay: notDelay,
+                    type: 'info',
+                    placement: notPlacementCorner,
+                    animate: notAnimate
+                });
+            }
+            
+            //update issue core infos
+            var update = false;
+            if (viewModel.Issue.Title() != issue.Title){
+                viewModel.Issue.Title(issue.Title)
+                update = true;
+            }
+            if (viewModel.Issue.Description() != issue.Description){
+                viewModel.Issue.Description(issue.Description)
+                update = true;
+            }
+            if (viewModel.Issue.AnonymousPosting() != issue.AnonymousPosting){
+                viewModel.Issue.AnonymousPosting(issue.AnonymousPosting)
+                update = true;
+            }
+            if (viewModel.Issue.Parent() != issue.Parent){
+                $('#selectRootIssue').selectpicker('val', issue.Parent);
+                update = true;
+            }
+            if (viewModel.Issue.DependsOn() != issue.DependsOn){
+                $('#selectdependsOnIssue').selectpicker('val', issue.DependsOn);
+                update = true;
+            }
+
+            if (update){
+                $.notify({
+                    icon: 'glyphicon glyphicon-info-sign',
+                    title: 'Issue Updated',
+                    message: 'Issue updated',
+                }, {
+                    delay: notDelay,
+                    type: 'info',
+                    placement: notPlacementCorner,
+                    animate: notAnimate
+                });
+            }
+
+            //selfassessment updated
+            for(var i = 0; i < viewModel.AccessRights().length; i++){
+                var ar = viewModel.AccessRights()[i]
+                if (userId == ar.UserId() && ar.SelfAssessmentValue() != selfAssessmentValue){
+                    var updatedAR = ar;
+                    $.ajax({
+                        url: '/Issue/SelfAssessmentRefreshed?issueId=' + issue.Id + '&userId=' + userId,
+                        type: 'POST',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: 'json',
+                        async: true,
+                        processData: false,
+                        success: function(data, textStatus, jqXHR){
+                            updatedAR.SelfAssessmentValue(selfAssessmentValue);
+                            var dat = JSON.parse(data);
+                            updatedAR.SelfAssessmentHistory.push(ko.mapping.fromJS(dat.SelfAssessmentHistory[0]))
+                            $.notify({
+                                icon: 'glyphicon glyphicon-info-sign',
+                                title: 'Selfassessment updated',
+                                message: updatedAR.Name() + ' updated selfassessment',
+                            }, {
+                                delay: notDelay,
+                                type: 'info',
+                                placement: notPlacementCorner,
+                                animate: notAnimate
+                            });
+                        }
+                    })
+                }
+            }
+        }
+
+        notificationHub.client.updateActivity = function(issueId, userId){
+            if (viewModel.UserId() == userId){
+                return;
+            }
+            $.ajax({
+                url: '/Issue/RefreshActivityIndex?issueId=' + issueId + '&userId=' + viewModel.UserId() + '&right=' + viewModel.AccessRight(),
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                async: true,
+                processData: false,
+                success: function(data, textStatus, jqXHR){
+                    var dat = JSON.parse(data);
+                    
+                    viewModel.UserWithMostChanges.Value(dat.UserWithMostChanges.Value)
+                    viewModel.UserWithMostChanges.Key(dat.UserWithMostChanges.Key)
+                    if (viewModel.AccessRight() == 'O'){
+                        viewModel.AllUserChangeCounts.removeAll();
+                        for(var i = 0; i < dat.AllUserChangeCounts.length; i++){
+                            var kvp = ko.mapping.fromJS(dat.AllUserChangeCounts[i])
+                            viewModel.AllUserChangeCounts.push(kvp)
+                        }
+                    }
+                    viewModel.InfoCount(dat.InfoCount)
+                    viewModel.LastChange.ChangeDate(dat.LastChange.ChangeDate)
+                    viewModel.LastChange.UserId(dat.LastChange.UserId)
+                    viewModel.LastChange.Action(dat.LastChange.Action)
+                    viewModel.LastChange.Name(dat.LastChange.Name)
+
+                    viewModel.Last100Changes.removeAll()
+                    for(i = 0; i < dat.Last100Changes.length; i ++){
+                        viewModel.Last100Changes.push(ko.mapping.fromJS(dat.Last100Changes[i]))
+                    }
+
+                    viewModel.UnreadInformation.removeAll()
+                    for(var i = 0; i < dat.UnreadInformation.length; i++){
+                        viewModel.UnreadInformation.push(ko.mapping.fromJS(dat.UnreadInformation[i]))
+                    }
+
+                    $.notify({
+                        icon: 'glyphicon glyphicon-info-sign',
+                        message: 'Activities updated',
+                    }, {
+                        delay: notDelay,
+                        type: 'info',
+                        placement: notPlacementCorner,
+                        animate: notAnimate
+                    });
+                }
+            })
+        }
 
         // Start the connection.
         $.connection.hub.start().done(function () {

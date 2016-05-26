@@ -203,7 +203,8 @@ namespace MApp.DA.Repository
         {
             bool ret;
             ApplicationDBEntities ctx = new ApplicationDBEntities();
-            if (ctx.Issue.Find(issueId).Status == "EVALUATING")
+            AccessRight ar = ctx.AccessRight.Find(userId, issueId);
+            if (ctx.Issue.Find(issueId).Status == "EVALUATING" && ar.Right != "V")
             {
                 List<Alternative> aList = ctx.Alternative.Where(x => x.IssueId == issueId).ToList();
                 if (aList.Count != 0)

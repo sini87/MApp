@@ -149,11 +149,7 @@ namespace MApp.Middleware
                 arm = arm.ToModel(ar);
                 arm.Right = right;
 
-                arm.SelfAssessmentHistory = new List<SelfAssessmentHEntry>();
-                foreach (HAccessRight har in AccessRightOp.GetAccessRightsHistorical(ar.UserId, issueId))
-                {
-                    arm.SelfAssessmentHistory.Add( new SelfAssessmentHEntry(har.ChangeDate, Convert.ToDouble(har.SelfAssessmentValue), har.SelfAssesmentDescr));
-                }
+                arm.SelfAssessmentHistory = GetSelfAssessmentHistoryForAr(ar.UserId, issueId);
 
                 if (userList == null)
                 {
@@ -166,6 +162,24 @@ namespace MApp.Middleware
                 
             }
             return list;
+        }
+
+        private List<SelfAssessmentHEntry> GetSelfAssessmentHistoryForAr(int userId, int issueId)
+        {
+            List<SelfAssessmentHEntry> list = new List<SelfAssessmentHEntry>();
+            foreach (HAccessRight har in AccessRightOp.GetAccessRightsHistorical(userId, issueId))
+            {
+                list.Add(new SelfAssessmentHEntry(har.ChangeDate, Convert.ToDouble(har.SelfAssessmentValue), har.SelfAssesmentDescr));
+            }
+            return list;
+        }
+
+        public AccessRightModel GetAccessRight(int issueId, int userId)
+        {
+            AccessRightModel arm = new AccessRightModel();
+            arm = arm.ToModel(AccessRightOp.GetAccessRight(issueId, userId));
+            arm.SelfAssessmentHistory = GetSelfAssessmentHistoryForAr(userId, issueId);
+            return arm;
         }
 
         /// <summary>

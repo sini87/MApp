@@ -1,5 +1,5 @@
 ﻿@using PerpetuumSoft.Knockout
-@model List<MApp.Middleware.Models.UserIssueModel>
+@model KeyValuePair<int, List<MApp.Middleware.Models.UserIssueModel>>
 @{
     ViewBag.Title = "Issue Overvies";
     var ko = Html.CreateKnockoutContext();
@@ -20,7 +20,7 @@
         </tr>
     </thead>
     <tbody data-bind="foreach: viewModel">
-        <tr data-bind="css: treegrid">
+        <tr data-bind="css: treegrid, attr: { id: 'node-' + Issue.Id() }">
             <td><a data-bind="text: Issue.Title, attr: { href: '/Issue/Creating?issueId=' + Issue.Id() }"></a></td>
             <td class="td-center-top">
                 <!-- ko if: Issue.Status() == 'CREATING' -->
@@ -74,8 +74,12 @@
     </tbody>
 </table>
 
+@*signalR reference*@
+<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+<script src="~/signalr/hubs"></script>
 <script type="text/javascript">
-    var viewModelJs = @Html.Raw(Json.Encode(Model));
+    var viewModelJs = @Html.Raw(Json.Encode(Model.Value));
+    var userId = @Model.Key;
     for (var i = 0; i < viewModelJs.length; i++){
         var newIssue = false;
         viewModelJs[i].treegrid = 'treegrid-' + viewModelJs[i].Issue.Id;
@@ -89,15 +93,19 @@
         }
         viewModelJs[i].newIssue = newIssue
     }
-    
     var viewModel = ko.mapping.fromJS(viewModelJs);
-
     ko.applyBindings(viewModel);
 
 
-    $(document).ready(function () {
-        $('.tree').treegrid();
 
+    $(document).ready(function () {
+        //init treegrid
+        $('.tree').treegrid({
+            expanderExpandedClass: 'glyphicon glyphicon-minus',
+            expanderCollapsedClass: 'glyphicon glyphicon-plus'
+        });
+
+        //render menues
         var element = document.getElementById("finished-menu");
         element.parentNode.removeChild(element);
         element = document.getElementById("brainstorming-menu");
@@ -106,5 +114,79 @@
         element.parentNode.removeChild(element);
         element = document.getElementById("evaluating-menu");
         element.parentNode.removeChild(element);
+
+        //SignalR
+        $(function () {
+            // Reference the auto-generated proxy for the hub.
+            var notificationHub = $.connection.notificationHub;
+            // Create a function that the hub can call back to display messages.
+            notificationHub.client.userAddedToIssue = function (issue, accessRights, userId) {
+                for (var i = 0; i < accessRights.length; i++){
+                    if (accessRights[i].UserId == userId){
+                        $.ajax({
+                            url: '/Issue/GetUserIssueModel?issueId=' + issue.Id + '&userId=' + userId,
+                            type: 'POST',
+                            contentType: "application/json; charset=utf-8",
+                            async: true,
+                            processData: false,
+                            complete: function (jqXHR, textStatus) {
+                                //notific when groupshift
+                            },
+                            success: function(data, textStatus, jqXHR){
+                                var uim = JSON.parse(data)
+                                uim.treegrid = 'treegrid-' + uim.Issue.Id
+                                uim.newIssue = true
+                                if (uim.ParentTitle != null && uim.ParentTitle.length > 0){
+                                    uim.treegrid = uim.treegrid + ' treegrid-parent-' + uim.Parent
+                                }
+                                var uimKo = ko.mapping.fromJS(uim)
+                                if (uim.Issue.Parent != null && uim.Issue.Parent > 0){
+                                    var idToFind = uim.Issue.Parent
+                                    var parentNode = $('#node-' + uim.Issue.Parent)
+                                    var parentChildredn = parentNode.treegrid('getChildNodes')
+                                    if (parentNode.treegrid('getChildNodes').length > 0){
+                                        var ntext = parentChildredn[parentChildredn.length - 1].id
+                                        idToFind = parseInt(ntext.substring(5,ntext.length))
+                                    }
+                                    for (i = 0; i < viewModel().length; i++){
+                                        if (idToFind == viewModel()[i].Issue.Id()){
+                                            if (i + 1 < viewModel().length){
+                                                viewModel.splice(i+1,0,uimKo)
+                                            }else{
+                                                viewModel.push(uimKo)
+                                            }
+                                            break;
+                                        }
+                                    }
+                                }else{
+                                    viewModel.push(uimKo)
+                                }
+                                
+                                $.notify({
+                                    icon: 'glyphicon glyphicon-info-sign',
+                                    title: 'New Issue',
+                                    message: 'You were added to issue: ' + uim.Issue.Title,
+                                    url: '/Issue/Creating?issueId=' + uim.Issue.Id
+                                },{
+                                    delay: notDelayLong,
+                                    type: 'info',
+                                    placement: notPlacementCorner,
+                                    animate: notAnimate
+                                });
+
+                            },
+                            error: function(jqXHR, textStatus, errorThrown){
+
+                            }
+                        })
+                    }
+                }
+            };
+
+            // Start the connection.
+            $.connection.hub.start().done(function () {
+                
+            });
+        });
     });
 </script>

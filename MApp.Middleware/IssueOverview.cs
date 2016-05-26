@@ -43,31 +43,52 @@ namespace MApp.Middleware
 
             foreach(IssueModel im in list)
             {
-                uim = new UserIssueModel();
-                uim.Issue = im;
-                uim.SelfAssessmentActionRequired = AccessRightOp.SelfAssessmentActionRequired(im.Id, userId);
-                uim.CriteriaActionRatingRequired = CriterionOp.CriteriaWeightingActionRequired(im.Id, userId);
-                uim.EvaluationActionRequired = RatingOp.GetRatingActionRequired(im.Id, userId);
-
-                uim.UnreadCoreItems = new List<string>();
-                unreadInfos = InformationReadOp.GetUnreadInfos(im.Id, userId);
-                unreadCnt = 0;
-                foreach(KeyValuePair<string,int> kvp in unreadInfos)
-                {
-                    if (kvp.Key.StartsWith("Alternative I") || kvp.Key.StartsWith("Issue I") || kvp.Key.StartsWith("Criteria I"))
-                    {
-                        unreadCnt = unreadCnt + kvp.Value;
-                        if (kvp.Value > 0)
-                        {
-                            uim.UnreadCoreItems.Add(kvp.Value + " " + kvp.Key);
-                        }
-                    }
-                }
-                uim.UnreadCoreItemsCount = unreadCnt;
+                uim = GetUserIssueModelFromIssueModel(im, userId);
                 uimList.Add(uim);
             }
 
             return uimList;
+        }
+
+        private UserIssueModel GetUserIssueModelFromIssueModel(IssueModel im, int userId)
+        {
+            UserIssueModel uim = new UserIssueModel();
+            int unreadCnt;
+            List<KeyValuePair<string, int>> unreadInfos;
+
+            uim.Issue = im;
+            uim.SelfAssessmentActionRequired = AccessRightOp.SelfAssessmentActionRequired(im.Id, userId);
+            uim.CriteriaActionRatingRequired = CriterionOp.CriteriaWeightingActionRequired(im.Id, userId);
+            uim.EvaluationActionRequired = RatingOp.GetRatingActionRequired(im.Id, userId);
+
+            uim.UnreadCoreItems = new List<string>();
+            unreadInfos = InformationReadOp.GetUnreadInfos(im.Id, userId);
+            unreadCnt = 0;
+            foreach (KeyValuePair<string, int> kvp in unreadInfos)
+            {
+                if (kvp.Key.StartsWith("Alternative I") || kvp.Key.StartsWith("Issue I") || kvp.Key.StartsWith("Criteria I"))
+                {
+                    unreadCnt = unreadCnt + kvp.Value;
+                    if (kvp.Value > 0)
+                    {
+                        uim.UnreadCoreItems.Add(kvp.Value + " " + kvp.Key);
+                    }
+                }
+            }
+            uim.UnreadCoreItemsCount = unreadCnt;
+            TagModel tm = new TagModel();
+            if (uim.Issue.Tags == null || uim.Issue.Tags.Count == 0)
+            {
+                uim.Issue.Tags = tm.ToModelList(TagOp.GetIssueTags(uim.Issue.Id), tm);
+            }
+            return uim;
+        }
+
+        public UserIssueModel GetUserIssueModel(int issueId, int userId)
+        {
+            IssueModel im = new IssueModel();
+            im = im.ToModel(IssueOp.GetIssueById(issueId));
+            return GetUserIssueModelFromIssueModel(im, userId);
         }
 
         private void Traverse(IssueModel root, List<IssueModel> node, ref List<IssueModel> list)

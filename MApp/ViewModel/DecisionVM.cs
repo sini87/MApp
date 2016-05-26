@@ -13,5 +13,6 @@ namespace MApp.Web.ViewModel
         public List<AlternativeModel> Alternatives { get; set; }
         public string AccessRight { get; set; }
         public List<DecisionModel> OldDecisions { get; set; }
+        public int UserId { get; set; }
     }
 }

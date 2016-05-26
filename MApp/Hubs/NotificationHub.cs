@@ -23,5 +23,44 @@ namespace MApp.Web.Hubs
         {
             Clients.All.sendNotification(notification);
         }
+
+        public void UserAddedToIssue(IssueModel issue, List<AccessRightModel> accessRights, int userId)
+        {
+            Clients.All.userAddedToIssue(issue, accessRights, userId);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="removedUserId">id of the removed user</param>
+        /// <param name="userId">user who is performing this operation</param>
+        public void UserRemovedFromIssue(int issueId, int removedUserId, int userId)
+        {
+            Clients.All.userRemovedFromIssue(issueId, removedUserId, userId);
+        }
+
+        /// <summary>
+        /// notifys the update of issue core infos
+        /// only used on Creating.cshtml/issue main site
+        /// </summary>
+        /// <param name="issue"></param>
+        /// <param name="addedTags"></param>
+        /// <param name="removedTags"></param>
+        /// <param name="userId"></param>
+        public void UpdateIssue(IssueModel issue, List<TagModel> addedTags, List<TagModel> removedTags, List<TagModel> issueTags, int userId, int selfAssessmentValue, string selfAssessmendDescr)
+        {
+            Clients.All.updateIssue(issue, addedTags, removedTags, issueTags, userId, selfAssessmentValue, selfAssessmendDescr);
+        }
+
+        /// <summary>
+        /// notifies clients to refresh activity index
+        /// use only on Issue main page (Creating.cshtml)
+        /// </summary>
+        /// <param name="issueId"></param>
+        public void UpdateActivity(int issueId, int userId)
+        {
+            Clients.All.updateActivity(issueId, userId);
+        }
     }
 }

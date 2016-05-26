@@ -98,3 +98,24 @@ function onShowCommentsBtnClick(type) {
         }
     })
 }
+
+//SignalR user added to issue
+function userAddedToIssue(notificationHub) {
+    notificationHub.client.userAddedToIssue = function (issue, accessRights, userId) {
+        for (var i = 0; i < accessRights.length; i++) {
+            if (accessRights[i].UserId == viewModel.UserId()) {
+                $.notify({
+                    icon: 'glyphicon glyphicon-info-sign',
+                    title: 'New Issue',
+                    message: 'You were added to issue: ' + issue.Title,
+                    url: '/Issue/Creating?issueId=' + issue.Id
+                }, {
+                    delay: notDelayLong,
+                    type: 'info',
+                    placement: notPlacementCorner,
+                    animate: notAnimate
+                });
+            }
+        }
+    }
+}

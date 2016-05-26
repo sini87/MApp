@@ -19,3 +19,4 @@ notAnimateCorner = {
 };
 
 notDelay = 3000;
+notDelayLong = 10000;

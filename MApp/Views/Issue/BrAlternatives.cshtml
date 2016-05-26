@@ -197,7 +197,7 @@
                 }else{
                     $.notify({
                         icon: 'glyphicon glyphicon-danger-sign',
-                        title: 'System Notificaion',
+                        title: 'System Notification',
                         message: 'Something went wrong! Could not add the comment.'
                     },{
                         delay: notDelay,
@@ -346,6 +346,9 @@
                 }
             }
         }
+
+        var notificationHub = $.connection.notificationHub;
+        userAddedToIssue(notificationHub)
 
         // Start the connection.
         $.connection.hub.start().done(function () {

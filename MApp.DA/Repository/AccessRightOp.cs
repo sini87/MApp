@@ -34,6 +34,13 @@ namespace MApp.DA.Repository
             return list;
         }
 
+        public static AccessRight GetAccessRight(int issueId, int userId)
+        {
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            AccessRight ar = ctx.AccessRight.AsNoTracking().Where(x => x.IssueId == issueId && x.UserId == userId).FirstOrDefault();
+            return ar;
+        }
+
         /// <summary>
         /// updates the accessrights for an issue
         /// </summary>
@@ -202,7 +209,7 @@ namespace MApp.DA.Repository
                 har.ChangeDate = System.DateTime.Now;
                 har.IssueId = right.IssueId;
                 har.UserId = right.UserId;
-                har.Action = "Selfassessment udpated";
+                har.Action = "Selfassessment updated";
                 ctx.HAccessRight.Add(har);
                 ctx.Entry(har).State = EntityState.Added;
 
@@ -217,7 +224,7 @@ namespace MApp.DA.Repository
         {
             List<HAccessRight> list;
             ApplicationDBEntities ctx = new ApplicationDBEntities();
-            list = ctx.HAccessRight.Where(x => x.UserId == userId && x.IssueId == issueId && x.Action == "Selfassessment updated").OrderByDescending(x => x.ChangeDate).AsNoTracking().ToList();
+            list = ctx.Database.SqlQuery<HAccessRight>("SELECT * FROM HAccessRight WHERE IssueId = {0} AND UserId = {1} AND Action LIKE 'Selfassessment updated' ORDER BY ChangeDate DESC",issueId, userId).ToList();
             ctx.Dispose();
 
             return list;
@@ -312,7 +319,8 @@ namespace MApp.DA.Repository
             string status = ctx.Issue.Find(issueId).Status;
             if (status == "CREATING" || status == "BRAINSTORMING1")
             {
-                if (ctx.AccessRight.Find(userId, issueId).SelfAssessmentValue == 0)
+                AccessRight ar = ctx.AccessRight.Find(userId, issueId);
+                if (ar.SelfAssessmentValue == 0 && ar.Right != "V")
                 {
                     ret = true;
                 }else

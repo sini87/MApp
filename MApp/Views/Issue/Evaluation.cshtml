@@ -10,46 +10,49 @@
 
 @if (Model.AccessRight != "V")
 {
-    <table id="userRatings" class="table table-hover table-striped table-condensed table-nonfluid">
-        <tr>
-            <th>Crtieria</th>
-            <th>Criteria Weight</th>
-            @using (var item = ko.Foreach(m => m.Alternatives))
-            {
-                <th @item.Bind.Text(m => m.Name)></th>
-            }
-        </tr>
-        <tbody>
-            @{ int i = 0; }
-            @foreach (var item in Model.Criterias)
-            {
-             
-                <tr>
-                    <td class="table-header-column">@item.Name</td>
-                    <td class="table-header-column">@String.Format("{0:#0.## %}",item.Weight)</td>
-                    @for (int k = 0; k < Model.UserRatings[i].Count;k++)
-                    {
-                        <td>
-                            <input data-bind="textInput: viewModel.UserRatings()[@i][@k].Value" class="form-control"/>
-                        </td>
-                    }
-                
-                
-                </tr>
-                i++;    
-            }
-        </tbody>
-    </table>
-
-    <button id="save" onclick="onClickSave()" class="btn btn-primary btn-md">save</button>
+    <form data-toggle="validator" role="form" id="ratingform">
+        <table id="userRatings" class="table table-hover table-striped table-condensed table-nonfluid">
+            <tr>
+                <th>Crtieria</th>
+                <th>Criteria Weight</th>
+                @using (var item = ko.Foreach(m => m.Alternatives))
+                {
+                    <th @item.Bind.Text(m => m.Name)></th>
+                }
+            </tr>
+            <tbody>
+                @{ int i = 0; }
+                @foreach (var item in Model.Criterias)
+                {
+                    <tr>
+                        <td class="table-header-column">@item.Name</td>
+                        <td class="table-header-column">@String.Format("{0:#0.## %}", item.Weight)</td>
+                        @for (int k = 0; k < Model.UserRatings[i].Count; k++)
+                        {
+                            <td>
+                                <div class="form-group has-feedback">
+                                    <div class="input-group">
+                                        <input data-bind="textInput: viewModel.UserRatings()[@i][@k].Value" class="form-control" pattern="\b(1|2|3|4|5|6|7|8|9|10)\b" data-error="Number must be between 1 and 10"/>
+                                    </div>
+                                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                    <div class="help-block with-errors"></div>
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                    i++;
+                }
+            </tbody>
+        </table>
+    </form>
+    <button id="save" onclick="onClickSave()" class="btn btn-primary btn-md" data-bind="visible: viewModel.Issue.Status() == 'EVALUATING', enable: viewModel.valid" >save</button>
 }
 @if (Model.AccessRight == "O")
 {
-    <button id="nextstage" type="button" class="btn btn-primary" onclick="javascript: onNextStageClick()">Next Stage</button>
+    <button id="nextstage" type="button" class="btn btn-primary" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.Issue.Status() != 'FINISHED' && viewModel.Issue.Status() != 'DECIDING'">Next Stage</button>
 }
 
-@if (Model.RatedUsers.Count > 0 && Model.Issue.AnonymousPosting == false)
-{
+<!-- ko if: viewModel.RatedUsers().length > 0 && viewModel.Issue.AnonymousPosting() == false -->
     <h3>Ratings of other users</h3>
     <!-- ko foreach: viewModel.RatedUsers -->
         <h4 data-bind="text: Name"></h4>
@@ -74,10 +77,10 @@
             </tbody>
         </table>
     <!-- /ko -->
-}else
-{
+<!-- /ko -->
+<!-- ko if: viewModel.RatedUsers().length == 0 -->
     <h3 data-bind="text: viewModel.RatedUserCnt() + ' other users have rated!'"></h3>
-}
+<!-- /ko -->
 <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
 <script src="~/signalr/hubs"></script>
 <script type="text/javascript">
@@ -85,6 +88,20 @@
     var viewModel = ko.mapping.fromJS(viewModelJs);
 
     viewModel.adding = ko.observable(false)
+
+    viewModel.valid = ko.computed(function(){
+        var valid = true;
+        for (var i = 0; i < viewModel.UserRatings().length; i++){
+            for (var j = 0; j < viewModel.UserRatings()[i].length; j++){
+                var num = viewModel.UserRatings()[i][j].Value()
+                if (!$.isNumeric(num) || num < 1 || num > 10 ){
+                    valid = false;
+                    break;
+                }
+            }
+        }
+        return valid;
+    })
 
     ko.applyBindings(viewModel);
     renderMenues();
@@ -193,6 +210,7 @@
         };
         
         userAddedToIssue(notificationHub);
+        nextStageNotification(notificationHub)
 
         $.connection.hub.start().done(function () {
             

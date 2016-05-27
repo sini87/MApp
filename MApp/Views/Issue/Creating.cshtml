@@ -21,7 +21,7 @@
                 <label id="issueStatus" data-bind="text: 'Issue Status: ' + viewModel.Issue.Status()" class="status-label"></label>
                 <div class="checkbox">
                     <label id="anonymousPostingLabel">
-                        <input id="anonymous" type="checkbox" data-bind="checked: viewModel.Issue.AnonymousPosting, enable: viewModel.AccessRight() != 'V'" />
+                        <input id="anonymous" type="checkbox" data-bind="checked: viewModel.Issue.AnonymousPosting, enable: viewModel.AccessRight() == 'O'" />
                         Anonymous posting?
                     </label>
                 </div>
@@ -121,7 +121,7 @@
                                         <tr>
                                             <td class="datecolumn">Date</td>
                                             <td>Description</td>
-                                            <td>Read</td>
+                                            <td class="td-center-top">Read</td>
                                         </tr>
                                     </thead>
                                     <tbody data-bind="foreach: viewModel.GroupthinkNotifications">
@@ -319,7 +319,7 @@
         </div> <!-- phenomenon end-->
         
         <!-- last changes -->
-        <div class="lastchange">
+        <div class="lastchange" data-bind="if: viewModel.Issue.Id() > 0">
             <a class="md-link" data-toggle="modal" data-target="#lastChangesDialog" data-bind="text: viewModel.LastChange.Name() + ' ' + moment(viewModel.LastChange.ChangeDate()).format('DD.MM.YY HH:mm') + ': ' + viewModel.LastChange.Action()"></a>
             <div class="modal fade" id="lastChangesDialog" role="dialog">
                 <div class="modal-dialog">
@@ -431,7 +431,7 @@
 </div>
 
 <div class="row">
-    <button id="save" type="button" class="btn btn-primary" onclick="javascript: onSaveClick()" data-bind="visible: viewModelJs.AccessRight == 'O' || viewModelJs.AccessRight == 'C', enable: viewModel.titleEmpty">Save</button>
+    <button id="save" type="button" class="btn btn-primary" onclick="javascript: onSaveClick()" data-bind="visible: (viewModelJs.AccessRight == 'O' || viewModelJs.AccessRight == 'C') && viewModel.Issue.Status() != 'FINISHED', enable: viewModel.titleEmpty">Save</button>
     <button id="nextstage" type="button" class="btn btn-primary" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.AccessRight() == 'O', enable: viewModelJs.Issue.Id != -1">Next Stage</button>
     <button id="showCommentsBtn" class="btn btn-primary btn-md accordion-toggle" data-toggle="collapse" data-target=".comment" data-bind="enable: viewModelJs.Issue.Id != -1" onclick="onShowCommentsBtnClick('Issue')">Show comments</button>
     <button id="delete" type="button" class="btn btn-danger" onclick="javascript: onDeleteClick()" data-bind="visible: viewModelJs.AccessRight == 'O', enable: viewModelJs.Issue.Id != -1">Delete</button>
@@ -551,7 +551,6 @@
     });
     //phenomenon dashboard VM end
 
-
     ko.applyBindings(viewModel);
 
 
@@ -649,7 +648,7 @@
             type: 'POST',
             data: { issueId: viewModel.Issue.Id }
         })
-        window.location.replace("http://localhost:15551")
+        window.location.replace("/")
     }
 
     function onNextStageClick() {
@@ -778,6 +777,12 @@
                     Text: CKEDITOR.instances['editor'].getData(),
                     Name: 'Me'
                 }
+
+        if (comment.Text.length < 3){
+            commentWarning()
+            return;
+        }
+
         $.ajax({
             url: '@Url.Action("AddComment", "Issue")',
             type: 'POST',
@@ -1024,7 +1029,7 @@
                     AddedDate: ko.observable(notification.AddedDate)
                 }
                 if (notification.Type == 'Groupthink' && viewModelJs.AccessRight == 'O'){
-                    viewModel.GroupthinkNotifications.push(knotification)
+                    viewModel.GroupthinkNotifications.unshift(knotification)
 
                     $.notify({
                         icon: 'glyphicon glyphicon-warning-sign',
@@ -1201,6 +1206,7 @@
             }
         }
 
+        //notifies clients to update the activity index
         notificationHub.client.updateActivity = function(issueId, userId){
             if (viewModel.UserId() == userId){
                 return;
@@ -1252,6 +1258,8 @@
                 }
             })
         }
+
+        nextStageNotification(notificationHub)
 
         // Start the connection.
         $.connection.hub.start().done(function () {

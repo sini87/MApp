@@ -155,23 +155,31 @@ namespace MApp.Web.Controllers
             IssueCreating ic = new IssueCreating();
             ic.NextStage(issueId,GetUserIdFromClaim());
             string st = status.Remove(status.Length - 1, 1).Remove(0, 1);
+            var context = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+            int userId = GetUserIdFromClaim();
+
             if (st == "CREATING")
             {
+                context.Clients.All.nextStage(issueId, "BRAINSTORMING1", userId);
                 return RedirectToAction("BrCriteria", "Issue", new { issueId = issueId });
             }else if (st == "BRAINSTORMING1")
             {
+                context.Clients.All.nextStage(issueId, "BRAINSTORMING2", userId);
                 return RedirectToAction("CriteriaRating", "Issue", new { issueId = issueId });
             }
             else if (st == "BRAINSTORMING2")
             {
+                context.Clients.All.nextStage(issueId, "EVALUATING", userId);
                 return RedirectToAction("EVALUATION", "Issue", new { issueId = issueId });
             }
             else if (st == "EVALUATING")
             {
+                context.Clients.All.nextStage(issueId, "DECIDING", userId);
                 return RedirectToAction("Decision", "Issue", new { issueId = issueId });
             }
             else
             {
+                context.Clients.All.nextStage(issueId, "FINISHED", userId);
                 return RedirectToAction("Issue", "Index", new { issueId = issueId });
             }
             
@@ -542,6 +550,23 @@ namespace MApp.Web.Controllers
             var result = new JsonResult
             {
                 Data = JsonConvert.SerializeObject(vm)
+            };
+            return result;
+        }
+
+        /// <summary>
+        /// should be called from All issues page when notification comes in that an issue is updated
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
+        [HttpPost]
+        public JsonResult RefreshUserIssue(int issueId, int userId)
+        {
+            IssueOverview io = new IssueOverview();
+            UserIssueModel uim = io.GetUserIssueModel(issueId, userId);
+            var result = new JsonResult
+            {
+                Data = JsonConvert.SerializeObject(uim)
             };
             return result;
         }

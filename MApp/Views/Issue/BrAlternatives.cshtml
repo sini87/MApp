@@ -68,7 +68,7 @@
                                     </form>
                                 </div>
                                 <div class="modal-footer">
-                                    <button class="btn btn-primary" data-bind="attr: { Id: 'saveCommentBtns' + Id(), onClick: 'onSaveCommentClick(' + Id() + ')'}">Save</button>
+                                    <button class="btn btn-primary" data-bind="attr: { Id: 'saveCommentBtns' + Id(), onClick: 'onSaveCommentClick(' + Id() + ')'}">Add</button>
                                 </div>
                             </div>
                         </div>
@@ -90,8 +90,8 @@
 <button id="showCommentsBtn" class="btn btn-primary btn-md accordion-toggle" data-toggle="collapse" data-target=".comment" onclick="onShowCommentClick()">Show comments</button>
 @if (Model.AccessRight == "C" || Model.AccessRight == "O")
 {
-    <button id="addNewAlternative" class="btn btn-primary btn-md" onclick="onAddNewAlternativeClick()" data-bind="enable: viewModel.Issue.Status() =='BRAINSTORMING1' || viewModel.Issue.Status() =='BRAINSTORMING2'">Add new Alternative</button>
-    <button id="save" class="btn btn-primary btn-md" onclick="onSaveClick()">Save</button>
+    <button id="addNewAlternative" class="btn btn-primary btn-md" onclick="onAddNewAlternativeClick()" data-bind="visible: viewModel.Issue.Status() =='BRAINSTORMING1' || viewModel.Issue.Status() =='BRAINSTORMING2'">Add new Alternative</button>
+    <button id="save" class="btn btn-primary btn-md" onclick="onSaveClick()" data-bind="visible: viewModel.Issue.Status() =='BRAINSTORMING1' || viewModel.Issue.Status() =='BRAINSTORMING2'">Save</button>
 }
 @if (Model.AccessRight == "O")
 {
@@ -167,6 +167,11 @@
                     Text: CKEDITOR.instances['editor' + altId].getData(),
                     Name: 'Me'
                 }
+        if (comment.Text.length < 3)
+        {
+            commentWarning()
+            return;
+        }
         $.ajax({
             url: '@Url.Action("AddComment", "Issue")',
             type: 'POST',
@@ -290,6 +295,7 @@
             }
         }
 
+        //SignalR new alternatives added
         alternativeHub.client.updateAlternatives = function (alternatives, user) {
             if (viewModel.UserId() != user.Id) {
                 for (var i = 0; i < alternatives.length; i++) {
@@ -306,6 +312,10 @@
                             Comments: ko.observableArray()
                         }
                         viewModel.Alternatives.push(newAlt)
+                        CKEDITOR.replace('editor' + uAlt.Id,
+                        {
+                            customConfig: '/ckeditor/config.js'
+                        });
 
                         $.notify({
                             icon: 'glyphicon glyphicon-info-sign',
@@ -349,6 +359,7 @@
 
         var notificationHub = $.connection.notificationHub;
         userAddedToIssue(notificationHub)
+        nextStageNotification(notificationHub)
 
         // Start the connection.
         $.connection.hub.start().done(function () {

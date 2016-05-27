@@ -3,33 +3,47 @@
     var issue = viewModelJs.Issue
     doLinks(issue);
 
-    if (viewModelJs.Issue.Status == "FINISHED") {
+    if (viewModel.Issue.Status() == "FINISHED") {
         status = 6
-    }else if (viewModelJs.Issue.Status == "DECIDING") {
+    }else if (viewModel.Issue.Status() == "DECIDING") {
         status = 5
-    } else if (viewModelJs.Issue.Status == "EVALUATING") {
+    } else if (viewModel.Issue.Status() == "EVALUATING") {
         status = 4
-    } else if (viewModelJs.Issue.Status == "BRAINSTORMING2") {
+    } else if (viewModel.Issue.Status() == "BRAINSTORMING2") {
         status = 3
-    } else if (viewModelJs.Issue.Status == "BRAINSTORMING1") {
+    } else if (viewModel.Issue.Status() == "BRAINSTORMING1") {
         status = 2
     } else {
         status = 1
     }
 
+    if (status == 5 || status == 6) {
+        var menuElem = document.getElementById("finished-menu")
+        menuElem.className = "enabled"
+    }
     if (status < 5) {
 
         var menuElem = document.getElementById("finished-menu")
         menuElem.className = "disabled"
+
+        menuElem = document.getElementById("evaluating-menu")
+        menuElem.className = "enabled"
     }
     if (status < 4) {
         var menuElem = document.getElementById("evaluating-menu")
         menuElem.className = "disabled"
+
+        menuElem = document.getElementById("criteriarating-menu")
+        menuElem.className = "enabled"
     }
     if (status < 3) {
         var menuElem = document.getElementById("criteriarating-menu")
         menuElem.className = "disabled"
 
+        menuElem = document.getElementById("alternatives-menu")
+        menuElem.className = "enabled"
+        menuElem = document.getElementById("criteriafinding-menu")
+        menuElem.className = "enabled"
     }
     if (status < 2) {
         var menuElem = document.getElementById("alternatives-menu")
@@ -118,4 +132,39 @@ function userAddedToIssue(notificationHub) {
             }
         }
     }
+}
+
+//SignalR issue to next stage
+function nextStageNotification(notificationHub) {
+    notificationHub.client.nextStage = function (issueId, status, userId) {
+        if (viewModel.UserId() == userId) {
+            return;
+        }
+        viewModel.Issue.Status(status);
+        renderMenues()
+        $.notify({
+            icon: 'glyphicon glyphicon-info-sign',
+            title: 'Status updated',
+            message: 'Issue was put to next stage!',
+        }, {
+            delay: notDelay,
+            type: 'info',
+            placement: notPlacementCorner,
+            animate: notAnimate
+        });
+    }
+}
+
+//comment warning minimum 3 length
+function commentWarning() {
+    $.notify({
+        icon: 'glyphicon glyphicon-warning-sign',
+        title: 'System Notificaion',
+        message: 'Comment must minimum be 3 characters long!'
+    }, {
+        delay: notDelay,
+        type: 'warning',
+        placement: notPlacement,
+        animate: notAnimate
+    });
 }

@@ -16,7 +16,7 @@ namespace MApp.DA.Repository
             List<Notification> list;
             ApplicationDBEntities ctx = new ApplicationDBEntities();
 
-            list = ctx.Notification.AsNoTracking().Where(x => x.IssueId == issueId && x.Type == "Groupthink").ToList();
+            list = ctx.Notification.AsNoTracking().Where(x => x.IssueId == issueId && x.Type == "Groupthink").OrderByDescending(x => x.AddedDate).ToList();
 
             ctx.Dispose();
             return list;

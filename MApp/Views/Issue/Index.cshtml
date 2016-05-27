@@ -60,7 +60,7 @@
             <td class="td-center-top">
                 <div class="ttip-large">
                     <label data-bind="text: UnreadCoreItemsCount, css: {actionrequired: newIssue, animated: newIssue, infinite: newIssue, flash: newIssue }"></label>
-                    <!-- ko if: UnreadCoreItemsCount() > 0-->
+                    <!-- ko if: UnreadCoreItemsCount() > 0 -->
                     <span class="tooltiptext" data-bind="foreach: UnreadCoreItems">
                         <p data-bind="text: $data"></p>
                     </span>
@@ -183,10 +183,87 @@
                 }
             };
 
+            //notifies clients to update the activity index
+            notificationHub.client.updateActivity = function(issueId, userId){
+                refreshUserIssueModel(issueId, 'update')
+            }
+
+            notificationHub.client.nextStage = function (issueId, status, userId) {
+                refreshUserIssueModel(issueId, 'next')
+            }
+
             // Start the connection.
             $.connection.hub.start().done(function () {
                 
             });
+
+            function refreshUserIssueModel(issueId, notificationText){
+                var idx = -1;
+                for (var i = 0; i < viewModel().length; i++){
+                    if (viewModel()[i].Issue.Id() == issueId){
+                        idx = i;
+                    }
+                }
+
+                if (idx > -1){
+                    $.ajax({
+                        url: '/Issue/RefreshUserIssue?issueId=' + issueId + '&userId=' + userId,
+                        type: 'POST',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: 'json',
+                        async: true,
+                        processData: false,
+                        success: function(data, textStatus, jqXHR){
+                            var dat = JSON.parse(data);
+                            
+                            viewModel()[idx].CriteriaActionRatingRequired(dat.CriteriaActionRatingRequired)
+                            viewModel()[idx].SelfAssessmentActionRequired(dat.SelfAssessmentActionRequired)
+                            viewModel()[idx].EvaluationActionRequired(dat.EvaluationActionRequired)
+                            viewModel()[idx].UnreadCoreItemsCount(dat.UnreadCoreItemsCount)
+                            
+                            //viewModel()[idx].UnreadCoreItems.removeAll()
+                            var smaller = 0 ;
+                            if ( dat.UnreadCoreItems.length <  viewModel()[idx].UnreadCoreItems().length){
+                                smaller = dat.UnreadCoreItems.length
+                            }else{
+                                smaller = viewModel()[idx].UnreadCoreItems().length
+                            }
+                            for(var i = 0; i < viewModel()[idx].UnreadCoreItems().length; i++){
+                                var x = viewModel()[idx].UnreadCoreItems()[0]
+                                viewModel()[idx].UnreadCoreItems.remove(x)
+                            }
+                            for(var i = 0; i < dat.UnreadCoreItems.length; i++){
+                                viewModel()[idx].UnreadCoreItems.push(dat.UnreadCoreItems[i])
+                            }
+
+                            viewModel()[idx].Issue.Status(dat.Issue.Status)
+
+                            var nText = ''
+                            var nTitle = ''
+                            if (notificationText == 'next'){
+                                var status =  dat.Issue.Status.toLowerCase();
+                                nText = dat.Issue.Title + ' moved to ' + status.charAt(0).toUpperCase() + status.slice(1);
+                                nTitle = 'Issue put to next stage!'
+                            }else{
+                                nText = dat.Issue.Title + ' was refreshed'
+                                nTitle = 'Issue refreshed!'
+                            }
+
+                            $.notify({
+                                icon: 'glyphicon glyphicon-info-sign',
+                                title: nTitle,
+                                message: nText
+                            }, {
+                                delay: notDelay,
+                                type: 'info',
+                                placement: notPlacementCorner,
+                                animate: notAnimate
+                            });
+                        }
+                    })    
+                }
+                
+            }
         });
     });
 </script>

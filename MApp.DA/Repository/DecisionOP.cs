@@ -35,13 +35,15 @@ namespace MApp.DA.Repository
             ApplicationDBEntities ctx = new ApplicationDBEntities();
             List<HDecision> rlist = new List<HDecision>();
 
-            List<HDecision> list = ctx.HDecision.AsNoTracking().Where(x => x.IssueId == issueId).OrderByDescending(x => x.ChangeDate).ToList();
+            List<HDecision> list = ctx.HDecision.AsNoTracking().Where(x => x.IssueId == issueId && x.Action != "Explanation Updated").OrderByDescending(x => x.ChangeDate).ToList();
             if (list.Count > 1)
             {
                 HDecision youngest = list[0];
                 for (int i = list.Count - 1; i > 0; i--)
                 {
                     list[i].ChangeDate = list[i - 1].ChangeDate;
+                    HDecision help = ctx.Database.SqlQuery<HDecision>("SELECT * FROM HDecision WHERE IssueId = {0} AND ChangeDate < {1} ORDER BY ChangeDate DESC", issueId, list[i].ChangeDate).FirstOrDefault();
+                    list[i].Explanation = help.Explanation;
                 }
                 list.Remove(youngest);
                 rlist = list;
@@ -60,6 +62,7 @@ namespace MApp.DA.Repository
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
             HDecision dec = new HDecision();
+
             if (ctx.Decision.Where(x => x.IssueId == decision.IssueId).Count() == 0)
             {
                 ctx.Decision.Add(decision);
@@ -97,6 +100,16 @@ namespace MApp.DA.Repository
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
             Decision entity = ctx.Decision.Where(x => x.IssueId == decision.IssueId).FirstOrDefault();
+            HDecision hdec = new HDecision();
+            hdec.IssueId = decision.IssueId;
+            hdec.ChangeDate = DateTime.Now;
+            hdec.AlternativeId = decision.AlternativeId;
+            hdec.Action = "Explanation updated";
+            hdec.Explanation = decision.Explanation;
+            hdec.UserId = userId;
+            ctx.HDecision.Add(hdec);
+            ctx.Entry(hdec).State = EntityState.Added;
+
             entity.Explanation = decision.Explanation;
             ctx.Entry(entity).State = EntityState.Modified;
             ctx.SaveChanges();

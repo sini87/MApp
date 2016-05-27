@@ -62,5 +62,10 @@ namespace MApp.Web.Hubs
         {
             Clients.All.updateActivity(issueId, userId);
         }
+
+        public void NextStage(int issueId, string status, int userId)
+        {
+            Clients.All.nextStage(issueId, status, userId);
+        }
     }
 }

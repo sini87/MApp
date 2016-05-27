@@ -2,7 +2,7 @@
 @model MApp.Web.ViewModel.DecisionVM
 @{
     var ko = Html.CreateKnockoutContext();
-    if (Model.Issue.Status == "DECISIONING")
+    if (Model.Issue.Status == "DECIDING")
     {
         ViewBag.Title = Model.Issue.Title + " - Decision Making";
     }
@@ -23,15 +23,12 @@
     }
 }
 
-@if (Model.Issue.Status == "DECISIONING")
-{
-    <h2>@Model.Issue.Title - Decision Making</h2>
-}
-else
-{
-    <h2>@Model.Issue.Title - Final Decision</h2>
-}
-
+<!-- ko if: viewModel.Issue.Status() == 'DECIDING' -->
+<h2 data-bind="text: viewModel.Issue.Title() + ' - Deciding'"></h2>
+<!-- /ko -->
+<!-- ko if: viewModel.Issue.Status() == 'FINISHED' -->
+<h2 data-bind="text: viewModel.Issue.Title() + ' - Final Decision'"></h2>
+<!-- /ko -->
 <div>
     <h3>Voting Results</h3>
     <table class="table">
@@ -59,28 +56,25 @@ else
         </div>
         <textarea data-bind="value: viewModel.Decision.Explanation" id="explanationText" class="form-control textarea-desc" rows="5"></textarea>
     </div>
-    if (Model.Issue.Status != "FINISHED")
-    {
-        <button id="save" type="button" class="btn btn-primary" onclick="javascript: onSaveClick()">Make Decision</button>
-    }
-    else
-    {
-        <button id="makeDecisionBtn" type="button" class="btn btn-primary" onclick="javascript: onSaveClick()" data-bind="visible: viewModel.overthink">Change Decision</button>
-        <button id="updateDecisionBtn" type="button" class="btn btn-primary" onclick="javascript: onUpdateClick()" data-bind="visible: viewModel.update">Update Explanation</button>
-    }
+    <!-- ko if: viewModel.Issue.Status() == 'FINISHED' -->
+        <button id="save" type="button" class="btn btn-primary" onclick="javascript: onUpdateClick()" data-bind="visible: viewModel.update">Update Description</button>
+        <button id="updateDecisionBtn" type="button" class="btn btn-primary" onclick="javascript: onSaveClick()" data-bind="visible: viewModel.overthink">Change Decision</button>
+    <!-- /ko -->
+    <!-- ko if: viewModel.Issue.Status() == 'DECIDING' -->
+        <button id="makeDecisionBtn" type="button" class="btn btn-primary" onclick="javascript: onSaveClick()">Make Decision</button>
+    <!-- /ko -->
 }
 else
 {
-    if (Model.Issue.Status != "FINISHED")
-    {
+    <!-- ko if: viewModel.Issue.Status() == 'DECIDING' -->
         <h3>Issue owner has made no decision yet</h3>
-    }else
-    {
-        <h3>Decision Made: @Model.Alternatives.Where(x => x.Id == Model.Decision.AlternativeId).FirstOrDefault().Name</h3>
+    <!-- /ko -->
+    <!-- ko if: viewModel.Issue.Status() == 'FINISHED' -->
+        <h3 data-bind="text: 'Decision Made: ' + viewModel.decisionName()"></h3>
         <h4>Explanation:</h4>
         <br />
         @Model.Decision.Explanation
-    }
+    <!-- /ko -->
 }
 
 @if(Model.OldDecisions != null && Model.OldDecisions.Count > 0)
@@ -129,11 +123,23 @@ else
 
     viewModel.update = ko.computed(function() {
         if (viewModel.Decision.AlternativeId() == @Model.Decision.AlternativeId && viewModel.Issue.Status() == "FINISHED" && viewModel.AccessRight() == "O"){
-            document.getElementById("explanationText").value = '@Model.Decision.Explanation';
+            document.getElementById("explanationText").value = viewModel.Decision.Explanation();
             return true;
         }else
             return false;
     });
+
+    viewModel.decisionName = ko.computed(function(){
+        if (viewModel.Issue.Status() == 'FINISHED'){
+            for (var i = 0; i < viewModel.Alternatives().length; i++){
+                if (viewModel.Decision.AlternativeId() == viewModel.Alternatives()[i].Id()){
+                    return viewModel.Alternatives()[i].Name()
+                }
+            }
+        }else{
+            return 'NO DECISION'
+        }
+    })
 
     ko.applyBindings(viewModel);
 
@@ -155,6 +161,8 @@ else
     $(function () {
         var notificationHub = $.connection.notificationHub;
         userAddedToIssue(notificationHub);
+
+        nextStageNotification(notificationHub)
         
         $.connection.hub.start().done(function () {
             

@@ -68,7 +68,7 @@
                                     </form>
                                 </div>
                                 <div class="modal-footer">
-                                    <button class="btn btn-primary" data-bind="attr: { Id: 'saveCommentBtns' + Id(), onClick: 'onSaveCommentClick(' + Id() + ')'}">Save</button>
+                                    <button class="btn btn-primary" data-bind="attr: { Id: 'saveCommentBtns' + Id(), onClick: 'onSaveCommentClick(' + Id() + ')'}">Add</button>
                                 </div>
                             </div>
                         </div>
@@ -76,7 +76,7 @@
                     
                 </td>
                 <td align="center" class="commenttable-btncol">
-                    <button class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeCriterion, visible: viewModel.AccessRight() != 'V', enable: viewModel.Issue.Status() =='BRAINSTORMING1'">Remove</button>
+                    <button class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeCriterion, visible: viewModel.AccessRight() != 'V', visible: viewModel.Issue.Status() =='BRAINSTORMING1'">Remove</button>
                     <div data-bind="if: Id() > 0">
                         <button class="btn btn-primary btn-xs" data-toggle="modal" data-bind="attr: { 'data-target': '#commentModal' + Id() }">Add new comment</button>
                     </div>
@@ -89,8 +89,8 @@
     <button id="showCommentsBtn" class="btn btn-primary btn-md accordion-toggle" data-toggle="collapse" data-target=".comment" onclick="onShowCommentClick()">Show comments</button>
 @if (Model.AccessRight == "C" || Model.AccessRight == "O")
 {
-    <button id="addNewCriterion" class="btn btn-primary btn-md" onclick="onAddNewCriterionClick()" data-bind="enable: viewModel.Issue.Status() == 'BRAINSTORMING1'">Add new Criterion</button>
-    <button id="save" class="btn btn-primary btn-md" onclick="onSaveClick()">Save</button>
+    <button id="addNewCriterion" class="btn btn-primary btn-md" onclick="onAddNewCriterionClick()" data-bind="visible: viewModel.Issue.Status() == 'BRAINSTORMING1'">Add new Criterion</button>
+    <button id="save" class="btn btn-primary btn-md" onclick="onSaveClick()" data-bind="visible: viewModel.Issue.Status() == 'BRAINSTORMING1'">Save</button>
 }
 @if (Model.AccessRight == "O")
 {
@@ -164,6 +164,11 @@
                     Text: CKEDITOR.instances['editor' + critId].getData(),
                     Name: 'Me'
                 }
+        if (comment.Text.length < 3)
+        {
+            commentWarning()
+            return;
+        }
         $.ajax({
             url: '@Url.Action("AddComment", "Issue")',
             type: 'POST',
@@ -231,9 +236,7 @@
 <script src="~/signalr/hubs"></script>
 <script>
     $(function () {
-        // Reference the auto-generated proxy for the hub.
         var commentHub = $.connection.commentHub;
-        // Create a function that the hub can call back to display messages.
         commentHub.client.addNewComment = function (comment) {
             if (comment.Type.startsWith('Criterion') && comment.UserId != viewModelJs.UserId){
                 var strId = comment.Type.replace("Criterion","")
@@ -262,6 +265,7 @@
 
         //signalR CriteronHub
         var criterionHub = $.connection.criterionHub;
+        //notification criterion deleted
         criterionHub.client.deleteCriteria = function (criteria, user) {
             if (viewModel.UserId() != user.Id) {
                 for (var i = 0; i < criteria.length; i++) {
@@ -287,6 +291,7 @@
             }
         }
 
+        //notification criteria updated
         criterionHub.client.updateCriteria = function (criteria, user) {
             if (viewModel.UserId() != user.Id) {
                 for (var i = 0; i < criteria.length; i++) {
@@ -303,6 +308,11 @@
                             Comments: ko.observableArray()
                         }
                         viewModel.IssueCriteria.push(newCrit)
+                        CKEDITOR.replace('editor' + uCrit.Id,
+                        {
+                            customConfig: '/ckeditor/config.js'
+                        });
+
 
                         $.notify({
                             icon: 'glyphicon glyphicon-info-sign',
@@ -346,6 +356,7 @@
 
         var notificationHub = $.connection.notificationHub;
         userAddedToIssue(notificationHub);
+        nextStageNotification(notificationHub)
 
         $.connection.hub.start().done(function () {
 

@@ -35,6 +35,7 @@ namespace MApp.Middleware.Models
             model.Type = entity.Type;
             model.Text = entity.Text;
             model.IssueId = entity.IssueId;
+            model.Anonymous = entity.Anonymous;
             var epoch = new DateTime(1970, 1, 1, 0, 0, 0);
             var unixDateTime = (entity.DateTime.Ticks - epoch.Ticks) / TimeSpan.TicksPerMillisecond - Convert.ToInt32(TimeZone.CurrentTimeZone.GetUtcOffset(entity.DateTime).TotalMilliseconds);
             model.DateTime = unixDateTime;

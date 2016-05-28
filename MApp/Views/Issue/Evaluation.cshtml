@@ -78,7 +78,7 @@
         </table>
     <!-- /ko -->
 <!-- /ko -->
-<!-- ko if: viewModel.RatedUsers().length == 0 -->
+<!-- ko if: viewModel.RatedUsers().length == 0 || viewModel.Issue.AnonymousPosting() == true -->
     <h3 data-bind="text: viewModel.RatedUserCnt() + ' other users have rated!'"></h3>
 <!-- /ko -->
 <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>

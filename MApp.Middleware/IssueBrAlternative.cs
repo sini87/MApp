@@ -49,7 +49,7 @@ namespace MApp.Middleware
             AlternativeOp.UpdateAlternatives(updateList, userId);
             AlternativeOp.AddAlternatives(addedList, userId);
         }
-
+        
         /// <summary>
         /// returns List of comments for issue alternatives
         /// </summary>
@@ -61,10 +61,40 @@ namespace MApp.Middleware
             CommentModel cm = new CommentModel();
             List<CommentModel> list = cm.ToModelList(CommentOp.GetAlternativeComments(issueId, userId), cm);
             List<KeyValuePair<int, string>> userList = UserOp.GetUserNames(list.Select(x => x.UserId).Distinct().ToList());
+            List<KeyValuePair<int, string>> anonymousUsers = new List<KeyValuePair<int, string>>();
+            List<KeyValuePair<int, string>> anonNames = new List<KeyValuePair<int, string>>();
+            int i = 1;
+            Random rnd = new Random();
+            KeyValuePair<int, string> randName;
+            List<int> usedRands = new List<int>();
+            bool added;
+            int rNumber = 0;
+            foreach (KeyValuePair<int, string> userkvp in userList)
+            {
+                added = false;
+                while (added == false)
+                {
+                    rNumber = rnd.Next(1, 999999);
+                    if (!usedRands.Contains(rNumber))
+                    {
+                        usedRands.Add(rNumber);
+                        added = true;
+                    }
+                }
+                anonNames.Add(new KeyValuePair<int, string>(userkvp.Key, "Anonymous " + rNumber));
+                i++;
+            }
 
             foreach (CommentModel model in list)
             {
-                model.Name = userList.Where(x => x.Key == model.UserId).FirstOrDefault().Value;
+                if (model.Anonymous)
+                {
+                    model.Name = anonNames.Where(x => x.Key == model.UserId).FirstOrDefault().Value;
+                }
+                else
+                {
+                    model.Name = userList.Where(x => x.Key == model.UserId).FirstOrDefault().Value;
+                }
             }
 
             return list;

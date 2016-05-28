@@ -52,9 +52,9 @@
 <button id="next" class="btn btn-primary btn-md" onclick="onNextStageClick()" data-bind="enable: viewModel.PercentSum() == 100, visible: viewModelJs.AccessRight == 'O' && viewModel.Issue.Status() != 'DECIDING' && viewModel.Issue.Status() != 'FINISHED'">Next Stage</button>
 
 <!-- ko if: viewModel.VotedUsers().length == 0-->
-    <h4>No votes yet!</h4>
+    <h4>No weights yet!</h4>
 <!-- /ko -->
-<!-- ko if: viewModel.VotedUsers().length > 0 -->
+<!-- ko if: viewModel.VotedUsers().length > 0 && viewModel.Issue.AnonymousPosting() == false -->
     <table id="critRatingTab" class="table table-hover table-striped table-condensed table-nonfluid">
         <thead>
             <th>User</th>
@@ -74,7 +74,9 @@
         </tbody>
     </table>
 <!-- /ko -->
-
+<!-- ko if: viewModel.VotedUsers().length > 0 && viewModel.Issue.AnonymousPosting() == true -->
+    <h4 data-bind="text: viewModel.VotedUsers().length + ' users have weighted'"></h4>
+<!-- /ko -->
 
 <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
 <script src="~/signalr/hubs"></script>
@@ -165,11 +167,18 @@
                         UserCriterionWeights: obsW
                     }
                     viewModel.VotedUsers.push(userWithCW)
+                    
+                    var msg = '';
+                    if (viewModel.Issue.AnonymousPosing() == true){
+                        msg = 'Some user have weighted'
+                    }else{
+                        msg = user.Name + ' has weighted!'
+                    }
 
                     $.notify({
                         icon: 'glyphicon glyphicon-info-sign',
                         title: 'System Notificaion',
-                        message: user.Name + ' has weighted!'
+                        message: msg
                     },{
                         delay: notDelay,
                         type: 'info',

@@ -68,7 +68,15 @@
                                     </form>
                                 </div>
                                 <div class="modal-footer">
-                                    <button class="btn btn-primary" data-bind="attr: { Id: 'saveCommentBtns' + Id(), onClick: 'onSaveCommentClick(' + Id() + ')'}">Add</button>
+                                    <div class="form-inline">
+                                        <div class="checkbox">
+                                            <label id="anonymCommentLabel">
+                                                <input data-bind="attr: {id: 'anonymousCommentCheck' + Id() }" type="checkbox" />
+                                                Anonymous comment
+                                            </label>
+                                        </div>
+                                        <button class="btn btn-primary" data-bind="attr: { Id: 'saveCommentBtns' + Id(), onClick: 'onSaveCommentClick(' + Id() + ')'}">Add</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -165,7 +173,8 @@
                     UserId: 0,
                     Type: 'Alternative' + altId,
                     Text: CKEDITOR.instances['editor' + altId].getData(),
-                    Name: 'Me'
+                    Name: 'Me',
+                    Anonymous: document.getElementById('anonymousCommentCheck' + altId).checked
                 }
         if (comment.Text.length < 3)
         {
@@ -191,8 +200,12 @@
                                     UserId: ko.observable(0),
                                     Type: ko.observable('Alternative' + altId),
                                     Text: ko.observable(CKEDITOR.instances['editor' + altId].getData()),
-                                    Name: ko.observable('Me')
+                                    Name: ko.observable('Me'),
+                                    Anonymous: document.getElementById('anonymousCommentCheck' + altId).checked
                                 }
+                            if(cmt.Anonymous){
+                                cmt.Name = 'Anonymous'
+                            }
                             viewModel.Alternatives()[i].Comments.push(cmt);
                         }
                     }

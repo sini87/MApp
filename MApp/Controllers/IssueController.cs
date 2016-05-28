@@ -385,7 +385,13 @@ namespace MApp.Web.Controllers
             ic.AddCommentToAlternative(commentModel, GetUserIdFromClaim());
 
             commentModel.UserId = GetUserIdFromClaim();
-            commentModel.Name = GetUserNameFromClaim();
+            if (commentModel.Anonymous)
+            {
+                commentModel.Name = "Anonymous";
+            }else
+            {
+                commentModel.Name = GetUserNameFromClaim();
+            }
             var context = GlobalHost.ConnectionManager.GetHubContext<CommentHub>();
             context.Clients.All.addNewComment(commentModel);
 

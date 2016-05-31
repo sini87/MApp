@@ -22,6 +22,7 @@ namespace MApp.DA
             this.PairwiseComparisonCC = new HashSet<PairwiseComparisonCC>();
             this.PairwiseComparisonCC1 = new HashSet<PairwiseComparisonCC>();
             this.Rating = new HashSet<Rating>();
+            this.PairwiseComparisonAC = new HashSet<PairwiseComparisonAC>();
         }
     
         public int Id { get; set; }
@@ -41,5 +42,7 @@ namespace MApp.DA
         public virtual ICollection<PairwiseComparisonCC> PairwiseComparisonCC1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Rating> Rating { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PairwiseComparisonAC> PairwiseComparisonAC { get; set; }
     }
 }

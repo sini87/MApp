@@ -30,5 +30,7 @@ namespace MApp.Web.ViewModel
         public List<CriterionWeightModel>[] OtherWeights { get; set; }
         public List<UserWithCW> VotedUsers { get; set; }
         public int UserId { get; set; }
+        public List<PairwiseComparisonCriterionModel> PCCriteria { get; set; }
+        public string[] SliderValues { get; set; }
     }
 }

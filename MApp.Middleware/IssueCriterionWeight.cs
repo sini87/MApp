@@ -51,7 +51,7 @@ namespace MApp.Middleware
         {
             CriterionWeightModel cwm = new CriterionWeightModel();
             List<CriterionWeightModel> allWeightsList = cwm.ToModelList(CriterionWeightOp.GetIssueWeights(issueId, userId), cwm);
-            allWeightsList = allWeightsList.Where(x => x.UserId != userId).ToList() ;
+            //allWeightsList = allWeightsList.Where(x => x.UserId != userId).ToList() ;
             IssueCreating ic = new IssueCreating();
             List<UserShortModel> allUsers = ic.GetAllUsers();
             List<int> distinctUsers = allWeightsList.GroupBy(x => x.UserId).Select(grp => grp.First()).Select(x => x.UserId).ToList();
@@ -71,6 +71,87 @@ namespace MApp.Middleware
             }
 
             return arrayList;
+        }
+
+        public string[] GetSliderValues()
+        {
+            Dictionary<double, string> values = PairwiseComparisonOp.Values;
+            string[] array = new string[values.Count];
+            int i = 0;
+            foreach (var val in values)
+            {
+                array[i] = val.Value;
+                i++;
+            }
+            return array;
+        }
+
+        public List<PairwiseComparisonCriterionModel> GetPCCriteria (int issueId, int userId)
+        {
+            List<Criterion> cList = CriterionOp.GetIssueCriterions(issueId, userId);
+            PairwiseComparisonCriterionModel pccm = new PairwiseComparisonCriterionModel();
+            List<PairwiseComparisonCriterionModel> list = pccm.ToModelList(PairwiseComparisonOp.GetWeightComparison(issueId, userId), pccm);
+            
+            //if user has compared criteria
+            //construct empty weights
+            if (list.Count() == 0)
+            {
+                list = new List<PairwiseComparisonCriterionModel>();
+                for (int i = 0; i < cList.Count; i++)
+                {
+                    for (int j = i + 1; j < cList.Count; j++)
+                    {
+                        pccm = new PairwiseComparisonCriterionModel();
+                        pccm.LeftCritId = cList[i].Id;
+                        pccm.LeftCritName = cList[i].Name;
+                        pccm.RightCritId = cList[j].Id;
+                        pccm.RightCritName = cList[j].Name;
+                        pccm.Value = "Equally important";
+                        list.Add(pccm);
+                    }
+                }
+            }else
+            {
+                foreach(var model in list)
+                {
+                    model.LeftCritName = cList.Find(x => x.Id == model.LeftCritId).Name;
+                    model.RightCritName = cList.Find(x => x.Id == model.RightCritId).Name;
+                }
+            }
+            
+            return list;
+        }
+
+        /// <summary>
+        /// returns true if comparison was saved an consistency check OK
+        /// </summary>
+        /// <param name="pccmList"></param>
+        /// <param name="userId"></param>
+        /// <param name="userName">name of user</param>
+        /// <returns></returns>
+        public List<CriterionWeightModel> SavePCCriteria(List<PairwiseComparisonCriterionModel> pccmList, int userId, string userName)
+        {
+            PairwiseComparisonCC pcc;
+            List<PairwiseComparisonCC> pccList = new List<PairwiseComparisonCC>();
+            Dictionary<double, string> values = PairwiseComparisonOp.Values;
+            foreach (PairwiseComparisonCriterionModel pccm in pccmList)
+            {
+                pcc = new PairwiseComparisonCC();
+                pcc.CriterionLeft = pccm.LeftCritId;
+                pcc.CriterionRight = pccm.RightCritId;
+                pcc.UserId = userId;
+                pcc.Value = values.Where(x => x.Value == pccm.Value).FirstOrDefault().Key;
+                pccList.Add(pcc);
+            }
+
+            CriterionWeightModel cwm = new CriterionWeightModel();
+            List<CriterionWeightModel> cwList = cwm.ToModelList(PairwiseComparisonOp.SaveWeightComparison(pccList), cwm);
+            foreach(var model in cwList)
+            {
+                model.Name = userName;
+            }
+
+            return cwList;
         }
     }
 }

@@ -17,5 +17,7 @@ namespace MApp.Web.ViewModel
         public string AccessRight { get; set; }
         public int UserId { get; set; }
         public int RatedUserCnt { get; set; }
+        public List<PairwiseComparisonRatingModel> PairwiseRatings { get; set; }
+        public string[] SliderValues { get; set; }
     }
 }

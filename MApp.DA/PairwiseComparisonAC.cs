@@ -17,10 +17,12 @@ namespace MApp.DA
         public int AlternativeLeft { get; set; }
         public int AlternativeRight { get; set; }
         public int UserId { get; set; }
-        public int Value { get; set; }
+        public double Value { get; set; }
+        public int CriterionId { get; set; }
     
         public virtual Alternative Alternative { get; set; }
         public virtual Alternative Alternative1 { get; set; }
         public virtual User User { get; set; }
+        public virtual Criterion Criterion { get; set; }
     }
 }

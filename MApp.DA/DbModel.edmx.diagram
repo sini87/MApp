@@ -70,6 +70,7 @@
         <AssociationConnector Association="ApplicationDBModel.UserProperty" ManuallyRouted="false" />
         <EntityTypeShape EntityType="ApplicationDBModel.Changes_View" Width="1.5" PointX="3.375" PointY="0.75" />
         <EntityTypeShape EntityType="ApplicationDBModel.InformationRead" Width="1.5" PointX="0.75" PointY="0.75" />
+        <AssociationConnector Association="ApplicationDBModel.FK_PairwiseComparisonAC_Criterion" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

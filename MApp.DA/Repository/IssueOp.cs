@@ -377,7 +377,14 @@ namespace MApp.DA.Repository
             ctx.Entry(hissue).State = EntityState.Added;
             ctx.SaveChanges();
 
+            string status = issue.Status;
+            string setting = issue.Setting;
             ctx.Dispose();
+
+            if (setting == "B" && issue.Status == "DECIDING")
+            {
+                PairwiseComparisonOp.CalculateResult(issueId);
+            }
         }
     }
 }

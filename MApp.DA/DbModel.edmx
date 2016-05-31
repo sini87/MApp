@@ -87,7 +87,7 @@
           <Property Name="ChangeDate" Type="datetime" Nullable="false" />
           <Property Name="IssueId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="Action" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Action" Type="varchar" MaxLength="200" Nullable="false" />
           <Property Name="SelfAssessmentValue" Type="float" />
           <Property Name="SelfAssesmentDescr" Type="varchar" MaxLength="500" />
         </EntityType>
@@ -100,7 +100,7 @@
           <Property Name="AlternativeId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="IssueId" Type="int" Nullable="false" />
-          <Property Name="Action" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Action" Type="varchar" MaxLength="200" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="30" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="150" />
           <Property Name="Reason" Type="varchar" MaxLength="100" />
@@ -114,7 +114,7 @@
           <Property Name="ChangeDate" Type="datetime" Nullable="false" />
           <Property Name="CriterionId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="Action" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Action" Type="varchar" MaxLength="200" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="200" />
           <Property Name="Issue" Type="int" Nullable="false" />
@@ -129,7 +129,7 @@
           <Property Name="ChangeDate" Type="datetime" Nullable="false" />
           <Property Name="IssueId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="Action" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Action" Type="varchar" MaxLength="200" Nullable="false" />
           <Property Name="AlternativeId" Type="int" />
           <Property Name="Explanation" Type="varchar" MaxLength="8000" />
         </EntityType>
@@ -141,7 +141,7 @@
           <Property Name="ChangeDate" Type="datetime" Nullable="false" />
           <Property Name="IssueId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="Action" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Action" Type="varchar" MaxLength="200" Nullable="false" />
           <Property Name="Title" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Status" Type="varchar" MaxLength="15" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="8000" />
@@ -161,7 +161,7 @@
           <Property Name="ChangeDate" Type="datetime" Nullable="false" />
           <Property Name="IssueId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="Action" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Action" Type="varchar" MaxLength="200" Nullable="false" />
         </EntityType>
         <EntityType Name="HTagIssue">
           <Key>
@@ -173,7 +173,7 @@
           <Property Name="TagId" Type="int" Nullable="false" />
           <Property Name="IssueId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="Action" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Action" Type="varchar" MaxLength="200" Nullable="false" />
         </EntityType>
         <EntityType Name="InformationRead">
           <Key>
@@ -216,12 +216,14 @@
           <Key>
             <PropertyRef Name="AlternativeLeft" />
             <PropertyRef Name="AlternativeRight" />
+            <PropertyRef Name="CriterionId" />
             <PropertyRef Name="UserId" />
           </Key>
           <Property Name="AlternativeLeft" Type="int" Nullable="false" />
           <Property Name="AlternativeRight" Type="int" Nullable="false" />
+          <Property Name="CriterionId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="Value" Type="int" Nullable="false" />
+          <Property Name="Value" Type="float" Nullable="false" />
         </EntityType>
         <EntityType Name="PairwiseComparisonCC">
           <Key>
@@ -267,7 +269,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="TagIssue">
           <Key>
@@ -318,7 +320,7 @@ warning 6002: The table/view 'ApplicationDB.appSchema.Changes_View' does not hav
           <Property Name="ChangeDate" Type="datetime" Nullable="false" />
           <Property Name="IssueId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="Action" Type="varchar" MaxLength="79" Nullable="false" />
+          <Property Name="Action" Type="varchar" MaxLength="200" Nullable="false" />
         </EntityType>
         <Association Name="FK_AccessRight_Issue">
           <End Role="Issue" Type="Self.Issue" Multiplicity="1">
@@ -617,6 +619,20 @@ warning 6002: The table/view 'ApplicationDB.appSchema.Changes_View' does not hav
             </Principal>
             <Dependent Role="PairwiseComparisonAC">
               <PropertyRef Name="AlternativeLeft" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PairwiseComparisonAC_Criterion">
+          <End Role="Criterion" Type="Self.Criterion" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PairwiseComparisonAC" Type="Self.PairwiseComparisonAC" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Criterion">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PairwiseComparisonAC">
+              <PropertyRef Name="CriterionId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -930,6 +946,10 @@ warning 6002: The table/view 'ApplicationDB.appSchema.Changes_View' does not hav
             <End Role="Alternative" EntitySet="Alternative" />
             <End Role="PairwiseComparisonAC" EntitySet="PairwiseComparisonAC" />
           </AssociationSet>
+          <AssociationSet Name="FK_PairwiseComparisonAC_Criterion" Association="Self.FK_PairwiseComparisonAC_Criterion">
+            <End Role="Criterion" EntitySet="Criterion" />
+            <End Role="PairwiseComparisonAC" EntitySet="PairwiseComparisonAC" />
+          </AssociationSet>
           <AssociationSet Name="FK_PairwiseComparisonAC_User" Association="Self.FK_PairwiseComparisonAC_User">
             <End Role="User" EntitySet="User" />
             <End Role="PairwiseComparisonAC" EntitySet="PairwiseComparisonAC" />
@@ -1050,6 +1070,7 @@ warning 6002: The table/view 'ApplicationDB.appSchema.Changes_View' does not hav
           <NavigationProperty Name="PairwiseComparisonCC" Relationship="Self.FK_PairwiseComparisonCC_CriterionLeft" FromRole="Criterion" ToRole="PairwiseComparisonCC" />
           <NavigationProperty Name="PairwiseComparisonCC1" Relationship="Self.FK_PairwiseComparisonCC_CriterionRight" FromRole="Criterion" ToRole="PairwiseComparisonCC" />
           <NavigationProperty Name="Rating" Relationship="Self.FK_Rating_Criterion" FromRole="Criterion" ToRole="Rating" />
+          <NavigationProperty Name="PairwiseComparisonAC" Relationship="ApplicationDBModel.FK_PairwiseComparisonAC_Criterion" FromRole="Criterion" ToRole="PairwiseComparisonAC" />
         </EntityType>
         <EntityType Name="CriterionWeight">
           <Key>
@@ -1089,7 +1110,7 @@ warning 6002: The table/view 'ApplicationDB.appSchema.Changes_View' does not hav
           <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="IssueId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="AccessRight" Relationship="Self.FK_HAccessRight_AccessRight" FromRole="HAccessRight" ToRole="AccessRight" />
           <Property Name="SelfAssessmentValue" Type="Double" />
           <Property Name="SelfAssesmentDescr" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
@@ -1102,7 +1123,7 @@ warning 6002: The table/view 'ApplicationDB.appSchema.Changes_View' does not hav
           <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="AlternativeId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Description" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
           <Property Name="Reason" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
@@ -1119,7 +1140,7 @@ warning 6002: The table/view 'ApplicationDB.appSchema.Changes_View' does not hav
           <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="CriterionId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Description" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
           <Property Name="Issue" Type="Int32" Nullable="false" />
@@ -1136,7 +1157,7 @@ warning 6002: The table/view 'ApplicationDB.appSchema.Changes_View' does not hav
           <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="IssueId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="AlternativeId" Type="Int32" />
           <Property Name="Explanation" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Decision" Relationship="Self.FK_HDecision_Decision" FromRole="HDecision" ToRole="Decision" />
@@ -1150,7 +1171,7 @@ warning 6002: The table/view 'ApplicationDB.appSchema.Changes_View' does not hav
           <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="IssueId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Status" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Description" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
@@ -1172,7 +1193,7 @@ warning 6002: The table/view 'ApplicationDB.appSchema.Changes_View' does not hav
           <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="IssueId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="Review" Relationship="Self.FK_HReview_Review" FromRole="HReview" ToRole="Review" />
         </EntityType>
         <EntityType Name="HTagIssue">
@@ -1185,7 +1206,7 @@ warning 6002: The table/view 'ApplicationDB.appSchema.Changes_View' does not hav
           <Property Name="TagId" Type="Int32" Nullable="false" />
           <Property Name="IssueId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="TagIssue" Relationship="Self.FK_HTagIssue_TagIssue" FromRole="HTagIssue" ToRole="TagIssue" />
           <NavigationProperty Name="User" Relationship="Self.FK_HTagIssue_User" FromRole="HTagIssue" ToRole="User" />
         </EntityType>
@@ -1235,14 +1256,17 @@ warning 6002: The table/view 'ApplicationDB.appSchema.Changes_View' does not hav
             <PropertyRef Name="AlternativeLeft" />
             <PropertyRef Name="AlternativeRight" />
             <PropertyRef Name="UserId" />
+            <PropertyRef Name="CriterionId" />
           </Key>
           <Property Name="AlternativeLeft" Type="Int32" Nullable="false" />
           <Property Name="AlternativeRight" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Value" Type="Int32" Nullable="false" />
+          <Property Name="Value" Type="Double" Nullable="false" />
           <NavigationProperty Name="Alternative" Relationship="Self.FK_PairwiseComparisonAC_AlternativeRight" FromRole="PairwiseComparisonAC" ToRole="Alternative" />
           <NavigationProperty Name="Alternative1" Relationship="Self.FK_PairwiseComparisonAC_AltertaniveLeft" FromRole="PairwiseComparisonAC" ToRole="Alternative" />
           <NavigationProperty Name="User" Relationship="Self.FK_PairwiseComparisonAC_User" FromRole="PairwiseComparisonAC" ToRole="User" />
+          <Property Name="CriterionId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Criterion" Relationship="ApplicationDBModel.FK_PairwiseComparisonAC_Criterion" FromRole="PairwiseComparisonAC" ToRole="Criterion" />
         </EntityType>
         <EntityType Name="PairwiseComparisonCC">
           <Key>
@@ -1253,7 +1277,7 @@ warning 6002: The table/view 'ApplicationDB.appSchema.Changes_View' does not hav
           <Property Name="CriterionLeft" Type="Int32" Nullable="false" />
           <Property Name="CriterionRight" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Value" Type="Int32" Nullable="false" />
+          <Property Name="Value" Type="Double" Nullable="false" />
           <NavigationProperty Name="Criterion" Relationship="Self.FK_PairwiseComparisonCC_CriterionLeft" FromRole="PairwiseComparisonCC" ToRole="Criterion" />
           <NavigationProperty Name="Criterion1" Relationship="Self.FK_PairwiseComparisonCC_CriterionRight" FromRole="PairwiseComparisonCC" ToRole="Criterion" />
           <NavigationProperty Name="User" Relationship="Self.FK_PairwiseComparisonCC_User" FromRole="PairwiseComparisonCC" ToRole="User" />
@@ -1298,7 +1322,7 @@ warning 6002: The table/view 'ApplicationDB.appSchema.Changes_View' does not hav
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="TagIssue" Relationship="Self.FK_TagIssue_Tag" FromRole="Tag" ToRole="TagIssue" />
         </EntityType>
         <EntityType Name="TagIssue">
@@ -2019,6 +2043,10 @@ warning 6002: The table/view 'ApplicationDB.appSchema.Changes_View' does not hav
           </AssociationSet>
           <EntitySet Name="Changes_View" EntityType="ApplicationDBModel.Changes_View" />
           <EntitySet Name="InformationRead" EntityType="ApplicationDBModel.InformationRead" />
+          <AssociationSet Name="FK_PairwiseComparisonAC_Criterion" Association="ApplicationDBModel.FK_PairwiseComparisonAC_Criterion">
+            <End Role="Criterion" EntitySet="Criterion" />
+            <End Role="PairwiseComparisonAC" EntitySet="PairwiseComparisonAC" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Changes_View">
           <Key>
@@ -2030,7 +2058,7 @@ warning 6002: The table/view 'ApplicationDB.appSchema.Changes_View' does not hav
           <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="IssueId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="Action" Type="String" Nullable="false" MaxLength="79" FixedLength="false" Unicode="false" />
+          <Property Name="Action" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="InformationRead">
           <Key>
@@ -2042,6 +2070,20 @@ warning 6002: The table/view 'ApplicationDB.appSchema.Changes_View' does not hav
           <Property Name="UserId" Type="Int32" Nullable="false" />
           <Property Name="Read" Type="Boolean" Nullable="false" />
         </EntityType>
+        <Association Name="FK_PairwiseComparisonAC_Criterion">
+          <End Type="ApplicationDBModel.Criterion" Role="Criterion" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="ApplicationDBModel.PairwiseComparisonAC" Role="PairwiseComparisonAC" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Criterion">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PairwiseComparisonAC">
+              <PropertyRef Name="CriterionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2250,6 +2292,7 @@ warning 6002: The table/view 'ApplicationDB.appSchema.Changes_View' does not hav
           <EntitySetMapping Name="PairwiseComparisonAC">
             <EntityTypeMapping TypeName="ApplicationDBModel.PairwiseComparisonAC">
               <MappingFragment StoreEntitySet="PairwiseComparisonAC">
+                <ScalarProperty Name="CriterionId" ColumnName="CriterionId" />
                 <ScalarProperty Name="AlternativeLeft" ColumnName="AlternativeLeft" />
                 <ScalarProperty Name="AlternativeRight" ColumnName="AlternativeRight" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />

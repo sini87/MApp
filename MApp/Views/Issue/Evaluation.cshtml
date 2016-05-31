@@ -5,10 +5,14 @@
     ViewBag.Title = Model.Issue.Title + " - Alternatives Evaluation";
     var ko = Html.CreateKnockoutContext();
 }
+<script src="~/Scripts/ion.rangeSlider.min.js"></script>
+<link href="~/Content/normalize.css" type="text/css" rel="stylesheet" />
+<link href="~/Content/ion.rangeSlider.css" type="text/css" rel="stylesheet" />
+<link href="~/Content/ion.rangeSlider.skinNice.css" type="text/css" rel="stylesheet" />
 
 <h2>@Model.Issue.Title - Alternative Evaluation</h2>
 
-@if (Model.AccessRight != "V")
+@if (Model.AccessRight != "V" && Model.Issue.Setting == "A")
 {
     <form data-toggle="validator" role="form" id="ratingform">
         <table id="userRatings" class="table table-hover table-striped table-condensed table-nonfluid">
@@ -47,61 +51,127 @@
     </form>
     <button id="save" onclick="onClickSave()" class="btn btn-primary btn-md" data-bind="visible: viewModel.Issue.Status() == 'EVALUATING', enable: viewModel.valid" >save</button>
 }
+else
+{
+    <div id="myCarousel" class="carousel slide" data-ride="carousel" data-wrap="false" data-interval="false">
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+            <!-- ko foreach: viewModel.PairwiseRatings-->
+            <li data-target="#myCarousel" data-bind="attr: { 'data-slide-to': $index() + 1 }"></li>
+            <!-- /ko -->
+        </ol>
+
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner">
+            <div class="item active carouselitem">
+                <h3 class="carousel-first" data-bind="text: 'You have to make ' + viewModel.PairwiseRatings().length + ' comparisons'"></h3>
+            </div>
+
+            <!-- ko foreach: viewModel.PairwiseRatings-->
+            <div class="item carouselitem">
+                <div class="carousel-vert">
+                    <div class="carousel-lbldiv">
+                        <table class="carousel-table">
+                            <tr>
+                                <td class="td-left-top">
+                                    <label data-bind="text: LeftAltName"></label>
+                                </td>
+                                <td class="td-center-top">
+                                    <label data-bind="text: CriterionName"></label>
+                                </td>
+                                <td class="td-right-top">
+                                    <label data-bind="text: RightAltName"></label>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="carousel-input">
+                        <input data-bind="value: Value, attr: { id: 'comparison' + LeftAltId() + ';' + RightAltId() + ';' + CriterionId() }" data-grid="true" data-grid-num="5" />
+                    </div>
+                </div>
+            </div>
+            <!-- /ko -->
+        </div>
+
+        <!-- Left and right controls -->
+        <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control hidden-sm" href="#myCarousel" role="button" data-slide="next">
+            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+    <button id="save" onclick="onAHPSaveClick()" class="btn btn-primary btn-md" data-bind="visible: viewModel.Issue.Status() == 'EVALUATING'">save</button>
+                    }
 @if (Model.AccessRight == "O")
 {
     <button id="nextstage" type="button" class="btn btn-primary" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.Issue.Status() != 'FINISHED' && viewModel.Issue.Status() != 'DECIDING'">Next Stage</button>
 }
 
-<!-- ko if: viewModel.RatedUsers().length > 0 && viewModel.Issue.AnonymousPosting() == false -->
+@if (Model.Issue.Setting == "A")
+{
+    <!-- ko if: viewModel.RatedUsers().length > 0 && viewModel.Issue.AnonymousPosting() == false -->
     <h3>Ratings of other users</h3>
     <!-- ko foreach: viewModel.RatedUsers -->
-        <h4 data-bind="text: Name"></h4>
+    <h4 data-bind="text: Name"></h4>
         <table data-bind="attr: { id: 'userRatingTable' + Id()}" class="table table-hover table-striped table-condensed table-nonfluid">
             <thead>
             <th>Crtieria</th>
             <!-- ko foreach: viewModel.Alternatives -->
-                <th data-bind="text: Name"></th>
+            <th data-bind="text: Name"></th>
             <!-- /ko -->
             </thead>
             <tbody data-bind="foreach: viewModel.Criterias">
-                    <tr>
-                        <td data-bind="text: Name" class="table-header-column"></td>
-                        <!-- ko foreach: viewModel.AllRatings-->
-                            <!-- ko if: !viewModel.adding() -->
-                                <!-- ko if: $parent.Id() == CriterionId() && $parents[1].Id() == UserId() -->
-                                    <td data-bind="text: Value"></td>
-                                <!-- /ko -->
-                            <!-- /ko -->
-                        <!-- /ko -->
-                    </tr>
+                <tr>
+                    <td data-bind="text: Name" class="table-header-column"></td>
+                    <!-- ko foreach: viewModel.AllRatings-->
+                    <!-- ko if: !viewModel.adding() -->
+                    <!-- ko if: $parent.Id() == CriterionId() && $parents[1].Id() == UserId() -->
+                    <td data-bind="text: Value"></td>
+                    <!-- /ko -->
+                    <!-- /ko -->
+                    <!-- /ko -->
+                </tr>
             </tbody>
         </table>
     <!-- /ko -->
-<!-- /ko -->
-<!-- ko if: viewModel.RatedUsers().length == 0 || viewModel.Issue.AnonymousPosting() == true -->
-    <h3 data-bind="text: viewModel.RatedUserCnt() + ' other users have rated!'"></h3>
-<!-- /ko -->
+        <!-- /ko -->
+        <!-- ko if: viewModel.RatedUsers().length == 0 || viewModel.Issue.AnonymousPosting() == true -->
+        <h3 data-bind="text: viewModel.RatedUserCnt() + ' other users have rated!'"></h3>
+        <!-- /ko -->
+
+}
+
 <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
 <script src="~/signalr/hubs"></script>
 <script type="text/javascript">
     var viewModelJs = @Html.Raw(Json.Encode(Model));
     var viewModel = ko.mapping.fromJS(viewModelJs);
+    
+    if (viewModelJs.Issue.Setting == 'A'){
+        viewModel.adding = ko.observable(false)
 
-    viewModel.adding = ko.observable(false)
-
-    viewModel.valid = ko.computed(function(){
-        var valid = true;
-        for (var i = 0; i < viewModel.UserRatings().length; i++){
-            for (var j = 0; j < viewModel.UserRatings()[i].length; j++){
-                var num = viewModel.UserRatings()[i][j].Value()
-                if (!$.isNumeric(num) || num < 1 || num > 10 ){
-                    valid = false;
-                    break;
+        viewModel.valid = ko.computed(function(){
+            var valid = true;
+            for (var i = 0; i < viewModel.UserRatings().length; i++){
+                for (var j = 0; j < viewModel.UserRatings()[i].length; j++){
+                    var num = viewModel.UserRatings()[i][j].Value()
+                    if (!$.isNumeric(num) || num < 1 || num > 10 ){
+                        valid = false;
+                        break;
+                    }
                 }
             }
-        }
-        return valid;
-    })
+            return valid;
+        })
+    }
+    
+    if (viewModelJs.Issue.Setting == 'B'){
+        viewModel.slideViews = ko.observable(0)
+    }
 
     ko.applyBindings(viewModel);
     renderMenues();
@@ -114,6 +184,55 @@
     function onNextStageClick() {
         ko.utils.postJson("/Issue/NextStage", { issueId: viewModel.Issue.Id, status: viewModel.Issue.Status })
     };
+
+    function onAHPSaveClick(){
+        var ratings = ko.toJS(viewModel.PairwiseRatings)
+        $.ajax({
+            url: '/Issue/SaveAlternativeRatingAHP?issueId=' + viewModel.Issue.Id(),
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(ratings),
+            async: true,
+            processData: false,
+            complete: function (r) {
+                if (r.responseText == "success") {
+                    $.notify({
+                        title: 'Comparisons saved',
+                        message: 'Consistency check successful!'
+                    },{
+                        delay: notDelay,
+                        type: 'success',
+                        placement: notPlacement,
+                        animate: notAnimate
+                    });
+                } else {
+                    $.notify({
+                        icon: 'glyphicon glyphicon-danger-sign',
+                        title: 'Could not save comparisons!',
+                        message: r.responseText
+                    },{
+                        delay: notDelay,
+                        type: 'danger',
+                        placement: notPlacement,
+                        animate: notAnimate
+                    });
+                }
+            }
+        })
+    }
+
+    //carousel
+    $('#myCarousel').on('slid.bs.carousel', function() {
+        viewModel.slideViews(viewModel.slideViews() + 1)
+    });
+
+    //sliders
+    $(document).ready(function () {
+        $('[id^="comparison"]').ionRangeSlider({
+            values: viewModelJs.SliderValues
+        });
+    });
 
     //SignalR
     $(function () {

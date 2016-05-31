@@ -35,14 +35,14 @@ namespace MApp.Web.Controllers
         // GET: Issue
         public ActionResult Index()
         {
-            int userId = GetUserIdFromClaim();          
+            int userId = GetUserIdFromClaim();
             IssueOverview iO = new IssueOverview();
             KeyValuePair<int, List<UserIssueModel>> kvp = new KeyValuePair<int, List<UserIssueModel>>(userId, iO.GetUIM(userId));
             return View(kvp);
         }
 
 
-        public ActionResult Creating (int issueId)
+        public ActionResult Creating(int issueId)
         {
             CreatingVM vm = new CreatingVM();
             IssueCreating ic = new IssueCreating();
@@ -90,7 +90,7 @@ namespace MApp.Web.Controllers
                 vm.Issue.Setting = "A";
                 vm.Issue.AnonymousPosting = false;
                 vm.AccessRights = new List<AccessRightModel>();
-                vm.AccessRights.Add(new AccessRightModel(userId, "Owner",vm.AllUsers.Where(x => x.Id == userId).FirstOrDefault().Name));
+                vm.AccessRights.Add(new AccessRightModel(userId, "Owner", vm.AllUsers.Where(x => x.Id == userId).FirstOrDefault().Name));
                 vm.AccessRight = "O";
                 vm.Issue.Id = -1;
                 vm.Comments = new List<CommentModel>();
@@ -146,14 +146,14 @@ namespace MApp.Web.Controllers
         {
             IssueCreating ic = new IssueCreating();
             ic.DeleteIssue(issueId);
-            return RedirectToAction("Index","Issue");
+            return RedirectToAction("Index", "Issue");
         }
 
         [HttpPost]
-        public ActionResult NextStage (int issueId, string status)
+        public ActionResult NextStage(int issueId, string status)
         {
             IssueCreating ic = new IssueCreating();
-            ic.NextStage(issueId,GetUserIdFromClaim());
+            ic.NextStage(issueId, GetUserIdFromClaim());
             string st = status.Remove(status.Length - 1, 1).Remove(0, 1);
             var context = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
             int userId = GetUserIdFromClaim();
@@ -162,7 +162,7 @@ namespace MApp.Web.Controllers
             {
                 context.Clients.All.nextStage(issueId, "BRAINSTORMING1", userId);
                 return RedirectToAction("BrCriteria", "Issue", new { issueId = issueId });
-            }else if (st == "BRAINSTORMING1")
+            } else if (st == "BRAINSTORMING1")
             {
                 context.Clients.All.nextStage(issueId, "BRAINSTORMING2", userId);
                 return RedirectToAction("CriteriaRating", "Issue", new { issueId = issueId });
@@ -182,7 +182,7 @@ namespace MApp.Web.Controllers
                 context.Clients.All.nextStage(issueId, "FINISHED", userId);
                 return RedirectToAction("Issue", "Index", new { issueId = issueId });
             }
-            
+
         }
 
         [HttpGet]
@@ -201,14 +201,14 @@ namespace MApp.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult BrCriteria ([FromJson]BrCriteriaVM brCriteriaVM)
+        public ActionResult BrCriteria([FromJson]BrCriteriaVM brCriteriaVM)
         {
             IssueBrCriteria ibc = new IssueBrCriteria();
             ibc.UpdateCriteria(brCriteriaVM.IssueCriteria, brCriteriaVM.DeletedCriteria, GetUserIdFromClaim());
             brCriteriaVM.IssueCriteria = ibc.GetIssueCriteria(brCriteriaVM.Issue.Id, GetUserIdFromClaim());
 
-            UserShortModel user = new UserShortModel(brCriteriaVM.UserId, GetUserNameFromClaim());           
-            var context = GlobalHost.ConnectionManager.GetHubContext<CriterionHub>();            
+            UserShortModel user = new UserShortModel(brCriteriaVM.UserId, GetUserNameFromClaim());
+            var context = GlobalHost.ConnectionManager.GetHubContext<CriterionHub>();
             context.Clients.All.updateCriteria(brCriteriaVM.IssueCriteria, user);
             if (brCriteriaVM.DeletedCriteria != null && brCriteriaVM.DeletedCriteria.Count > 0)
             {
@@ -265,11 +265,18 @@ namespace MApp.Web.Controllers
             IssueCriterionWeight icw = new IssueCriterionWeight();
             int userId = GetUserIdFromClaim();
             vm.Issue = ic.GetIssue(issueId);
-            vm.UserWeights = icw.GetUserWeights(issueId, userId);
             vm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
+            vm.UserId = userId;
+
+            if (vm.Issue.Setting == "B")
+            {
+                vm.PCCriteria = icw.GetPCCriteria(issueId, userId);
+                vm.SliderValues = icw.GetSliderValues();
+            }
+
+            vm.UserWeights = icw.GetUserWeights(issueId, userId);
             vm.OtherWeights = icw.GetIssueWeights(issueId, userId);
             vm.VotedUsers = new List<UserWithCW>();
-            vm.UserId = userId;
             int i = 0;
             foreach (List<CriterionWeightModel> cwmL in vm.OtherWeights)
             {
@@ -285,13 +292,19 @@ namespace MApp.Web.Controllers
         public ActionResult CriteriaRating([FromJson] CriteriaWeightsVM criteriaWeightsVM)
         {
             IssueCriterionWeight icw = new IssueCriterionWeight();
-            icw.SaveCriterionWeights(criteriaWeightsVM.UserWeights, criteriaWeightsVM.Issue.Id, GetUserIdFromClaim());
+            if (criteriaWeightsVM.Issue.Setting == "A")
+            {
+                icw.SaveCriterionWeights(criteriaWeightsVM.UserWeights, criteriaWeightsVM.Issue.Id, GetUserIdFromClaim());
 
-            var context = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
-            context.Clients.All.updateCriteriaWeights(criteriaWeightsVM.UserWeights, new UserShortModel(criteriaWeightsVM.UserId, GetUserNameFromClaim()));
+                var context = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+                context.Clients.All.updateCriteriaWeights(criteriaWeightsVM.UserWeights, new UserShortModel(criteriaWeightsVM.UserId, GetUserNameFromClaim()));
 
-            var ctx2 = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
-            ctx2.Clients.All.updateActivity(criteriaWeightsVM.Issue.Id, criteriaWeightsVM.UserId);
+                var ctx2 = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+                ctx2.Clients.All.updateActivity(criteriaWeightsVM.Issue.Id, criteriaWeightsVM.UserId);
+            } else if (criteriaWeightsVM.Issue.Setting == "B")
+            {
+                icw.SavePCCriteria(criteriaWeightsVM.PCCriteria, criteriaWeightsVM.UserId, GetUserNameFromClaim());
+            }
 
             return View(criteriaWeightsVM);
         }
@@ -310,9 +323,16 @@ namespace MApp.Web.Controllers
             evm.Alternatives = ie.GetIssueAlternatives(issueId, userId);
             evm.RatedUsers = ie.GetRatedUsersForIssue(issueId, userId);
             evm.RatedUserCnt = evm.RatedUsers.Count;
-
             evm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
             evm.UserId = userId;
+
+            if (evm.Issue.Setting == "B")
+            {
+                IssueCriterionWeight icw = new IssueCriterionWeight();
+                evm.SliderValues = icw.GetSliderValues();
+                evm.PairwiseRatings = ie.GetPairwiseAlternativeRatings(issueId, userId);
+            }
+
             return View(evm);
         }
 
@@ -323,9 +343,9 @@ namespace MApp.Web.Controllers
             ie.SaveUserRatings(evaluationVM.UserRatings);
 
             List<RatingModel> userRatings = new List<RatingModel>();
-            for(int i = 0; i < evaluationVM.UserRatings.Count(); i++)
+            for (int i = 0; i < evaluationVM.UserRatings.Count(); i++)
             {
-                foreach(RatingModel rat in evaluationVM.UserRatings[i])
+                foreach (RatingModel rat in evaluationVM.UserRatings[i])
                 {
                     userRatings.Add(rat);
                 }
@@ -356,24 +376,24 @@ namespace MApp.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Decision ([FromJson] DecisionModel decisionModel)
+        public ActionResult Decision([FromJson] DecisionModel decisionModel)
         {
             IssueCreating ic = new IssueCreating();
             int userId = GetUserIdFromClaim();
             IssueDecision id = new IssueDecision();
-            id.SaveDecision(decisionModel,userId);
+            id.SaveDecision(decisionModel, userId);
             ic.NextStage(decisionModel.IssueId, userId);
 
             var ctx2 = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
             ctx2.Clients.All.updateActivity(decisionModel.IssueId, userId);
 
-            return RedirectToAction("Decision","Issue", new { issueId = decisionModel.IssueId });
+            return RedirectToAction("Decision", "Issue", new { issueId = decisionModel.IssueId });
         }
 
         public ActionResult UpdateDecision([FromJson] DecisionModel decisionModel)
         {
             IssueDecision id = new IssueDecision();
-            id.UpdateDecision(decisionModel,GetUserIdFromClaim());
+            id.UpdateDecision(decisionModel, GetUserIdFromClaim());
             return RedirectToAction("Decision", "Issue", new { issueId = decisionModel.IssueId });
         }
 
@@ -388,7 +408,7 @@ namespace MApp.Web.Controllers
             if (commentModel.Anonymous)
             {
                 commentModel.Name = "Anonymous";
-            }else
+            } else
             {
                 commentModel.Name = GetUserNameFromClaim();
             }
@@ -490,7 +510,7 @@ namespace MApp.Web.Controllers
             {
                 IssueCreating ic = new IssueCreating();
                 ic.MarkCommentsAsRead(issueId, userId);
-            }else if (type == "Alternative")
+            } else if (type == "Alternative")
             {
                 IssueBrAlternative iba = new IssueBrAlternative();
                 iba.MarkCommentsAsRead(issueId, userId);
@@ -575,6 +595,44 @@ namespace MApp.Web.Controllers
                 Data = JsonConvert.SerializeObject(uim)
             };
             return result;
+        }
+
+        /// <summary>
+        /// trys to save pairwise criteria comparison
+        /// returns false if consistencycheck faild
+        /// else true
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public bool SaveCriteriaWeightsAHP(int issueId, List<PairwiseComparisonCriterionModel> list)
+        {
+            int userId = GetUserIdFromClaim();
+            string userName = GetUserNameFromClaim();
+            IssueCriterionWeight icw = new IssueCriterionWeight();
+            List<CriterionWeightModel> cwList = icw.SavePCCriteria(list, userId, userName);
+
+            var context = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+            context.Clients.All.updateCriteriaWeights(cwList, new UserShortModel(userId, userName));
+
+            var ctx2 = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+            ctx2.Clients.All.updateActivity(issueId, userId);
+
+            if (cwList.Count == 0)
+            {
+                return false;
+            }else
+            {
+                return true;
+            }
+        }
+
+        [HttpPost]
+        public string SaveAlternativeRatingAHP(int issueId, List<PairwiseComparisonRatingModel> list)
+        {
+            IssueEvaluation ie = new IssueEvaluation();
+            string msg = ie.SaveAHPAlternativeEvaluation(list, issueId, GetUserIdFromClaim());
+            return msg;
         }
     }
 }

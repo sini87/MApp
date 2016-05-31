@@ -17,7 +17,7 @@ namespace MApp.DA
         public int CriterionLeft { get; set; }
         public int CriterionRight { get; set; }
         public int UserId { get; set; }
-        public int Value { get; set; }
+        public double Value { get; set; }
     
         public virtual Criterion Criterion { get; set; }
         public virtual Criterion Criterion1 { get; set; }

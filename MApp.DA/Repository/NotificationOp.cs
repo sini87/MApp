@@ -58,7 +58,7 @@ namespace MApp.DA.Repository
         /// returns a list of key-value pairs
         /// the key is the name of the property
         /// the value is a list of users who share the property/skill
-        /// the threshold is currently 50%
+        /// the threshold is currently 75%
         /// so if 50% of the users of an issue share the same property 
         /// this method will return these properties with the users
         /// only 'Owners' and 'Contributors' are considered, not owners
@@ -99,7 +99,7 @@ namespace MApp.DA.Repository
                 while (reader.Read())
                 {
                     val = reader.GetDouble(0);
-                    if (val >= 0.5)
+                    if (val >= 0.75)
                     {
                         propertyName = reader.GetString(1);
                         propertyId = reader.GetInt32(2);

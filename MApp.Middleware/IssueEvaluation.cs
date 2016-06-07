@@ -100,6 +100,7 @@ namespace MApp.Middleware
             PairwiseComparisonRatingModel pcacm = new PairwiseComparisonRatingModel();
             List<PairwiseComparisonRatingModel> modelList = pcacm.ToModelList(PairwiseComparisonOp.GetAlternativeComparison(issueId, userId), pcacm);
             List<Criterion> cList = CriterionOp.GetIssueCriterions(issueId, userId);
+            List<Alternative> aList = AlternativeOp.GetIssueAlternatives(issueId, userId);
 
             //if user already compared alternatives then return him that
             if (modelList != null && modelList.Count > 0)
@@ -107,11 +108,12 @@ namespace MApp.Middleware
                 foreach(PairwiseComparisonRatingModel model in modelList)
                 {
                     model.CriterionName = cList.Find(x => x.Id == model.CriterionId).Name;
+                    model.LeftAltName = aList.Find(x => x.Id == model.LeftAltId).Name;
+                    model.RightAltName = aList.Find(x => x.Id == model.RightAltId).Name;
                 }
                 return modelList;
             }else // else construct the comparisons
             {
-                List<Alternative> aList = AlternativeOp.GetIssueAlternatives(issueId, userId);
                 modelList = new List<PairwiseComparisonRatingModel>();
                 foreach(Criterion crit in cList)
                 {

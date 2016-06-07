@@ -116,7 +116,7 @@
     <div class="col-md-5">
         <div class="phenomenon">
             <div class="row phenomenon-header">
-                <label>Phenomenon</label>
+                <label>Phenomenons</label>
                 <!-- ko if: viewModel.AccessRight() == 'O' -->
                     <span class="label label-default phenomenon-badge-header" data-bind="text: viewModel.newPhenomenonNotifications, css: { 'label-success': viewModel.newPhenomenonNotifications() == 0, 'label-danger': viewModel.newPhenomenonNotifications() != 0 }"></span>
                 <!-- /ko -->
@@ -207,6 +207,73 @@
                     </div>
                 </div>
             </div>
+
+            @*Group Trustworthiness*@
+            <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() == 'O'">
+                <a class="phenomenon-link" data-toggle="modal" data-target="#groupTWDialog">Group Trustworthiness</a>
+                <span class="label label-default phenomenon-badge" data-bind="text: viewModel.GroupTrustworthiness().length, css: { 'label-success': viewModel.GroupTrustworthiness().length == 0, 'label-danger': viewModel.GroupTrustworthiness().length != 0 }"></span>
+                <div class="modal fade" id="groupTWDialog" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Users who have not seen all core information</h4>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table">
+                                    <thead>
+                                    <th>User</th>
+                                    </thead>
+                                    <tbody data-bind="foreach: viewModel.GroupTrustworthiness">
+                                        <tr>
+                                            <td data-bind="text: $data"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            @*Decision Trustworthiness*@
+            <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() == 'O'">
+                <a class="phenomenon-link" data-toggle="modal" data-target="#decisionTWDialog">Decision Trustworthiness</a>
+                <span class="label label-default phenomenon-badge" data-bind="text: viewModel.DecisionTrustworthiness().length, css: { 'label-success': viewModel.DecisionTrustworthiness().length == 0, 'label-danger': viewModel.DecisionTrustworthiness().length != 0 }"></span>
+                <div class="modal fade" id="decisionTWDialog" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Users who have evaluated but not seen all the core information</h4>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table">
+                                    <thead>
+                                    <th>User</th>
+                                    </thead>
+                                    <tbody data-bind="foreach: viewModel.DecisionTrustworthiness">
+                                        <tr>
+                                            <td data-bind="text: $data"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
             @*make groupthink notification only for contributors*@
             <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() == 'C'">
                 <a class="phenomenon-link" data-toggle="modal" data-target="#makeGTNotifDialog">Send Groupthink notification</a>
@@ -226,6 +293,47 @@
                             </div>
                             <div class="modal-footer">
                                 <button id="groupthinkMake" onclick="onGroupthinkMakeClick()" class="btn btn-success">Send notification</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            
+            @*unread core infos*@
+            <div class="row phenomenon-elem">
+                <a class="phenomenon-link" data-toggle="modal" data-target="#myInfosToReadDialog">Unread core Infos</a>
+                <span class="label label-default phenomenon-badge" data-bind="text: viewModel.UnreadCoreInfos, css: { 'label-success': viewModel.UnreadCoreInfos() == 0, 'label-danger': viewModel.UnreadCoreInfos() != 0 }"></span>
+            </div>
+
+            @*group activity*@
+            <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() == 'O'">
+                <a class="phenomenon-link" data-toggle="modal" data-target="#groupActivityDialog" data-bind="text: 'Group Activity'"></a>
+                <span class="label label-default phenomenon-badge" data-bind="text: viewModel.GroupActivityCount"></span>
+                <div class="modal fade" id="groupActivityDialog" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Group Activity</h4>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table">
+                                    <thead>
+                                    <th>User</th>
+                                    <th>Activity</th>
+                                    </thead>
+                                    <tbody data-bind="foreach: viewModel.GroupActivity">
+                                        <tr>
+                                            <td data-bind="text: Key"></td>
+                                            <td data-bind="text: Value"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+
                             </div>
                         </div>
 
@@ -304,7 +412,7 @@
             </div>
             @*Information read/seen*@
             <div class="row phenomenon-elem">
-                <a class="phenomenon-link" data-toggle="modal" data-target="#myInfosToReadDialog" data-bind="text: 'Read ' + viewModel.ReadInfoCount() + ' items of ' + viewModel.InfoCount()"></a>
+                <a class="phenomenon-link" data-toggle="modal" data-target="#myInfosToReadDialog" data-bind="text: 'Read ' + viewModel.ReadInfoCount() + ' items of ' + viewModel.InfoCount() + '.'"></a>
                 <div class="modal fade" id="myInfosToReadDialog" role="dialog">
                     <div class="modal-dialog">
                         <!-- Modal content-->
@@ -335,6 +443,7 @@
                     </div>
                 </div>
             </div>
+
         </div> <!-- phenomenon end-->
         
         <!-- last changes -->
@@ -547,6 +656,17 @@
 
     if (viewModelJs.Issue.Id == -1){
         viewModel.Issue.Tags = ko.observableArray();
+        viewModel.UnreadCoreInfos = ko.observable(0)
+    }else{
+        viewModel.UnreadCoreInfos = ko.computed(function() {
+            var cnt = 0;
+            for(var i = 0; i < viewModel.UnreadInformation().length; i++){
+                if (viewModel.UnreadInformation()[i].Key().indexOf('Comment') == -1){
+                    cnt = cnt + viewModel.UnreadInformation()[i].Value()
+                }
+            }
+            return cnt;
+        })
     }
 
     viewModel.titleEmpty = ko.computed(function(){
@@ -573,9 +693,18 @@
     });
 
     viewModel.newPhenomenonNotifications = ko.computed(function(){
-        var sum = viewModel.newGroupthinkNotifications() + viewModel.newGroupshiftNotifications();
+        var sum = viewModel.newGroupthinkNotifications() + viewModel.newGroupshiftNotifications() + viewModel.UnreadCoreInfos() + viewModel.GroupTrustworthiness().length + viewModel.DecisionTrustworthiness().length;
         return sum;
     });
+
+    viewModel.GroupActivityCount = ko.computed(function() {
+        var sum = 0
+        for(var i = 0; i < viewModel.GroupActivity().length; i++){
+            sum = sum + viewModel.GroupActivity()[i].Value()
+        }
+        return sum;
+    })
+
     //phenomenon dashboard VM end
 
     ko.applyBindings(viewModel);
@@ -1280,6 +1409,21 @@
                     viewModel.UnreadInformation.removeAll()
                     for(var i = 0; i < dat.UnreadInformation.length; i++){
                         viewModel.UnreadInformation.push(ko.mapping.fromJS(dat.UnreadInformation[i]))
+                    }
+
+                    viewModel.GroupActivity.removeAll()
+                    for(var i = 0; i < dat.GroupActivity.length; i++){
+                        viewModel.GroupActivity.push(ko.mapping.fromJS(dat.GroupActivity[i]))
+                    }
+
+                    viewModel.GroupTrustworthiness.removeAll()
+                    for(var i = 0; i < dat.GroupTrustworthiness.length; i++){
+                        viewModel.GroupTrustworthiness.push(ko.mapping.fromJS(dat.GroupTrustworthiness[i]))
+                    }
+
+                    viewModel.DecisionTrustworthiness.removeAll()
+                    for(var i = 0; i < dat.DecisionTrustworthiness.length; i++){
+                        viewModel.DecisionTrustworthiness.push(ko.mapping.fromJS(dat.DecisionTrustworthiness[i]))
                     }
 
                     $.notify({

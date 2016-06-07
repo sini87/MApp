@@ -377,9 +377,9 @@ namespace MApp.Middleware
         /// </summary>
         /// <param name="issueId"></param>
         /// <param name="userId"></param>
-        public void MarkAsRead(int issueId, int userId)
+        public bool MarkAsRead(int issueId, int userId)
         {
-            InformationReadOp.MarkIssue(issueId, userId);
+            return InformationReadOp.MarkIssue(issueId, userId);
         }
 
         /// <summary>
@@ -487,6 +487,21 @@ namespace MApp.Middleware
             }
 
             return changesList;
+        }
+
+        public List<KeyValuePair<string,int>> GetGroupActivity(int issueId)
+        {
+            return ChangesOp.GetGroupActivity(issueId);
+        }
+
+        public List<string>GetGroupTrustworthiness(int issueId)
+        {
+            return InformationReadOp.GetGroupTrustworthiness(issueId);
+        }
+
+        public List<string>GetDecisionTrustworthiness(int issueId)
+        {
+            return InformationReadOp.GetDecisionTrustwortiness(issueId);
         }
     }
 }

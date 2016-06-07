@@ -37,5 +37,8 @@ namespace MApp.Web.ViewModel
         public List<KeyValuePair<string,int>> UnreadInformation { get; set; }
         public UserChangeModel LastChange { get; set; }
         public List<UserChangeModel> Last100Changes { get; set; }
+        public List<KeyValuePair<string,int>> GroupActivity { get; set; }
+        public List<string> GroupTrustworthiness { get; set; }
+        public List<string> DecisionTrustworthiness { get; set; }
     }
 }

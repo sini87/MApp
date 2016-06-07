@@ -9,56 +9,174 @@ namespace MApp.DA.Repository
 {
     public class InformationReadOp
     {
-        public static void MarkIssue(int issueId, int userId)
+        public static bool MarkIssue(int issueId, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
             DbCommand cmd;
             string sql;
+            bool marked = false;
             ctx.Database.Connection.Open();
-            
-            cmd = ctx.Database.Connection.CreateCommand();
-            sql = "update appSchema.InformationRead SET [Read] = 1 WHERE TName LIKE 'Issue' and FK LIKE '" + issueId + "' AND UserId = " + userId;
-            cmd.CommandText = sql;
-            cmd.CommandType = System.Data.CommandType.Text;
-            cmd.ExecuteNonQuery();            
+
+            sql = "select count(*) from InformationRead Where TName Like 'Issue' AND UserId = {0} AND [Read] = 0 AND FK LIKE {1}";
+
+            if (ctx.Database.SqlQuery<int>(sql, userId, issueId).FirstOrDefault() > 0)
+            {
+                cmd = ctx.Database.Connection.CreateCommand();
+                sql = "update appSchema.InformationRead SET [Read] = 1 WHERE TName LIKE 'Issue' and FK LIKE '" + issueId + "' AND UserId = " + userId;
+                cmd.CommandText = sql;
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.ExecuteNonQuery();
+
+                //decision trustworthiness weighting
+                if (ctx.Issue.Find(issueId).Status == "BRAINSTORMING2")
+                {
+                    //if user has read criteria info and now issue info then mark DT Criteria True
+                    sql = "select count(*) from InformationRead Where TName Like 'Criterion' AND UserId = {0} AND [Read] = 0 AND FK IN (SELECT Id From Criterion Where Issue = {1})";
+                    if (ctx.Database.SqlQuery<int>(sql, userId, issueId).FirstOrDefault() == 0)
+                    {
+                        cmd = ctx.Database.Connection.CreateCommand();
+                        sql = "update appSchema.InformationRead SET [Read] = 1 WHERE TName LIKE 'DTCritWeight' and FK LIKE '" + issueId + "' AND UserId = " + userId;
+                        cmd.CommandText = sql;
+                        cmd.CommandType = System.Data.CommandType.Text;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                //decision trustworthiness evaluation
+                if (ctx.Issue.Find(issueId).Status == "EVALUATING")
+                {
+                    //if user has read criteria, alternatives info and now issue info then mark DT Evaluation True
+                    sql = "select count(*) from InformationRead Where UserId = {0} AND [Read] = 0 AND " +
+                        "(TName Like 'Criterion' AND FK IN (SELECT Id From Criterion Where Issue = {1}) OR " +
+                        "TName Like 'Alternative' AND FK IN (Select Id From Alternative Where IssueId = {1}))";
+                    if (ctx.Database.SqlQuery<int>(sql, userId, issueId).FirstOrDefault() == 0)
+                    {
+                        cmd = ctx.Database.Connection.CreateCommand();
+                        sql = "update appSchema.InformationRead SET [Read] = 1 WHERE TName LIKE 'DTEvaluation' and FK LIKE '" + issueId + "' AND UserId = " + userId;
+                        cmd.CommandText = sql;
+                        cmd.CommandType = System.Data.CommandType.Text;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                marked = true;
+            }
             ctx.Database.Connection.Close();
             ctx.Dispose();
+            return marked;
         }
 
-        public static void MarkAlternatives(int issueId, int userId)
+        public static bool MarkAlternatives(int issueId, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
             DbCommand cmd;
             string sql;
+            bool marked = false;
             ctx.Database.Connection.Open();
 
-            cmd = ctx.Database.Connection.CreateCommand();
-            sql = "update appSchema.InformationRead SET [Read] = 1 " + 
-                "WHERE TName LIKE 'Alternative' AND CAST(FK AS INT) IN " +
+            sql = "select count(*) from appSchema.InformationRead " +
+                "WHERE TName LIKE 'Alternative' AND [Read] = 0 AND CAST(FK AS INT) IN " +
                 "(SELECT Id FROM Alternative WHERE IssueId = " + issueId + ") AND UserId=" + userId;
-            cmd.CommandText = sql;
-            cmd.CommandType = System.Data.CommandType.Text;
-            cmd.ExecuteNonQuery();
+
+            if (ctx.Database.SqlQuery<int>(sql).FirstOrDefault() > 0)
+            {
+                cmd = ctx.Database.Connection.CreateCommand();
+                sql = "update appSchema.InformationRead SET [Read] = 1 " +
+                    "WHERE TName LIKE 'Alternative' AND CAST(FK AS INT) IN " +
+                    "(SELECT Id FROM Alternative WHERE IssueId = " + issueId + ") AND UserId=" + userId;
+                cmd.CommandText = sql;
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.ExecuteNonQuery();
+                marked = true;
+
+                //decision trustworthiness evaluation
+                if (ctx.Issue.Find(issueId).Status == "EVALUATING")
+                {
+                    //if user has read criteria, issue info and now alternatives info then mark DT Evaluation True
+                    sql = "select count(*) from InformationRead Where UserId = {0} AND[Read] = 0 AND " +
+                        "(TName Like 'Criterion' AND FK IN (SELECT Id From Criterion Where Issue = {1}) OR " +
+                        "TName Like 'Issue' AND FK LIKE {1})";
+                    if (ctx.Database.SqlQuery<int>(sql, userId, issueId).FirstOrDefault() == 0)
+                    {
+                        cmd = ctx.Database.Connection.CreateCommand();
+                        sql = "update appSchema.InformationRead SET [Read] = 1 WHERE TName LIKE 'DTEvaluation' and FK LIKE '" + issueId + "' AND UserId = " + userId;
+                        cmd.CommandText = sql;
+                        cmd.CommandType = System.Data.CommandType.Text;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            
             ctx.Database.Connection.Close();
             ctx.Dispose();
+
+            return marked;
         }
 
-        public static void MarkCritera(int issueId, int userId)
+        public static bool MarkCritera(int issueId, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
             DbCommand cmd;
+            bool marked;
             string sql;
             ctx.Database.Connection.Open();
 
-            cmd = ctx.Database.Connection.CreateCommand();
-            sql = "update appSchema.InformationRead SET [Read] = 1 " +
-                "WHERE TName LIKE 'Criterion' AND CAST(FK AS INT) IN " +
+            sql = "SELECT count(*) FROM appSchema.InformationRead " +
+                "WHERE [Read] = 0 AND TName LIKE 'Criterion' AND CAST(FK AS INT) IN " +
                 "(SELECT Id FROM Criterion WHERE Issue = " + issueId + ") AND UserId=" + userId;
-            cmd.CommandText = sql;
-            cmd.CommandType = System.Data.CommandType.Text;
-            cmd.ExecuteNonQuery();
+
+            if (ctx.Database.SqlQuery<int>(sql).FirstOrDefault() > 0)
+            {
+                cmd = ctx.Database.Connection.CreateCommand();
+                sql = "update appSchema.InformationRead SET [Read] = 1 " +
+                    "WHERE TName LIKE 'Criterion' AND CAST(FK AS INT) IN " +
+                    "(SELECT Id FROM Criterion WHERE Issue = " + issueId + ") AND UserId=" + userId;
+                cmd.CommandText = sql;
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.ExecuteNonQuery();
+
+                //decision trustworthiness
+                if (ctx.Issue.Find(issueId).Status == "BRAINSTORMING2")
+                {
+                    //if user has read Issue and now Criteria then mark DTCriteria as Read
+                    sql = "select count(*) from InformationRead Where TName Like 'Issue' AND UserId = {0} AND [Read] = 0 AND FK LIKE {1}";
+                    if (ctx.Database.SqlQuery<int>(sql, userId, issueId).FirstOrDefault() == 0)
+                    {
+                        cmd = ctx.Database.Connection.CreateCommand();
+                        sql = "update appSchema.InformationRead SET [Read] = 1 WHERE TName LIKE 'DTCritWeight' and FK LIKE '" + issueId + "' AND UserId = " + userId;
+                        cmd.CommandText = sql;
+                        cmd.CommandType = System.Data.CommandType.Text;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                //decision trustworthiness evaluation
+                if (ctx.Issue.Find(issueId).Status == "EVALUATING")
+                {
+                    //if user has read issue, alternatives info and now criteria info then mark DT Evaluation True
+                    sql = "select count(*) from InformationRead Where UserId = {0} AND [Read] = 0 AND " +
+                        "(TName Like 'Issue' AND FK LIKE {1} OR " +
+                        "TName Like 'Alternative' AND FK IN (Select Id From Alternative Where IssueId = {1}))";
+                    if (ctx.Database.SqlQuery<int>(sql, userId, issueId).FirstOrDefault() == 0)
+                    {
+                        cmd = ctx.Database.Connection.CreateCommand();
+                        sql = "update appSchema.InformationRead SET [Read] = 1 WHERE TName LIKE 'DTEvaluation' and FK LIKE '" + issueId + "' AND UserId = " + userId;
+                        cmd.CommandText = sql;
+                        cmd.CommandType = System.Data.CommandType.Text;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                marked = true;
+            }else
+            {
+                marked = false;
+            }
+
+            
             ctx.Database.Connection.Close();
             ctx.Dispose();
+            return marked;
         }
 
         public static void MarkIssueComments(int issueId, int userId)
@@ -287,6 +405,58 @@ namespace MApp.DA.Repository
             }
 
             ctx.Database.Connection.Close();
+            ctx.Dispose();
+            return list;
+        }
+
+        /// <summary>
+        /// returns a list of user who have not seen all core information
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <returns></returns>
+        public static List<string> GetGroupTrustworthiness(int issueId)
+        {
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            List<string> list = new List<string>();
+
+            string query = "SELECT Distinct(UserId) from InformationRead WHERE [Read] = 0 AND " +
+                "((TName Like 'Issue' AND FK Like CAST({0} AS varchar)) OR " +
+                "(TName Like 'Alternative' AND FK IN (SELECT CAST(Id as varchar) FROM Alternative WHere IssueId = {0})) OR " +
+                "(TName LIKE 'Criterion' AND FK IN (SELECT CAST(Id as varchar) FROM Criterion WHERE Issue = {0}))) And UserId in (SELECT UserId FROM AccessRight Where IssueId = {0} AND [Right] != 'V')";
+
+            var queryResult = ctx.Database.SqlQuery<int>(query, issueId);
+            User u;
+            foreach(int userId in queryResult)
+            {
+                u = ctx.User.Find(userId);
+                list.Add(u.FirstName + " " + u.LastName);
+            }
+
+            ctx.Dispose();
+            return list;
+        }
+
+        public static List<string> GetDecisionTrustwortiness(int issueId)
+        {
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+            List<string> list = new List<string>();
+
+            string query = "SELECT distinct(un.UserId) FROM" +
+                "(SELECT ir.UserId FROM InformationRead ir Where [Read] = 0 AND ir.TName Like 'DTEvaluation' AND FK LIKE {0} and ir.UserId IN " +
+                "(SELECT UserId From Rating Where AlternativeId in (Select Id From Alternative Where IssueId = {0})) " +
+                "UNION " +
+                "SELECT ir.UserId FROM InformationRead ir Where [Read] = 0 AND ir.TName Like 'DTCritWeight' AND FK LIKE {0} and ir.UserId IN " +
+                "	(SELECT UserId From CriterionWeight Where CriterionId in (Select Id From Criterion Where Issue = {0}))) un";
+
+            var result = ctx.Database.SqlQuery<int>(query, issueId);
+
+            User u;
+            foreach(int userId in result)
+            {
+                u = ctx.User.Find(userId);
+                list.Add( u.FirstName + ' ' + u.LastName);
+            }
+
             ctx.Dispose();
             return list;
         }

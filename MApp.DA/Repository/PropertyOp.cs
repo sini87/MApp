@@ -67,7 +67,6 @@ namespace MApp.DA.Repository
             }          
 
             ctx.SaveChanges();
-            User user = UserOp.GetUser(userId);
             var updateProp = ctx.Property.First();
             foreach (Property prop in properties)
             {
@@ -83,8 +82,9 @@ namespace MApp.DA.Repository
                 {
                     updateProp = ctx.Property.Find(prop.Id);
                 }
-                user.Property.Add(updateProp);
-                ctx.Entry(user).State = EntityState.Modified;
+                string sqlInsert = "INSERT INTO UserProperty (UserId, PropertyId) VALUES({0},{1})";
+                ctx.Database.ExecuteSqlCommand(sqlInsert, userId, updateProp.Id);
+                
                 ctx.SaveChanges();
             }
 

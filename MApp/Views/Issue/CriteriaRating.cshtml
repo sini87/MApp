@@ -282,7 +282,7 @@ else if (Model.Issue.Setting == "B")
                     viewModel.VotedUsers.push(userWithCW)
                     
                     var msg = '';
-                    if (viewModel.Issue.AnonymousPosing() == true){
+                    if (viewModel.Issue.AnonymousPosting() == true){
                         msg = 'Some user have weighted'
                     }else{
                         msg = user.Name + ' has weighted!'

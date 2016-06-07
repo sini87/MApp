@@ -29,18 +29,40 @@
 <!-- ko if: viewModel.Issue.Status() == 'FINISHED' -->
 <h2 data-bind="text: viewModel.Issue.Title() + ' - Final Decision'"></h2>
 <!-- /ko -->
-<div>
+<div class="some">
     <h3>Voting Results</h3>
-    <table class="table">
-        @foreach(var am in Model.Alternatives)
+    <table class="table table-nonfluid restable">
+        <thead>
+        <th>Alternative</th>
+        @if (Model.Issue.Setting == "A")
         {
-            <tr>
-                <td>@am.Name</td>
-                <td>@String.Format("{0:0.00#}", am.Rating)</td>
-            </tr>
+            <th>Score</th>
         }
+        else
+        {
+            <th class="td-center-top">Ranking</th>
+        }
+        </thead>
+        <tbody>
+            @foreach (var am in Model.Alternatives)
+            {
+                <tr>
+                    <td>@am.Name</td>
+                    @if (Model.Issue.Setting == "A")
+                    {
+                        <td class="td-right-top rank-column"><span class="divpadd">@String.Format("{0:0.##}", am.Rating)</span></td>
+                    }
+                    else
+                    {
+                        <td class="td-right-top rank-column"><span class="divpadd">@String.Format("{0:0.##} %", am.Rating * 100)</span></td>
+                    }
+                </tr>
+            }
+        </tbody>
     </table>
 </div>
+
+
 
 @if (Model.AccessRight == "O")
 {

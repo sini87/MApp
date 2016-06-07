@@ -89,18 +89,18 @@
                             <a href="@Url.Action("Creating", "Issue", new { issueId = -1 })">Creating</a>
                         </li>
                         <li id="brainstorming-menu"class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Brainstorming<span class="caret"></span></a>
+                            <a id="anchor-brainstorming" href="#" class="dropdown-toggle" data-toggle="dropdown">Brainstorming<span class="caret"></span></a>
                             <ul id="brainstorming-menu" class="dropdown-menu">
-                                <li id="alternatives-menu"><a href="#">Alternatives</a></li>
-                                <li id="criteriafinding-menu"><a href="#">Criteria finding</a></li>
-                                <li id="criteriarating-menu"><a href="#">Criteria rating</a></li>
+                                <li id="alternatives-menu"><a href="#" id="anchor-alternatives">Alternatives</a></li>
+                                <li id="criteriafinding-menu"><a href="#" id="anchor-criteriafinding">Criteria finding</a></li>
+                                <li id="criteriarating-menu"><a href="#" id="anchor-criteriarating" class="disabled">Criteria rating</a></li>
                             </ul>
                         </li>
                         <li id="evaluating-menu">
-                            <a href="@Url.Action("Creating", "Issue", new { issueId = -1 })">Evaluating</a>
+                            <a href="@Url.Action("Creating", "Issue", new { issueId = -1 })" id="anchor-evaluating">Evaluating</a>
                         </li>
                         <li id="finished-menu">
-                            <a href="@Url.Action("Creating", "Issue", new { issueId = -1 })">Deciding</a>
+                            <a href="@Url.Action("Creating", "Issue", new { issueId = -1 })" id="anchor-finished">Deciding</a>
                         </li>
                     </ul>
 

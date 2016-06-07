@@ -388,7 +388,7 @@ textarea {
 .phenomenon {
     border-radius: 15px;
     width: 220px;
-    max-width: 300px;
+    max-width: 320px;
     width: auto;
     border-color: #CCCCCC;
     border-style: solid;
@@ -428,6 +428,11 @@ textarea {
    text-decoration:none;
    cursor:text;
 }
+
+.phenomenon-elem-last {
+    padding-bottom: 3px;
+}
+
 .phenomenon-link {
     color:inherit;
     text-decoration:none;   
@@ -614,4 +619,29 @@ textarea {
 
  .carousel-table{
      width: 100%;
+ }
+
+ /**carousel**/
+
+ /**link disabled**/
+ .a .disabled {
+  pointer-events: none;
+  cursor: default;
+}
+
+ .li .a .disabled {
+  pointer-events: none;
+  cursor: default;
+}
+
+ .rank-column{
+    width: 150px !important;
+ }
+ .restable{
+     min-width: 400px ;
+     table-layout: fixed;
+ }
+
+ .divpadd{
+     padding-right: 15px !important;
  }

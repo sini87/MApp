@@ -111,9 +111,7 @@ else
     <button id="nextstage" type="button" class="btn btn-primary" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.Issue.Status() != 'FINISHED' && viewModel.Issue.Status() != 'DECIDING'">Next Stage</button>
 }
 
-@if (Model.Issue.Setting == "A")
-{
-    <!-- ko if: viewModel.RatedUsers().length > 0 && viewModel.Issue.AnonymousPosting() == false -->
+<!-- ko if: viewModel.RatedUsers().length > 0 && viewModel.Issue.AnonymousPosting() == false -->
     <h3>Ratings of other users</h3>
     <!-- ko foreach: viewModel.RatedUsers -->
     <h4 data-bind="text: Name"></h4>
@@ -121,39 +119,44 @@ else
             <thead>
             <th>Crtieria</th>
             <!-- ko foreach: viewModel.Alternatives -->
-            <th data-bind="text: Name"></th>
+                <th data-bind="text: Name"></th>
             <!-- /ko -->
             </thead>
             <tbody data-bind="foreach: viewModel.Criterias">
                 <tr>
                     <td data-bind="text: Name" class="table-header-column"></td>
                     <!-- ko foreach: viewModel.AllRatings-->
-                    <!-- ko if: !viewModel.adding() -->
-                    <!-- ko if: $parent.Id() == CriterionId() && $parents[1].Id() == UserId() -->
-                    <td data-bind="text: Value"></td>
-                    <!-- /ko -->
-                    <!-- /ko -->
+                        <!-- ko if: !viewModel.adding() -->
+                            <!-- ko if: $parent.Id() == CriterionId() && $parents[1].Id() == UserId() -->
+                                <td data-bind="text: Value" class="td-right-top"></td>
+                            <!-- /ko -->
+                        <!-- /ko -->
                     <!-- /ko -->
                 </tr>
             </tbody>
         </table>
     <!-- /ko -->
-        <!-- /ko -->
-        <!-- ko if: viewModel.RatedUsers().length == 0 || viewModel.Issue.AnonymousPosting() == true -->
-        <h3 data-bind="text: viewModel.RatedUserCnt() + ' other users have rated!'"></h3>
-        <!-- /ko -->
+<!-- /ko -->
+<!-- ko if: viewModel.RatedUsers().length == 0 || viewModel.Issue.AnonymousPosting() == true -->
+<h3 data-bind="text: viewModel.RatedUserCnt() + ' other users have rated!'"></h3>
+<!-- /ko -->
 
-}
+
 
 <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
 <script src="~/signalr/hubs"></script>
 <script type="text/javascript">
     var viewModelJs = @Html.Raw(Json.Encode(Model));
+    if (viewModelJs.Issue.Setting == 'B'){
+        for (var i = 0; i < viewModelJs.AllRatings.length; i++){
+            viewModelJs.AllRatings[i].Value = Math.round(viewModelJs.AllRatings[i].Value * 10000) / 100
+        }
+    }
+
     var viewModel = ko.mapping.fromJS(viewModelJs);
     
+    viewModel.adding = ko.observable(false)
     if (viewModelJs.Issue.Setting == 'A'){
-        viewModel.adding = ko.observable(false)
-
         viewModel.valid = ko.computed(function(){
             var valid = true;
             for (var i = 0; i < viewModel.UserRatings().length; i++){
@@ -171,6 +174,7 @@ else
     
     if (viewModelJs.Issue.Setting == 'B'){
         viewModel.slideViews = ko.observable(0)
+
     }
 
     ko.applyBindings(viewModel);
@@ -239,18 +243,24 @@ else
         var notificationHub = $.connection.notificationHub;
         // Create a function that the hub can call back to display messages.
         notificationHub.client.updateRatings = function (userRatings, user) {
-            if (viewModel.UserId() != user.Id){
+            if (viewModel.UserId() != user.Id || viewModel.Issue.Setting() == 'B'){
                 var result = $.grep(viewModel.RatedUsers(), function (e) { return e.Id() == user.Id; });
                 //new vote
                 if (result.length == 0) {
                     viewModel.adding(true)
+                    var val = ''
                     var obsVotes = ko.observableArray()
                     for(var i = 0; i < userRatings.length; i++){
+                        if (viewModel.Issue.Setting() == 'A'){
+                            val = userRatings[i].Value
+                        }else{
+                            val = Math.round(userRatings[i].Value * 10000) / 100
+                        }
                         var rat = {
                             CriterionId: ko.observable(userRatings[i].CriterionId),
                             UserId: ko.observable(user.Id),
                             AlternativeId: ko.observable(userRatings[i].AlternativeId),
-                            Value: ko.observable(userRatings[i].Value)
+                            Value: ko.observable(val)
                         }
                         viewModel.AllRatings.push(rat)
                     }
@@ -298,7 +308,12 @@ else
                         rat = $.grep(rat, function (e) { 
                             return e.AlternativeId() == userRatings[i].AlternativeId;
                         });
-                        rat[0].Value(userRatings[i].Value)
+                        if (viewModel.Issue.Setting() == 'B'){
+                            rat[0].Value(Math.round(userRatings[i].Value * 10000) / 100)
+                        }else{
+                            rat[0].Value(userRatings[i].Value)
+                        }
+                        
                     }
 
                     if (!viewModelJs.Issue.AnonymousPosting){

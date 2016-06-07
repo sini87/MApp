@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Data.Entity.Core.Objects;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -127,6 +129,46 @@ namespace MApp.DA.Repository
                 cv = list.First();
             }
             return cv;
+        }
+
+        /// <summary>
+        /// returns a list of users with changes made
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <returns>List of tuples where first item is user name and second item the number of changes</returns>
+        public static List<KeyValuePair<string,int>>GetGroupActivity(int issueId)
+        {
+            List<KeyValuePair<string, int>> list = new List<KeyValuePair<string, int>>();
+            ApplicationDBEntities ctx = new ApplicationDBEntities();
+
+            string query = "Select cw.UserId, Count(*) AS 'Changes' from " +
+                "Changes_View cw, [User] u WHERE " +
+                "cw.IssueId = " + issueId + " AND " +
+                "u.Id = cw.UserId " +
+                "GROUP BY cw.UserId " +
+                "UNION " +
+                "Select ar.UserId, 0 AS 'Changes' FROM " +
+                "AccessRight ar " +
+                "WHERE ar.IssueId = " + issueId + " AND ar.[Right] != 'V' AND " +
+                "ar.UserId NOT IN (Select DISTINCT(UserId) FROM Changes_View Where IssueId = " + issueId + ") " +
+                "order By Changes Asc";
+
+            User u;
+            DbCommand cmd = ctx.Database.Connection.CreateCommand();
+            ctx.Database.Connection.Open();
+            cmd.CommandText = query;
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    u = ctx.User.Find(reader.GetInt32(0));
+                    list.Add(new KeyValuePair<string, int>(u.FirstName + ' ' + u.LastName, reader.GetInt32(1)));
+                }
+                reader.Close();
+            }
+
+            ctx.Dispose();
+            return list;
         }
     }
 }

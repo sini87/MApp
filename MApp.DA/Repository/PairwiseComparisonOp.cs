@@ -216,7 +216,10 @@ namespace MApp.DA.Repository
                 }
             }
 
-            ctx.SaveChanges();
+            if (msg == "success")
+            {
+                ctx.SaveChanges();
+            }
             ctx.Dispose();
             return msg;
         }
@@ -355,7 +358,7 @@ namespace MApp.DA.Repository
                     bool[] checks = new bool[ev.Count];
                     for (int i = 0; i < ev.Count; i++)
                     {
-                        if (ev[i].ToString().PadLeft(6) == prevEv[i].ToString().PadLeft(6))
+                        if (ev[i].ToString().PadLeft(12) == prevEv[i].ToString().PadLeft(12))
                         {
                             checks[i] = true;
                         }

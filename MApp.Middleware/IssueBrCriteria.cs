@@ -99,9 +99,10 @@ namespace MApp.Middleware
         /// </summary>
         /// <param name="issueId"></param>
         /// <param name="userId"></param>
-        public void MarkAsRead(int issueId, int userId)
+        /// <returns>true if marked else false</returns>
+        public bool MarkAsRead(int issueId, int userId)
         {
-            InformationReadOp.MarkCritera(issueId, userId);
+            return InformationReadOp.MarkCritera(issueId, userId);
         }
 
         /// <summary>

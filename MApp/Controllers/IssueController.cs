@@ -65,15 +65,25 @@ namespace MApp.Web.Controllers
                 vm.Comments = ic.GetIssueComments(issueId, userId);
                 vm.GroupthinkNotifications = ic.GetGroupthinkNotifications(issueId, userId);
                 vm.GroupshiftProperties = ic.GetGropshiftProperties(issueId);
-                ic.MarkAsRead(issueId, userId);
+                if (ic.MarkAsRead(issueId, userId))
+                {
+                    var ctx2 = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+                    ctx2.Clients.All.updateActivity(issueId, userId);
+                }
                 vm.UserWithMostChanges = ic.UserWithMostChanges(issueId);
                 if (vm.AccessRight == "O")
                 {
                     vm.AllUserChangeCounts = ic.GetAllChangeCountsByUser(issueId);
+                    vm.GroupActivity = ic.GetGroupActivity(issueId);
+                    vm.GroupTrustworthiness = ic.GetGroupTrustworthiness(issueId);
+                    vm.DecisionTrustworthiness = ic.GetDecisionTrustworthiness(issueId);
                 }
                 else
                 {
                     vm.AllUserChangeCounts = new List<KeyValuePair<UserShortModel, int>>();
+                    vm.GroupActivity = new List<KeyValuePair<string, int>>();
+                    vm.GroupTrustworthiness = new List<string>();
+                    vm.DecisionTrustworthiness = new List<string>();
                 }
                 vm.UserChangesCount = ic.GetUserChangesCount(issueId, userId);
                 vm.InfoCount = ic.GetInfoCountForUser(issueId, userId);
@@ -103,6 +113,9 @@ namespace MApp.Web.Controllers
                 vm.UnreadInformation = new List<KeyValuePair<string, int>>();
                 vm.Last100Changes = new List<UserChangeModel>();
                 vm.LastChange = new UserChangeModel();
+                vm.GroupActivity = new List<KeyValuePair<string, int>>();
+                vm.GroupTrustworthiness = new List<string>();
+                vm.DecisionTrustworthiness = new List<string>();
             }
             vm.AllUsers = vm.AllUsers.Where(x => x.Id != userId).ToList();
 
@@ -196,7 +209,11 @@ namespace MApp.Web.Controllers
             viewModel.IssueCriteria = ibc.GetIssueCriteria(issueId, userId);
             viewModel.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
             viewModel.UserId = userId;
-            ibc.MarkAsRead(issueId, userId);
+            if (ibc.MarkAsRead(issueId, userId))
+            {
+                var ctx2 = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+                ctx2.Clients.All.updateActivity(issueId, userId);
+            }
             return View(viewModel);
         }
 
@@ -232,7 +249,11 @@ namespace MApp.Web.Controllers
             vm.Alternatives = iba.GetIssueAlternatives(issueId, userId);
             vm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
             vm.UserId = userId;
-            iba.MarkAsRead(issueId, userId);
+            if (iba.MarkAsRead(issueId, userId))
+            {
+                var ctx2 = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+                ctx2.Clients.All.updateActivity(issueId, userId);
+            }
             return View(vm);
         }
 
@@ -563,10 +584,18 @@ namespace MApp.Web.Controllers
             if (right == "O")
             {
                 vm.AllUserChangeCounts = ic.GetAllChangeCountsByUser(issueId);
+                vm.AllUserChangeCounts = ic.GetAllChangeCountsByUser(issueId);
+                vm.GroupActivity = ic.GetGroupActivity(issueId);
+                vm.GroupTrustworthiness = ic.GetGroupTrustworthiness(issueId);
+                vm.DecisionTrustworthiness = ic.GetDecisionTrustworthiness(issueId);
             }
             else
             {
                 vm.AllUserChangeCounts = new List<KeyValuePair<UserShortModel, int>>();
+                vm.AllUserChangeCounts = new List<KeyValuePair<UserShortModel, int>>();
+                vm.GroupActivity = new List<KeyValuePair<string, int>>();
+                vm.GroupTrustworthiness = new List<string>();
+                vm.DecisionTrustworthiness = new List<string>();
             }
             vm.UserChangesCount = ic.GetUserChangesCount(issueId, userId);
             vm.InfoCount = ic.GetInfoCountForUser(issueId, userId);
@@ -577,6 +606,7 @@ namespace MApp.Web.Controllers
             {
                 Data = JsonConvert.SerializeObject(vm)
             };
+
             return result;
         }
 
@@ -632,6 +662,19 @@ namespace MApp.Web.Controllers
         {
             IssueEvaluation ie = new IssueEvaluation();
             string msg = ie.SaveAHPAlternativeEvaluation(list, issueId, GetUserIdFromClaim());
+            int userId = GetUserIdFromClaim();
+            string userName = GetUserNameFromClaim();
+            List<RatingModel> ratList = ie.GetAllIssueRatings(issueId, userId).Where(x => x.UserId == userId).OrderBy(x => x.CriterionId).ThenBy(x => x.AlternativeId).ToList();
+
+            if (msg == "success")
+            {
+                var context = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+                context.Clients.All.updateRatings(ratList, new UserShortModel(userId, userName));
+
+                var ctx2 = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+                ctx2.Clients.All.updateActivity(issueId, userId);
+            }
+
             return msg;
         }
     }

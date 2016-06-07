@@ -20,37 +20,74 @@
     if (status == 5 || status == 6) {
         var menuElem = document.getElementById("finished-menu")
         menuElem.className = "enabled"
+        document.getElementById("anchor-finished").addEventListener('click', function (e) {
+            window.location.href = "/Issue/Decision?issueId=" + issueId
+        })
     }
     if (status < 5) {
 
         var menuElem = document.getElementById("finished-menu")
         menuElem.className = "disabled"
+        $("#anchor-finished").on('click', function (e) {
+            e.preventDefault();
+        });
 
         menuElem = document.getElementById("evaluating-menu")
         menuElem.className = "enabled"
+        document.getElementById("anchor-evaluating").addEventListener('click', function (e) {
+            window.location.href = "/Issue/Evaluation?issueId=" + issueId
+        })
     }
     if (status < 4) {
         var menuElem = document.getElementById("evaluating-menu")
         menuElem.className = "disabled"
+        $("#anchor-evaluating").on('click', function (e) {
+            e.preventDefault();
+        });
 
         menuElem = document.getElementById("criteriarating-menu")
         menuElem.className = "enabled"
+        if ($("#anchor-criteriarating").hasClass('disabled')) {
+            $("#anchor-criteriarating").removeClass('disabled')
+        }
+        document.getElementById("anchor-criteriarating").addEventListener('click', function (e) {
+            window.location.href = "/Issue/CriteriaRating?issueId=" + issueId
+        })
     }
     if (status < 3) {
         var menuElem = document.getElementById("criteriarating-menu")
         menuElem.className = "disabled"
+        $("#anchor-criteriarating").on('click', preventDefaultClick);
 
         menuElem = document.getElementById("alternatives-menu")
         menuElem.className = "enabled"
         menuElem = document.getElementById("criteriafinding-menu")
         menuElem.className = "enabled"
+
+        menuElem = document.getElementById("brainstorming-menu")
+        if (!$("#anchor-brainstorming").hasClass('enabled')) {
+            !$("#anchor-brainstorming").addClass('enabled')
+        }
+        if ($("#anchor-brainstorming").hasClass('disabled')){
+            $("#anchor-brainstorming").removeClass('disabled')
+        }
+        if (menuElem.className == "disabled") {
+            menuElem.className = "enabled";
+        }
     }
     if (status < 2) {
         var menuElem = document.getElementById("alternatives-menu")
         menuElem.className = "disabled"
         menuElem = document.getElementById("criteriafinding-menu")
         menuElem.className = "disabled"
+        menuElem = document.getElementById("brainstorming-menu")
+        menuElem.className = "disabled"
+        $("#anchor-brainstorming").addClass('disabled')
     }
+}
+
+function preventDefaultClick(e) {
+    e.preventDefault();
 }
 
 function doLinks(issue) {

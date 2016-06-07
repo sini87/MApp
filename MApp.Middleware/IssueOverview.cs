@@ -71,7 +71,18 @@ namespace MApp.Middleware
                     unreadCnt = unreadCnt + kvp.Value;
                     if (kvp.Value > 0)
                     {
-                        uim.UnreadCoreItems.Add(kvp.Value + " " + kvp.Key);
+                        if (kvp.Key.StartsWith("Alternative Information"))
+                        {
+                            uim.UnreadCoreItems.Add(kvp.Value + " new Alternatives");
+                        }
+                        if (kvp.Key.StartsWith("Issue Information"))
+                        {
+                            uim.UnreadCoreItems.Add(kvp.Value + " new Issue Attributes");
+                        }
+                        if (kvp.Key.StartsWith("Criteria Information"))
+                        {
+                            uim.UnreadCoreItems.Add(kvp.Value + " new Criteria");
+                        }
                     }
                 }
             }
@@ -81,6 +92,7 @@ namespace MApp.Middleware
             {
                 uim.Issue.Tags = tm.ToModelList(TagOp.GetIssueTags(uim.Issue.Id), tm);
             }
+
             return uim;
         }
 

@@ -15,7 +15,7 @@
             <th>Issue</th>
             <th class="td-center-top">Status</th>
             <th class="td-center-top">Action Required</th>
-            <th>Unseen Infos</th>
+            <th class="td-center-top">Updates</th>
             <th>Tags</th>
         </tr>
     </thead>
@@ -79,17 +79,15 @@
 <script src="~/signalr/hubs"></script>
 <script type="text/javascript">
     var viewModelJs = @Html.Raw(Json.Encode(Model.Value));
-    var userId = @Model.Key;
+    var userIdLogged = @Model.Key;
     for (var i = 0; i < viewModelJs.length; i++){
         var newIssue = false;
         viewModelJs[i].treegrid = 'treegrid-' + viewModelJs[i].Issue.Id;
         if (viewModelJs[i].Issue.Parent != null && viewModelJs[i].Issue.Parent != ""){
             viewModelJs[i].treegrid = viewModelJs[i].treegrid + ' treegrid-parent-' + viewModelJs[i].Issue.Parent;
         }
-        for (var j = 0; j < viewModelJs[i].UnreadCoreItems.length; j++){
-            if(viewModelJs[i].UnreadCoreItems[j].indexOf('Issue Information') >= 0){
-                newIssue = true;
-            }
+        if (viewModelJs[i].UnreadCoreItems.length > 0){
+            newIssue = true;
         }
         viewModelJs[i].newIssue = newIssue
     }
@@ -122,9 +120,9 @@
             // Create a function that the hub can call back to display messages.
             notificationHub.client.userAddedToIssue = function (issue, accessRights, userId) {
                 for (var i = 0; i < accessRights.length; i++){
-                    if (accessRights[i].UserId == userId){
+                    if (accessRights[i].UserId == userIdLogged){
                         $.ajax({
-                            url: '/Issue/GetUserIssueModel?issueId=' + issue.Id + '&userId=' + userId,
+                            url: '/Issue/GetUserIssueModel?issueId=' + issue.Id + '&userId=' + userIdLogged,
                             type: 'POST',
                             contentType: "application/json; charset=utf-8",
                             async: true,

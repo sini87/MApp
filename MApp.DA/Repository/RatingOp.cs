@@ -89,7 +89,7 @@ namespace MApp.DA.Repository
         }
 
         /// <summary>
-        /// returns list of all ratings expect own rating
+        /// returns list of all ratings expect own rating when setting = A
         /// </summary>
         /// <param name="issueId"></param>
         /// <param name="userId"></param>
@@ -99,16 +99,33 @@ namespace MApp.DA.Repository
             List<Rating> list = new List<Rating>();
             ApplicationDBEntities ctx = new ApplicationDBEntities();
 
-            var query = from rat in ctx.Rating
-                        where
-                          rat.UserId != userId &&
-                          rat.Alternative.IssueId == issueId
-                        orderby
-                          rat.UserId,
-                          rat.Criterion.Id,
-                          rat.Alternative.Id
-                        select rat;
-            list = query.AsNoTracking().ToList();
+            Issue issue = ctx.Issue.Find(issueId);
+
+            if (issue.Setting == "A")
+            {
+                var query = from rat in ctx.Rating
+                            where
+                              rat.UserId != userId &&
+                              rat.Alternative.IssueId == issueId
+                            orderby
+                              rat.UserId,
+                              rat.Criterion.Id,
+                              rat.Alternative.Id
+                            select rat;
+                list = query.AsNoTracking().ToList();
+            }else
+            {
+                var query = from rat in ctx.Rating
+                            where
+                              rat.Alternative.IssueId == issueId
+                            orderby
+                              rat.UserId,
+                              rat.Criterion.Id,
+                              rat.Alternative.Id
+                            select rat;
+                list = query.AsNoTracking().ToList();
+            }
+            
             ctx.Dispose();
 
             return list;
@@ -182,10 +199,19 @@ namespace MApp.DA.Repository
         {
             List<int> users;
             ApplicationDBEntities ctx = new ApplicationDBEntities();
-
-            string query = "select distinct(rat.UserId) from appSchema.Rating rat, " +
+            string setting = ctx.Issue.Find(issueId).Setting;
+            string query;
+            
+            if (setting == "A")
+            {
+                query = "select distinct(rat.UserId) from appSchema.Rating rat, " +
                 "appSchema.Alternative alt where alt.Id = rat.AlternativeId and alt.IssueId = {0} AND " +
                 "rat.UserId !=  {1}";
+            }else
+            {
+                query = "select distinct(rat.UserId) from appSchema.Rating rat, " +
+                "appSchema.Alternative alt where alt.Id = rat.AlternativeId and alt.IssueId = {0}";
+            }
 
             users = ctx.Database.SqlQuery<int>(query, issueId, userId).ToList() ;
             ctx.Dispose();
@@ -210,7 +236,7 @@ namespace MApp.DA.Repository
                 if (aList.Count != 0)
                 {
                     int id = aList.FirstOrDefault().Id;
-                    List<Rating> rList = ctx.Rating.Where(x => x.AlternativeId == id).ToList();
+                    List<Rating> rList = ctx.Rating.Where(x => x.AlternativeId == id && x.UserId == userId).ToList();
                     if (rList == null || rList.Count == 0)
                     {
                         ret = true;

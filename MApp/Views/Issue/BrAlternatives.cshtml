@@ -251,6 +251,24 @@
 <script src="~/signalr/hubs"></script>
 
 <script>
+    //when windows gets focus mark as read
+    $(document).ready(function() { $(window).on("focus", markAsRead); } );
+    var markAsRead = function() {
+        if ( $('#addCommentBtn').is(':hidden') == false){
+            $.ajax({
+                url: '/Issue/MarkCommentAsRead?issueId=' + viewModel.Issue.Id() + '&Type=Alternative',
+                type: 'POST'
+            })
+        }
+
+        if (document.getElementById('showCommentsBtn').innerText == 'Hide Comments'){
+            $.ajax({
+                url: '/Issue/MarkCommentAsRead?issueId=' + viewModel.Issue.Id() + '&Type=Alternative',
+                type: 'POST'
+            })
+        }
+    }
+
     $(function () {
         // Reference the auto-generated proxy for the hub.
         var commentHub = $.connection.commentHub;
@@ -275,6 +293,13 @@
                             placement: notPlacementCorner,
                             animate: notAnimateCorner
                         });
+
+                        if (document.hasFocus() && document.getElementById('showCommentsBtn').innerText == 'Hide Comments'){
+                            $.ajax({
+                                url: '/Issue/MarkCommentAsRead?issueId=' + viewModel.Issue.Id() + '&Type=Alternative',
+                                type: 'POST'
+                            })
+                        }
                     }
                 }
             }
@@ -314,7 +339,7 @@
                 for (var i = 0; i < alternatives.length; i++) {
                     var uAlt = alternatives[i]
                     var result = $.grep(viewModel.Alternatives(), function (e) { return e.Id() == uAlt.Id; });
-                    if (result.length == 0) {
+                    if (result.length == 0) { // new alternative
                         var newAlt = {
                             Id: ko.observable(uAlt.Id),
                             Name: ko.observable(uAlt.Name),
@@ -340,7 +365,14 @@
                             placement: notPlacementCorner,
                             animate: notAnimateCorner
                         });
-                    } else if (result.length == 1) {
+
+                        if (document.hasFocus()){
+                            $.ajax({
+                                url: '/Issue/MarkCoreInfoAsRead?issueId=' + viewModel.Issue.Id() + '&Type=Alternative',
+                                type: 'POST'
+                            })
+                        }
+                    } else if (result.length == 1) { // update existing alternative
                         var updated = false;
                         var oldAlt = result[0]
                         var name = oldAlt.Name()

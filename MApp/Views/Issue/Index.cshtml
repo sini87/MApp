@@ -190,6 +190,38 @@
                 refreshUserIssueModel(issueId, 'next')
             }
 
+            notificationHub.client.nextStage = function (issueId, status, userId) {
+                for (var i = 0; i < viewModel().length; i++){
+                    if (viewModel()[i].Issue.Id() == issueId){
+                        viewModel()[i].Issue.Status(status)
+                        
+                        $.notify({
+                            icon: 'glyphicon glyphicon-info-sign',
+                            title: 'Status updated',
+                            message: viewModel()[i].Issue.Title() + ' was put to next stage!',
+                        }, {
+                            delay: notDelay,
+                            type: 'info',
+                            placement: notPlacementCorner,
+                            animate: notAnimate
+                        });
+                    }   
+                }
+            }
+
+            //issue is updated
+            notificationHub.client.updateIssue = function(issue, addedTags, removedTags, issueTags, userId, selfAssessmentValue, selfassmentDescr){
+                for (var i = 0; i < viewModel().length; i++){
+                    if (viewModel()[i].Issue.Id() == issue.Id){
+                        viewModel()[i].Issue.Tags.removeAll()
+                        for(var j = 0; j < issueTags.length; j++){
+                            viewModel()[i].Issue.Tags.push(ko.mapping.fromJS(issueTags[j]))
+                        }
+                        return;
+                    }
+                }
+            }
+
             // Start the connection.
             $.connection.hub.start().done(function () {
                 
@@ -205,7 +237,7 @@
 
                 if (idx > -1){
                     $.ajax({
-                        url: '/Issue/RefreshUserIssue?issueId=' + issueId + '&userId=' + userId,
+                        url: '/Issue/RefreshUserIssue?issueId=' + issueId + '&userId=' + userIdLogged,
                         type: 'POST',
                         contentType: "application/json; charset=utf-8",
                         dataType: 'json',

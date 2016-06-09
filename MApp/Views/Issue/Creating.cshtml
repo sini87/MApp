@@ -1155,6 +1155,17 @@
         });
     });
 
+    //when windows gets focus mark as read
+    $(document).ready(function() { $(window).on("focus", markAsRead); } );
+    var markAsRead = function() {
+        if ( $('#addCommentBtn').is(':hidden') == false){
+            $.ajax({
+                url: '/Issue/MarkCommentAsRead?issueId=' + viewModel.Issue.Id() + '&Type=Issue',
+                type: 'POST'
+            })
+        }
+    }
+
     //SignalR
     $(function () {
         // Reference the auto-generated proxy for the hub.
@@ -1177,7 +1188,14 @@
                     type: 'info',
                     placement: notPlacementCorner,
                     animate: notAnimateCorner
-                });   
+                });
+
+                if (document.hasFocus() && $('#addCommentBtn').is(':hidden') == false){
+                    $.ajax({
+                        url: '/Issue/MarkCommentAsRead?issueId=' + viewModel.Issue.Id() + '&Type=Issue',
+                        type: 'POST'
+                    })
+                }
             }
         };
 

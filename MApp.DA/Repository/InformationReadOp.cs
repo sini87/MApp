@@ -426,9 +426,10 @@ namespace MApp.DA.Repository
 
             var queryResult = ctx.Database.SqlQuery<int>(query, issueId);
             User u;
+            List<User> userLIst = ctx.User.ToList();
             foreach(int userId in queryResult)
             {
-                u = ctx.User.Find(userId);
+                u = userLIst.Find(x => x.Id == userId);
                 list.Add(u.FirstName + " " + u.LastName);
             }
 
@@ -440,6 +441,7 @@ namespace MApp.DA.Repository
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
             List<string> list = new List<string>();
+            List<User> userList = ctx.User.ToList();
 
             string query = "SELECT distinct(un.UserId) FROM" +
                 "(SELECT ir.UserId FROM InformationRead ir Where [Read] = 0 AND ir.TName Like 'DTEvaluation' AND FK LIKE {0} and ir.UserId IN " +
@@ -453,7 +455,7 @@ namespace MApp.DA.Repository
             User u;
             foreach(int userId in result)
             {
-                u = ctx.User.Find(userId);
+                u = userList.Find(x => x.Id == userId);
                 list.Add( u.FirstName + ' ' + u.LastName);
             }
 

@@ -817,6 +817,7 @@
     <Content Include="Scripts\moment-with-locales.min.js" />
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
+    <Content Include="Scripts\numeral.js" />
     <Content Include="Scripts\summernote\plugin\summernote-ext-hello.js" />
     <Content Include="Scripts\summernote\plugin\summernote-ext-hint.js" />
     <Content Include="Scripts\summernote\plugin\summernote-ext-video.js" />
@@ -853,6 +854,7 @@
     <Compile Include="ViewModel\BrAlternativesVM.cs" />
     <Compile Include="ViewModel\BrCriteriaVM.cs" />
     <Compile Include="ViewModel\CriteriaWeightsVM.cs" />
+    <Compile Include="ViewModel\DecisionModelVM.cs" />
     <Compile Include="ViewModel\DecisionVM.cs" />
     <Compile Include="ViewModel\EvaluationVM.cs" />
     <Compile Include="ViewModel\LoginModel.cs" />

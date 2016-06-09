@@ -23,8 +23,12 @@
         document.getElementById("anchor-finished").addEventListener('click', function (e) {
             window.location.href = "/Issue/Decision?issueId=" + issueId
         })
+
+        document.getElementById('anchor-criteriafinding').innerText = 'Criteria'
+        document.getElementById('anchor-evaluating').innerText = 'Evaluation'
     }
     if (status < 5) {
+        document.getElementById('anchor-criteriafinding').innerText = 'Criteria'
 
         var menuElem = document.getElementById("finished-menu")
         menuElem.className = "disabled"
@@ -63,6 +67,7 @@
         menuElem.className = "enabled"
         menuElem = document.getElementById("criteriafinding-menu")
         menuElem.className = "enabled"
+        document.getElementById('anchor-criteriafinding').innerText = 'Criteria Finding'
 
         menuElem = document.getElementById("brainstorming-menu")
         if (!$("#anchor-brainstorming").hasClass('enabled')) {

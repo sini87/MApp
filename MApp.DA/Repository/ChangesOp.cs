@@ -154,6 +154,7 @@ namespace MApp.DA.Repository
                 "order By Changes Asc";
 
             User u;
+            List<User> userList = ctx.User.ToList();
             DbCommand cmd = ctx.Database.Connection.CreateCommand();
             ctx.Database.Connection.Open();
             cmd.CommandText = query;
@@ -161,7 +162,7 @@ namespace MApp.DA.Repository
             {
                 while (reader.Read())
                 {
-                    u = ctx.User.Find(reader.GetInt32(0));
+                    u = userList.Find(x => x.Id == reader.GetInt32(0));
                     list.Add(new KeyValuePair<string, int>(u.FirstName + ' ' + u.LastName, reader.GetInt32(1)));
                 }
                 reader.Close();

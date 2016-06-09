@@ -36,7 +36,14 @@
                             <td>
                                 <div class="form-group has-feedback">
                                     <div class="input-group">
-                                        <input data-bind="textInput: viewModel.UserRatings()[@i][@k].Value" class="form-control" pattern="\b(1|2|3|4|5|6|7|8|9|10)\b" data-error="Number must be between 1 and 10"/>
+                                        @if (Model.Issue.Status == "EVALUATING")
+                                        {
+                                            <input data-bind="textInput: viewModel.UserRatings()[@i][@k].Value" class="form-control" pattern="\b(1|2|3|4|5|6|7|8|9|10)\b" data-error="Number must be between 1 and 10" />
+                                        }else
+                                        {
+                                            <div data-bind="text: viewModel.UserRatings()[@i][@k].Value"></div>
+                                        }
+
                                     </div>
                                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                                     <div class="help-block with-errors"></div>

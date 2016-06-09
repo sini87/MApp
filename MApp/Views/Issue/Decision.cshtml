@@ -22,6 +22,8 @@
         enabled = false;
     }
 }
+<script src="~/ckeditor/ckeditor.js"></script>
+<script src="~/Scripts/numeral.js"></script>
 
 <!-- ko if: viewModel.Issue.Status() == 'DECIDING' -->
 <h2 data-bind="text: viewModel.Issue.Title() + ' - Deciding'"></h2>
@@ -36,28 +38,25 @@
         <th>Alternative</th>
         @if (Model.Issue.Setting == "A")
         {
-            <th>Score</th>
+            <th class="td-center-top">Score</th>
         }
         else
         {
             <th class="td-center-top">Ranking</th>
         }
         </thead>
-        <tbody>
-            @foreach (var am in Model.Alternatives)
-            {
+        <tbody data-bind="foreach: viewModel.Alternatives">
                 <tr>
-                    <td>@am.Name</td>
+                    <td data-bind="text: Name"></td>
                     @if (Model.Issue.Setting == "A")
                     {
-                        <td class="td-right-top rank-column"><span class="divpadd">@String.Format("{0:0.##}", am.Rating)</span></td>
+                        <td class="td-right-top rank-column"><span class="divpadd" data-bind="text: numeral(Rating()).format('0[.]00')"></span></td>
                     }
                     else
                     {
-                        <td class="td-right-top rank-column"><span class="divpadd">@String.Format("{0:0.##} %", am.Rating * 100)</span></td>
+                        <td class="td-right-top rank-column"><span class="divpadd" data-bind="text: numeral(Rating()).format('(0.00 %)')"></span></td>
                     }
                 </tr>
-            }
         </tbody>
     </table>
 </div>
@@ -69,6 +68,9 @@
 
 
     <div class="form-group">
+        <div data-bind="if: viewModel.Decision.AlternativeId() == 0">
+            <h4>Select Alternative</h4>
+        </div>
         <div data-bind="foreach: viewModel.Alternatives">
             <label>
                 <input type="radio" name="altRadio" data-bind="checkedValue: Id, checked: viewModel.Decision.AlternativeId" />
@@ -76,14 +78,16 @@
                 <br />
             </label>
         </div>
-        <textarea data-bind="value: viewModel.Decision.Explanation" id="explanationText" class="form-control textarea-desc" rows="5"></textarea>
+        <div data-bind="visible: viewModel.Decision.AlternativeId() > 0">
+            <textarea data-bind="value: viewModel.Decision.Explanation" id="explanationText" class="form-control textarea-desc" rows="4"></textarea>
+        </div>
     </div>
     <!-- ko if: viewModel.Issue.Status() == 'FINISHED' -->
         <button id="save" type="button" class="btn btn-primary" onclick="javascript: onUpdateClick()" data-bind="visible: viewModel.update">Update Description</button>
         <button id="updateDecisionBtn" type="button" class="btn btn-primary" onclick="javascript: onSaveClick()" data-bind="visible: viewModel.overthink">Change Decision</button>
     <!-- /ko -->
     <!-- ko if: viewModel.Issue.Status() == 'DECIDING' -->
-        <button id="makeDecisionBtn" type="button" class="btn btn-primary" onclick="javascript: onSaveClick()">Make Decision</button>
+        <button id="makeDecisionBtn" type="button" class="btn btn-primary" onclick="javascript: onSaveClick()" data-bind="enable: viewModel.Decision.AlternativeId() > 0">Make Decision</button>
     <!-- /ko -->
 }
 else
@@ -95,47 +99,64 @@ else
         <h3 data-bind="text: 'Decision Made: ' + viewModel.decisionName()"></h3>
         <h4>Explanation:</h4>
         <br />
-        @Model.Decision.Explanation
+        <div data-bind="html: viewModel.Decision.Explanation"></div>
     <!-- /ko -->
 }
 
-@if(Model.OldDecisions != null && Model.OldDecisions.Count > 0)
-{
+
+<div data-bind="if: viewModel.OldDecisions().length > 0">
     <h3>Old Decisions</h3>
     <table class="table">
         <thead>
             <tr>
-                <td>Discard Date</td>
-                <td>Decision</td>
+                <th>Discard Date</th>
+                <th>Decision</th>
             </tr>
         </thead>
-        <tbody>
-            @foreach (var dm in Model.OldDecisions)
-            {
-                <tr>
-                    <td>@dm.ChangeDate</td>
-                    <td>
-                        <strong>@Model.Alternatives.Where(x => x.Id == dm.AlternativeId).FirstOrDefault().Name</strong>
-                        <br />
-                        @dm.Explanation
-                    </td>
-                </tr>
-            }
+        <tbody data-bind="foreach: viewModel.OldDecisions">
+            <tr>
+                <td data-bind="text: moment(ChangeDate()).format('DD.MM.YY HH:mm')"></td>
+                <td>
+                    <strong data-bind="text: AlternativeName"></strong>
+                    <br />
+                    <div data-bind="html: Explanation"></div>
+                </td>
+            </tr>
         </tbody>
     </table>
-    
-}
+</div>
 
 <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
 <script src="~/signalr/hubs"></script>
 <script>
 
     var viewModelJs = @Html.Raw(Json.Encode(Model));
+
+    for (var i = 0; i < viewModelJs.OldDecisions.length; i++){
+        var alt = $.grep(viewModelJs.Alternatives, function(e){ return e.Id == viewModelJs.OldDecisions[i].AlternativeId; });
+        viewModelJs.OldDecisions[i].AlternativeName = alt.Name
+    }
+
     var viewModel = ko.mapping.fromJS(viewModelJs);
 
+    //for owner init CKEDITOR
+    if (viewModel.AccessRight() == 'O'){
+        CKEDITOR.replace('explanationText',
+        {
+            customConfig: '/ckeditor/config.js'
+        });
+        if (viewModel.Decision.Explanation == null){
+            CKEDITOR.instances['explanationText'].setData('')
+        }else{
+            CKEDITOR.instances['explanationText'].setData(viewModel.Decision.Explanation())
+        }
+    }
+
     viewModel.overthink = ko.computed(function() {
-        if (viewModel.Decision.AlternativeId() != @Model.Decision.AlternativeId ){
-            document.getElementById("explanationText").value = ""
+        if (viewModel.Decision.AlternativeId() != @Model.Decision.AlternativeId){
+            if (viewModel.Decision.AlternativeId() != 0 && viewModel.AccessRight() == 'O'){
+                CKEDITOR.instances['explanationText'].setData('')
+            }
             return true;
         }
 
@@ -145,7 +166,7 @@ else
 
     viewModel.update = ko.computed(function() {
         if (viewModel.Decision.AlternativeId() == @Model.Decision.AlternativeId && viewModel.Issue.Status() == "FINISHED" && viewModel.AccessRight() == "O"){
-            document.getElementById("explanationText").value = viewModel.Decision.Explanation();
+            CKEDITOR.instances['explanationText'].setData(viewModel.Decision.Explanation())
             return true;
         }else
             return false;
@@ -165,18 +186,44 @@ else
 
     ko.applyBindings(viewModel);
 
-
     renderMenues()
+
     function onSaveClick() {
         var tmpVM = ko.toJS(viewModel.Decision)
         tmpVM.ChangeDate = "";
-        ko.utils.postJson("", { DecisionModel: tmpVM });
+        tmpVM.Explanation = CKEDITOR.instances['explanationText'].getData()
+
+        $.ajax({
+            url: "/Issue/Decision?issueId=" + tmpVM.IssueId,
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(tmpVM),
+            async: true,
+            processData: false,
+            complete: function (r) {
+                window.location.reload(true);
+            }
+        })
     }
 
     function onUpdateClick(){
         var tmpVM = ko.toJS(viewModel.Decision);
         tmpVM.ChangeDate = "";
-        ko.utils.postJson("/Issue/UpdateDecision", { DecisionModel: tmpVM });
+        tmpVM.Explanation = CKEDITOR.instances['explanationText'].getData()
+        $.ajax({
+            url: "/Issue/UpdateDecision",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(tmpVM),
+            async: true,
+            processData: false,
+            complete: function (r) {
+                window.location.reload(true);
+            }
+        })
+
     }
 
     //SignalR
@@ -185,9 +232,38 @@ else
         userAddedToIssue(notificationHub);
 
         nextStageNotification(notificationHub)
-        
-        $.connection.hub.start().done(function () {
+
+        notificationHub.client.decisionUpdated = function(decisionVM, changedByUserId){
+            if (changedByUserId == viewModel.UserId()){
+                return;
+            }
             
+            viewModel.OldDecisions.removeAll()
+            for(var i = 0; i < decisionVM.OldDecisions.length; i++){
+                var alt = $.grep(viewModelJs.Alternatives, function(e){ return e.Id == decisionVM.OldDecisions[i].AlternativeId; });
+                decisionVM.OldDecisions[i].AlternativeName = alt.Name
+                viewModel.OldDecisions.push(ko.mapping.fromJS(decisionVM.OldDecisions[i]))
+            }
+            
+            viewModel.Issue.Status(decisionVM.Issue.Status)
+
+            viewModel.Decision.AlternativeId(decisionVM.Decision.AlternativeId)
+            viewModel.Decision.Explanation(decisionVM.Decision.Explanation)
+
+            $.notify({
+                icon: 'glyphicon glyphicon-info-sign',
+                title: 'System Notificaion',
+                message: 'Decision updated'
+            },{
+                delay: notDelay,
+                type: 'info',
+                placement: notPlacementCorner,
+                animate: notAnimateCorner
+            });
+        }
+
+        $.connection.hub.start().done(function () {
+
         });
     })
 </script>

@@ -193,7 +193,7 @@ namespace MApp.Web.Controllers
             else
             {
                 context.Clients.All.nextStage(issueId, "FINISHED", userId);
-                return RedirectToAction("Issue", "Index", new { issueId = issueId });
+                return RedirectToAction("Index", "Issue");
             }
 
         }
@@ -205,6 +205,10 @@ namespace MApp.Web.Controllers
             BrCriteriaVM viewModel = new BrCriteriaVM();
             int userId = GetUserIdFromClaim();
             viewModel.Issue = ic.GetIssue(issueId);
+            if (viewModel.Issue.Status == "CREATING")
+            {
+                return RedirectToAction("Creating", "Issue", new { issueId = issueId });
+            }
             IssueBrCriteria ibc = new IssueBrCriteria();
             viewModel.IssueCriteria = ibc.GetIssueCriteria(issueId, userId);
             viewModel.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
@@ -245,6 +249,10 @@ namespace MApp.Web.Controllers
             IssueCreating ic = new IssueCreating();
             int userId = GetUserIdFromClaim();
             vm.Issue = ic.GetIssue(issueId);
+            if (vm.Issue.Status == "CREATING")
+            {
+                return RedirectToAction("Creating", "Issue", new { issueId = issueId });
+            }
             IssueBrAlternative iba = new IssueBrAlternative();
             vm.Alternatives = iba.GetIssueAlternatives(issueId, userId);
             vm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
@@ -286,6 +294,10 @@ namespace MApp.Web.Controllers
             IssueCriterionWeight icw = new IssueCriterionWeight();
             int userId = GetUserIdFromClaim();
             vm.Issue = ic.GetIssue(issueId);
+            if (vm.Issue.Status == "CREATING" || vm.Issue.Status == "BRAINSTORMING1")
+            {
+                return RedirectToAction("Creating", "Issue", new { issueId = issueId });
+            }
             vm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
             vm.UserId = userId;
 
@@ -337,6 +349,10 @@ namespace MApp.Web.Controllers
             IssueEvaluation ie = new IssueEvaluation();
             int userId = GetUserIdFromClaim();
             evm.Issue = ic.GetIssue(issueId);
+            if (evm.Issue.Status == "CREATING" || evm.Issue.Status == "BRAINSTORMING1" || evm.Issue.Status == "BRAINSTORMING2")
+            {
+                return RedirectToAction("Creating", "Issue", new { issueId = issueId });
+            }
             //ToDo check viewsettings & issueOwner
             evm.AllRatings = ie.GetAllIssueRatings(issueId, userId);
             evm.UserRatings = ie.GetIssueUserRatings(issueId, userId);
@@ -390,6 +406,12 @@ namespace MApp.Web.Controllers
             dvm.AccessRight = ic.AccessRightOfUserForIssue(userId, issueId).Right;
             dvm.Alternatives = iba.GetIssueAlternatives(issueId, userId).OrderByDescending(x => x.Rating).ToList();
             dvm.Issue = ic.GetIssue(issueId);
+
+            if (dvm.Issue.Status == "CREATING" || dvm.Issue.Status == "BRAINSTORMING1" || dvm.Issue.Status == "BRAINSTORMING2" || dvm.Issue.Status == "EVALUATING")
+            {
+                return RedirectToAction("Creating", "Issue", new { issueId = issueId });
+            }
+
             dvm.OldDecisions = id.GetOldDecisions(issueId, userId);
             dvm.Decision = id.GetDecision(issueId, userId);
             dvm.UserId = GetUserIdFromClaim();
@@ -397,8 +419,17 @@ namespace MApp.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Decision([FromJson] DecisionModel decisionModel)
+        public ActionResult Decision(DecisionModelVM dmvm)
         {
+            DecisionModel decisionModel = new DecisionModel();
+            decisionModel.AlternativeId = dmvm.AlternativeId;
+            decisionModel.ChangeDate = dmvm.ChangeDate;
+            decisionModel.Explanation = dmvm.Explanation;
+            decisionModel.IssueId = dmvm.IssueId;
+            if (dmvm.Explanation == null)
+            {
+                return RedirectToAction("Decision", "Issue", new { issueId = decisionModel.IssueId });
+            }
             IssueCreating ic = new IssueCreating();
             int userId = GetUserIdFromClaim();
             IssueDecision id = new IssueDecision();
@@ -408,13 +439,36 @@ namespace MApp.Web.Controllers
             var ctx2 = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
             ctx2.Clients.All.updateActivity(decisionModel.IssueId, userId);
 
+            int issueId = decisionModel.IssueId;
+            DecisionVM dvm = new DecisionVM();
+            dvm.OldDecisions = id.GetOldDecisions(issueId, userId);
+            dvm.Decision = id.GetDecision(issueId, userId);
+            dvm.Issue = ic.GetIssue(issueId);
+            ctx2.Clients.All.decisionUpdated(dvm, issueId);
+
             return RedirectToAction("Decision", "Issue", new { issueId = decisionModel.IssueId });
         }
 
-        public ActionResult UpdateDecision([FromJson] DecisionModel decisionModel)
+        public ActionResult UpdateDecision( DecisionModelVM dmvm)
         {
             IssueDecision id = new IssueDecision();
+            DecisionModel decisionModel = new DecisionModel();
+            decisionModel.AlternativeId = dmvm.AlternativeId;
+            decisionModel.ChangeDate = dmvm.ChangeDate;
+            decisionModel.Explanation = dmvm.Explanation;
+            decisionModel.IssueId = dmvm.IssueId;
             id.UpdateDecision(decisionModel, GetUserIdFromClaim());
+
+            int issueId = decisionModel.IssueId;
+            int userId = GetUserIdFromClaim();
+            DecisionVM dvm = new DecisionVM();
+            IssueCreating ic = new IssueCreating();
+            dvm.OldDecisions = id.GetOldDecisions(issueId, userId);
+            dvm.Decision = id.GetDecision(issueId, userId);
+            dvm.Issue = ic.GetIssue(issueId);
+            var ctx2 = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+            ctx2.Clients.All.decisionUpdated(dvm, issueId);
+
             return RedirectToAction("Decision", "Issue", new { issueId = decisionModel.IssueId });
         }
 
@@ -675,6 +729,67 @@ namespace MApp.Web.Controllers
                 ctx2.Clients.All.updateActivity(issueId, userId);
             }
 
+            return msg;
+        }
+
+        /// <summary>
+        /// should be used if somebody adds new core information (Alternative, Criterion)
+        /// and some other user have currently focused the regarding page
+        /// also he sees this new information instantly 
+        /// this new information should be makrked as read
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="type">type coudl be "Criterion" or "Alternative"</param>
+        /// <returns></returns>
+        [HttpPost]
+        public HttpResponseMessage MarkCoreInfoAsRead(int issueId, string type)
+        {
+            HttpResponseMessage msg = new HttpResponseMessage();
+
+            if (type == "Criterion")
+            {
+                IssueBrCriteria ibc = new IssueBrCriteria();
+                ibc.MarkAsRead(issueId, GetUserIdFromClaim());
+            }else if(type == "Alternative")
+            {
+                IssueBrAlternative iba = new IssueBrAlternative();
+                iba.MarkAsRead(issueId, GetUserIdFromClaim());
+            }
+
+            msg.StatusCode = System.Net.HttpStatusCode.OK;
+            return msg;
+        }
+
+        /// <summary>
+        /// should be used if somebody adds a new comment (for Issue, Alternative, Criterion)
+        /// and some other user have currently focused the regarding page and expanded comments
+        /// also he sees this new comment instantly 
+        /// this new information should be makrked as read
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public HttpResponseMessage MarkCommentAsRead(int issueId, string type)
+        {
+            HttpResponseMessage msg = new HttpResponseMessage();
+
+            if (type == "Criterion")
+            {
+                IssueBrCriteria ibc = new IssueBrCriteria();
+                ibc.MarkCommentsAsRead(issueId, GetUserIdFromClaim());
+            }
+            else if (type == "Alternative")
+            {
+                IssueBrAlternative iba = new IssueBrAlternative();
+                iba.MarkCommentsAsRead(issueId, GetUserIdFromClaim());
+            }else if (type == "Issue")
+            {
+                IssueCreating ic = new IssueCreating();
+                ic.MarkCommentsAsRead(issueId, GetUserIdFromClaim());
+            }
+
+            msg.StatusCode = System.Net.HttpStatusCode.OK;
             return msg;
         }
     }

@@ -247,6 +247,24 @@
 <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
 <script src="~/signalr/hubs"></script>
 <script>
+    //when windows gets focus mark as read
+    $(document).ready(function () { $(window).on("focus", markAsRead); });
+    var markAsRead = function () {
+        if ($('#addCommentBtn').is(':hidden') == false) {
+            $.ajax({
+                url: '/Issue/MarkCommentAsRead?issueId=' + viewModel.Issue.Id() + '&Type=Criterion',
+                type: 'POST'
+            })
+        }
+
+        if (document.getElementById('showCommentsBtn').innerText == 'Hide Comments') {
+            $.ajax({
+                url: '/Issue/MarkCommentAsRead?issueId=' + viewModel.Issue.Id() + '&Type=Criterion',
+                type: 'POST'
+            })
+        }
+    }
+
     $(function () {
         var commentHub = $.connection.commentHub;
         commentHub.client.addNewComment = function (comment) {
@@ -269,6 +287,14 @@
                             placement: notPlacementCorner,
                             animate: notAnimateCorner
                         });
+
+                        //mark new comment as read if windows has focus and comments visible
+                        if (document.hasFocus() && document.getElementById('showCommentsBtn').innerText == 'Hide Comments') {
+                            $.ajax({
+                                url: '/Issue/MarkCommentAsRead?issueId=' + viewModel.Issue.Id() + '&Type=Criterion',
+                                type: 'POST'
+                            })
+                        }
                     }
                 }
             }
@@ -309,7 +335,7 @@
                 for (var i = 0; i < criteria.length; i++) {
                     var uCrit = criteria[i]
                     var result = $.grep(viewModel.IssueCriteria(), function (e) { return e.Id() == uCrit.Id; });
-                    if (result.length == 0) {
+                    if (result.length == 0) { // new criteria
                         var newCrit = {
                             Id: ko.observable(uCrit.Id),
                             Name: ko.observable(uCrit.Name),
@@ -336,6 +362,13 @@
                             placement: notPlacementCorner,
                             animate: notAnimateCorner
                         });
+
+                        if (document.hasFocus()) {
+                            $.ajax({
+                                url: '/Issue/MarkCoreInfoAsRead?issueId=' + viewModel.Issue.Id() + '&Type=Criterion',
+                                type: 'POST'
+                            })
+                        }
                     } else if (result.length == 1) {
                         var updated = false;
                         var oldCrit = result[0]

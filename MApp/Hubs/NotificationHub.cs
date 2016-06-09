@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using Microsoft.AspNet.SignalR;
 using MApp.Middleware.Models;
+using MApp.Web.ViewModel;
 
 namespace MApp.Web.Hubs
 {
@@ -66,6 +67,11 @@ namespace MApp.Web.Hubs
         public void NextStage(int issueId, string status, int userId)
         {
             Clients.All.nextStage(issueId, status, userId);
+        }
+
+        public void DecisionUpdated(DecisionVM decisionVM, int changedByUserId)
+        {
+            Clients.All.decisionUpdated(decisionVM, changedByUserId);
         }
     }
 }

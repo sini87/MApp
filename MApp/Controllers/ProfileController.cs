@@ -32,7 +32,16 @@ namespace MApp.Web.Controllers
                 return View() ;
             }
             Authentication auth = new Authentication();
-            return View(auth.UpdateProfile(profileModel));
+            ProfileModel pm = auth.UpdateProfile(profileModel);
+            var user = User as ClaimsPrincipal;
+            var identity = user.Identity as ClaimsIdentity;
+            var claim = (from c in user.Claims
+                         where c.Type == ClaimTypes.Name
+                         select c).Single();
+            identity.RemoveClaim(claim);
+            identity.AddClaim(new Claim(ClaimTypes.Name, pm.FirstName + " " + pm.LastName));
+
+            return View(pm);
         }
     }
 }

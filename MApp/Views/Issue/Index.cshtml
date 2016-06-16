@@ -4,6 +4,8 @@
     ViewBag.Title = "Issue Overvies";
     var ko = Html.CreateKnockoutContext();
 }
+<script src="~/Scripts/rateit.js/jquery.rateit.js" type="text/javascript"></script>
+<link type="text/css" rel="stylesheet" href="~/Scripts/rateit.js/rateit.css" />
 
 <div class="page-header">
     <h2>Issue Overview</h2>
@@ -16,7 +18,7 @@
             <th class="td-center-top">Status</th>
             <th class="td-center-top">Action Required</th>
             <th class="td-center-top">Updates</th>
-            <th>Tags</th>
+            <th></th>
         </tr>
     </thead>
     <tbody data-bind="foreach: viewModel">
@@ -67,9 +69,76 @@
                     <!-- /ko -->
                 </div>
             </td>
-            <td data-bind="foreach: Issue.Tags">
-                <a data-bind="text: Name" class="tag"></a>
-            </td>
+            <!-- ko if: Issue.Status() != 'FINISHED' -->
+                <td data-bind="foreach: Issue.Tags">
+                    <a data-bind="text: Name" class="tag"></a>
+                </td>
+            <!-- /ko -->
+            <!-- ko if: Issue.Status() == 'FINISHED' -->
+                <td>
+                    <span class="rateit" data-bind="attr: { 'data-rateit-value': Rating, 'data-target': '#ratingModal' + Issue.Id(), id: 'issueRating-rateit' + Issue.Id() }" data-toggle="modal" data-rateit-ispreset="true" data-rateit-readonly="true"></span>
+
+                    <div class="modal fade" data-bind="attr: { id: 'ratingModal' + Issue.Id()}" role="dialog">
+                        <div class="modal-dialog modal-lg">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="mdclose" data-dismiss="modal">&times;</button>
+                                    <label class="modal-title h4md" data-bind="text: 'Rate ' + Issue.Title()"></label>
+                                </div>
+                                <div class="modal-body">
+                                    <table class="mdrating-table">
+                                        <tr class="form-group">
+                                            <td class="mdrating-table-td">
+                                                <label data-bind="attr: { for: 'rateit' + Issue.Id() }">Rating</label>
+                                            </td>
+                                            <td class="mdrating-table-td">
+                                                <select data-bind="attr: { id: 'backing' + Issue.Id() }">
+                                                    <option value="1">Bad</option>
+                                                    <option value="2">NOTBAD</option>
+                                                    <option value="3">OK</option>
+                                                    <option value="4">Great</option>
+                                                    <option value="5">Excellent</option>
+                                                </select>
+                                                <span class="rateit" data-bind="attr: { 'data-rateit-backingfld': '#backing' + Issue.Id(), id: 'rateit' + Issue.Id() }" data-rateit-resetable="false" data-rateit-min="0"></span>
+                                            </td>
+                                        </tr>
+                                        <tr class="form-group">
+                                            <td class="mdrating-table-td">
+                                                <label data-bind="attr: { for: 'explanation' + Issue.Id() }">Explanation</label>
+                                            </td>
+                                            <td class="mdrating-table-td">
+                                                <textarea class="form-control textarea-rating" data-bind="attr: { id: 'explanation' + Issue.Id()}"></textarea>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <table class="table table-condensed">
+                                        <thead>
+                                            <th>User</th>
+                                            <th>Rating</th>
+                                            <th>Explanation</th>
+                                        </thead>
+                                        <tbody data-bind="foreach: Reviews">
+                                            <tr>
+                                                <td data-bind="text: UserName"></td>
+                                                <td>
+                                                    <span class="rateit" data-bind="attr: { 'data-rateit-value': Rating }" data-rateit-ispreset="true" data-rateit-readonly="true"></span>
+                                                </td>
+                                                <td data-bind="text: Explanation"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="form-inline">
+                                        <button class="btn btn-primary" data-bind="attr: { Id: 'rateIssue' + Issue.Id(), onClick: 'onRateSaveClick(' + Issue.Id() + ')'}">Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            <!-- /ko -->
         </tr>
     </tbody>
 </table>
@@ -94,7 +163,23 @@
     var viewModel = ko.mapping.fromJS(viewModelJs);
     ko.applyBindings(viewModel);
 
-
+    function onRateSaveClick(issueId){
+        var rating = parseInt(document.getElementById('rateit' + issueId).childNodes[1].attributes['aria-valuenow'].nodeValue)
+        var review = {
+            UserId: userIdLogged,
+            IssueId: issueId,
+            Rating: rating,
+            Explanation: document.getElementById('explanation' + issueId).value
+        }
+        $.ajax({
+            url: '/Issue/SaveIssueReview',
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(review),
+            async: true
+        })
+    }
 
     $(document).ready(function () {
         //init treegrid
@@ -222,6 +307,38 @@
                 }
             }
 
+            //review saved
+            notificationHub.client.reviewSaved = function(reviewModel){
+                var updated = false;
+                for (var i = 0; i < viewModel().length; i++){
+                    if (viewModel()[i].Issue.Id() == reviewModel.IssueId){ //find issue
+                        var reviews = viewModel()[i].Reviews
+                        for(var j = 0; j < reviews().length; j++){
+                            if (reviewModel.UserId == reviews()[j].UserId()){
+                                reviews()[j].Rating(reviewModel.Rating)
+                                reviews()[j].Explanation(reviewModel.Explanation)
+                                updated = true;
+                            }
+                        }
+                        if (!updated){
+                            reviews.push(ko.mapping.fromJS(reviewModel))
+                        }
+
+                        $.notify({
+                            icon: 'glyphicon glyphicon-info-sign',
+                            title: 'Reviews updated',
+                            message: 'Reviews updated for ' + viewModel()[i].Issue.Title(),
+                        }, {
+                            delay: notDelay,
+                            type: 'info',
+                            placement: notPlacementCorner,
+                            animate: notAnimate
+                        });
+                    }
+                }
+                
+            }
+
             // Start the connection.
             $.connection.hub.start().done(function () {
                 
@@ -250,6 +367,8 @@
                             viewModel()[idx].SelfAssessmentActionRequired(dat.SelfAssessmentActionRequired)
                             viewModel()[idx].EvaluationActionRequired(dat.EvaluationActionRequired)
                             viewModel()[idx].UnreadCoreItemsCount(dat.UnreadCoreItemsCount)
+                            viewModel()[idx].Rating(dat.Rating)
+                            $('#issueRating-rateit' + dat.Issue.Id).rateit('value',dat.Rating)
                             
                             //viewModel()[idx].UnreadCoreItems.removeAll()
                             var smaller = 0 ;

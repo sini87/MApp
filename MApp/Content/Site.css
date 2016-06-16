@@ -645,3 +645,21 @@ textarea {
  .divpadd{
      padding-right: 15px !important;
  }
+
+ .textarea-rating{
+     resize: none;
+     height: 100px !important;
+     width: 800px !important;
+     margin-right: 0px !important;
+ }
+
+.mdrating-table{
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;
+}
+
+.mdrating-table-td{
+    padding: 8px;
+    vertical-align: top;
+}

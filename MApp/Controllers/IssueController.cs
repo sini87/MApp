@@ -792,5 +792,22 @@ namespace MApp.Web.Controllers
             msg.StatusCode = System.Net.HttpStatusCode.OK;
             return msg;
         }
+
+        public HttpResponseMessage SaveIssueReview(ReviewModel reviewModel)
+        {
+            IssueOverview io = new IssueOverview();
+            io.SaveIssueReview(reviewModel);
+            reviewModel.UserName = GetUserNameFromClaim();
+
+            var context = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+            context.Clients.All.reviewSaved(reviewModel);
+
+            var ctx2 = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+            ctx2.Clients.All.updateActivity(reviewModel.IssueId, reviewModel.UserId);
+
+            HttpResponseMessage msg = new HttpResponseMessage();
+            msg.StatusCode = System.Net.HttpStatusCode.OK;
+            return msg;
+        }
     }
 }

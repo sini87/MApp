@@ -155,6 +155,7 @@
     <Compile Include="Repository\RatingOp.cs" />
     <Compile Include="Repository\IssueOp.cs" />
     <Compile Include="Repository\PropertyOp.cs" />
+    <Compile Include="Repository\ReviewOp.cs" />
     <Compile Include="Repository\TagOp.cs" />
     <Compile Include="Repository\UserOp.cs" />
     <Compile Include="Review.cs">

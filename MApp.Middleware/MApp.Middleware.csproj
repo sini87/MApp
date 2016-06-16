@@ -65,6 +65,7 @@
     <Compile Include="Models\ProfileModel.cs" />
     <Compile Include="Models\PropertyModel.cs" />
     <Compile Include="Models\RatingModel.cs" />
+    <Compile Include="Models\ReviewModel.cs" />
     <Compile Include="Models\TagModel.cs" />
     <Compile Include="Models\UserChangeModel.cs" />
     <Compile Include="Models\UserIssueModel.cs" />

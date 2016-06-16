@@ -73,5 +73,10 @@ namespace MApp.Web.Hubs
         {
             Clients.All.decisionUpdated(decisionVM, changedByUserId);
         }
+
+        public void ReviewSaved(ReviewModel reviewModel)
+        {
+            Clients.All.reivewSaved(reviewModel);
+        }
     }
 }

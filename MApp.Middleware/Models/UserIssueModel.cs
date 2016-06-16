@@ -14,5 +14,7 @@ namespace MApp.Middleware.Models
         public bool EvaluationActionRequired { get; set; }
         public int UnreadCoreItemsCount { get; set; }
         public List<string> UnreadCoreItems { get; set; }
+        public double Rating { get; set; }
+        public List<ReviewModel> Reviews { get; set; }
     }
 }

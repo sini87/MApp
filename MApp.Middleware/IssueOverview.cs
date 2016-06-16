@@ -93,6 +93,26 @@ namespace MApp.Middleware
                 uim.Issue.Tags = tm.ToModelList(TagOp.GetIssueTags(uim.Issue.Id), tm);
             }
 
+            ReviewModel rm = new ReviewModel();
+            IssueCreating ic = new IssueCreating();
+            List<UserShortModel> userList = ic.GetAllUsers();
+            UserShortModel usm;
+
+            if (uim.Issue.Status == "FINISHED")
+            {
+                uim.Rating = ReviewOp.GetReviewRating(uim.Issue.Id);
+                uim.Reviews = rm.ToModelList(ReviewOp.GetIssueReviews(uim.Issue.Id), rm);
+                foreach (ReviewModel reviewModel in uim.Reviews)
+                {
+                    usm = userList.Find(x => x.Id == reviewModel.UserId);
+                    reviewModel.UserName = usm.FirstName + " " + usm.LastName;
+                }
+            }
+            else
+            {
+                uim.Rating = 0.0;
+            }
+
             return uim;
         }
 
@@ -134,6 +154,11 @@ namespace MApp.Middleware
                 return children;
             }
 
+        }
+
+        public void SaveIssueReview(ReviewModel reviewModel)
+        {
+            ReviewOp.SaveIssueReview(reviewModel.ToEntity(reviewModel));
         }
     }
 }

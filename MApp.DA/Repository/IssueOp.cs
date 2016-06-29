@@ -354,6 +354,12 @@ namespace MApp.DA.Repository
                 case "DECIDING":
                     issue.Status = "FINISHED";
                     break;
+                case "FINISHED":
+                    issue.Status = "CLOSED";
+                    break;
+                case "CLOSED":
+                    issue.Status = "FINISHED";
+                    break;
             }
             ctx.Entry(issue).State = EntityState.Modified;
             ctx.SaveChanges();

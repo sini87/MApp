@@ -13,14 +13,33 @@
 <div class="container">
     <div id ="coreInfos" class="col-md-7">
         <!-- ko if: viewModel.Issue.Status() != 'FINISHED' -->
-        <div class="row">
+        <div class="row" data-bind="if: viewModel.Issue.Status() != 'CLOSED'">
             <label for="titleInput">Title</label>
             <input id="titleInput" class="form-control" data-bind="textInput: viewModel.Issue.Title, enable: viewModel.AccessRight() != 'V'" />
         </div>
         <!-- /ko -->
         <div class="row">
             <div class="form-inline">
-                <label id="issueStatus" data-bind="text: 'Issue Status: ' + viewModel.Issue.Status()" class="status-label"></label>
+                <label id="issueStatus" data-bind="text: 'Issue Status: ' + viewModel.Issue.StatusRd()" class="status-label"></label>
+                @*<!-- ko if: viewModel.Issue.Status() == 'CREATING' -->
+                    <label id="issueStatus1" class="status-label">Issue Status: Define</label>
+                <!-- /ko -->
+                <!-- ko if: viewModel.Issue.Status() == 'BRAINSTORMING1' || viewModel.Issue.Status() == 'BRAINSTORMING2' -->
+                    <label id="issueStatus1" class="status-label">Issue Status: Prepare</label>
+                <!-- /ko -->
+                <!-- ko if: viewModel.Issue.Status() == 'EVALUATING' -->
+                    <label id="issueStatus1" class="status-label">Issue Status: Evaluate</label>
+                <!-- /ko -->
+                <!-- ko if: viewModel.Issue.Status() == 'DECIDING' -->
+                    <label id="issueStatus1" class="status-label">Issue Status: Decide</label>
+                <!-- /ko -->
+                <!-- ko if: viewModel.Issue.Status() == 'FINISHED' -->
+                    <label id="issueStatus1" class="status-label">Issue Status: Decided</label>
+                <!-- /ko -->
+                <!-- ko if: viewModel.Issue.Status() == 'CLOSED' -->
+                    <label id="issueStatus1" class="status-label">Issue Status: Closed</label>
+                <!-- /ko -->*@
+
                 <!-- ko if: viewModel.Issue.Status() == 'CREATING'-->
                 <div class="checkbox">
                     <label id="anonymousPostingLabel">
@@ -29,46 +48,52 @@
                     </label>
                 </div>
                 <!-- /ko -->
-                <!-- ko if: viewModel.Issue.Status() != 'CREATING' && viewModel.Issue.AnonymousPosting() == true -->
+                <div class="checkbox">
+                    <!-- ko if: viewModel.Issue.Status() != 'CREATING' && viewModel.Issue.AnonymousPosting() == true -->
                     <label>Anonymous posting is enabled</label>
-                <!-- /ko -->
-                <!-- ko if: viewModel.Issue.Status() != 'CREATING' && viewModel.Issue.AnonymousPosting() == false -->
+                    <!-- /ko -->
+                    <!-- ko if: viewModel.Issue.Status() != 'CREATING' && viewModel.Issue.AnonymousPosting() == false -->
                     <label>Anonymous posting is disabled</label>
-                <!-- /ko -->
+                    <!-- /ko -->
+                </div>
             </div>
         </div>
         <div class="row">
             <div class="form-inline">
-                <label>Methology</label>
+                <label>Methodology</label>
             </div>
-            <div class="form-inline" data-bind="enable: viewModel.Issue.Status == 'CREATING' || viewModel.Issue.Status == 'BRAINSTORMING1'">
-                <label class="radio-inline"><input type="radio" name="settingGroup" value="A" data-bind="checked: viewModel.Issue.Setting"/>Setting A</label>
-                <label class="radio-inline"><input type="radio" name="settingGroup" value="B" data-bind="checked: viewModel.Issue.Setting" />Setting B (AHP)</label>
+            <div class="form-inline" >
+                <label class="radio-inline" data-bind="css: { radiodisabled: viewModel.Issue.Status != 'CREATING' && viewModel.Issue.Status != 'BRAINSTORMING1'}"><input type="radio" name="settingGroup" value="A" data-bind="checked: viewModel.Issue.Setting"/>Setting A</label>
+                <label class="radio-inline" data-bind="css: { radiodisabled: viewModel.Issue.Status != 'CREATING' && viewModel.Issue.Status != 'BRAINSTORMING1'}"><input type="radio" name="settingGroup" value="B" data-bind="checked: viewModel.Issue.Setting" />Setting B (AHP)</label>
             </div>
         </div>
         <div class="row">
             <label for="description">Description</label>
-            <textarea class="form-control textarea-issuedesc" data-bind="value: viewModel.Issue.Description, enable: viewModel.AccessRight() != 'V'" id="description" name="description"></textarea>
+            <textarea class="form-control textarea-issuedesc" data-bind="value: viewModel.Issue.Description, enable: viewModel.AccessRight() != 'V' && viewModel.Issue.Status() != 'CLOSED'" id="description" name="description"></textarea>
         </div>
 
         <div class="row">
             <table>
                 <tr>
                     <td class="td-top">
-                        <label for="selectRootIssue">Parent Issue:</label>
+                        <label for="selectRootIssue" data-bind="if: viewModel.Issue.Status() != 'CLOSED' || (viewModel.Issue.Status() == 'CLOSED' && viewModel.Issue.Parent() > 0)">Parent Issue:</label>
                         <br />
+                        <!-- ko if: viewModel.Issue.Status() != 'CLOSED' && viewModel.AccessRight != 'V' -->
                         <select class="selectpicker" data-live-search="true" id="selectRootIssue" data-bind="options: viewModel.Issues, optionsText: 'Title', optionsValue: 'Id', value: viewModel.Issue.Parent"></select>
                         <br />
+                        <!-- /ko -->
                         <!-- ko if: viewModel.Issue.Parent() > 0 -->
                         <a data-bind="text: viewModel.Issue.ParentTitle, attr: {href: '?issueId=' + viewModel.Issue.Parent()}, visible: !viewModel.parentChanged() && viewModel.Issue.ParentTitle() != ''"></a>
                         <a data-bind="text: viewModel.parentDDText, attr: {href: '?issueId=' + viewModel.Issue.Parent()}, visible: viewModel.parentDDText() != 'none' && viewModel.parentChanged"></a>
                         <!-- /ko -->
                     </td>
                     <td class="td-top">
-                        <label for="selectdependsOnIssue">Depends on Issue:</label>
+                        <label for="selectdependsOnIssue" data-bind="if: viewModel.Issue.Status() != 'CLOSED' || (viewModel.Issue.Status() == 'CLOSED' && viewModel.Issue.DependsOn() > 0)">Depends on Issue:</label>
                         <br />
+                        <!-- ko if: viewModel.Issue.Status() != 'CLOSED' && viewModel.AccessRight != 'V' -->
                         <select class="selectpicker" data-live-search="true" id="selectdependsOnIssue" data-bind="options: viewModel.Issues, optionsText: 'Title', optionsValue: 'Id', value: viewModel.Issue.DependsOn"></select>
                         <br />
+                        <!-- /ko -->
                         <!-- ko if: viewModel.Issue.DependsOn() > 0-->
                         <a data-bind="text: viewModel.Issue.DependsOnTitle, attr: {href: '?issueId=' + viewModel.Issue.DependsOn()}, visible: !viewModel.dependsOnChanged() && viewModel.Issue.DependsOnTitle() != ''"></a>
                         <a data-bind="text: viewModel.dependsOnDDText, attr: {href: '?issueId=' + viewModel.Issue.DependsOn()}, visible: viewModel.dependsOnDDText() != 'none' && viewModel.dependsOnChanged"></a>
@@ -114,18 +139,19 @@
 
     @*Phenomenon dashboard*@
     <div class="col-md-5">
+        <!-- ko if: viewModel.AccessRight() == 'O' -->
         <div class="phenomenon">
-            <div class="row phenomenon-header">
-                <label>Phenomenons</label>
+            <div class="row phenomenon-header" id="gpind">
+                <label>Group Phenomenon Indicators</label>
                 <!-- ko if: viewModel.AccessRight() == 'O' -->
-                    <span class="label label-default phenomenon-badge-header" data-bind="text: viewModel.newPhenomenonNotifications, css: { 'label-success': viewModel.newPhenomenonNotifications() == 0, 'label-danger': viewModel.newPhenomenonNotifications() != 0 }"></span>
+                <span class="label label-default phenomenon-badge-header" data-bind="text: viewModel.newPhenomenonNotifications, css: { 'label-success': viewModel.newPhenomenonNotifications() == 0, 'label-danger': viewModel.newPhenomenonNotifications() != 0 }"></span>
                 <!-- /ko -->
             </div>
-            
+
             @*Groupthink notifications*@
             <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() == 'O'">
                 <a class="phenomenon-link" data-toggle="modal" data-target="#groupThinkAllNotModalDialog">Grouphtink notifications</a>
-                <span class="label phenomenon-badge" data-bind="text: viewModel.newGroupthinkNotifications, css: { 'label-success': viewModel.newGroupthinkNotifications() == 0, 'label-danger': viewModel.newGroupthinkNotifications() != 0 }"></span>
+                <span class="label phenomenon-badge" data-toggle="modal" data-target="#groupThinkAllNotModalDialog" data-bind="text: viewModel.newGroupthinkNotifications, css: { 'label-success': viewModel.newGroupthinkNotifications() == 0, 'label-danger': viewModel.newGroupthinkNotifications() != 0 }"></span>
                 <div class="modal fade" id="groupThinkAllNotModalDialog" role="dialog">
                     <div class="modal-dialog">
                         <!-- Modal content-->
@@ -160,7 +186,7 @@
                                 </table>
                             </div>
                             <div class="modal-footer">
-                                
+
                             </div>
                         </div>
 
@@ -172,7 +198,7 @@
             @*Groupshift notifications only for owners*@
             <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() == 'O'">
                 <a class="phenomenon-link" data-toggle="modal" data-target="#groupshiftDialog">Groupshift warning</a>
-                <span class="label label-default phenomenon-badge" data-bind="text: viewModel.newGroupshiftNotifications, css: { 'label-success': viewModel.newGroupshiftNotifications() == 0, 'label-danger': viewModel.newGroupshiftNotifications() != 0 }"></span>
+                <span class="label label-default phenomenon-badge" data-toggle="modal" data-target="#groupshiftDialog" data-bind="text: viewModel.newGroupshiftNotifications, css: { 'label-success': viewModel.newGroupshiftNotifications() == 0, 'label-danger': viewModel.newGroupshiftNotifications() != 0 }"></span>
                 <div class="modal fade" id="groupshiftDialog" role="dialog">
                     <div class="modal-dialog">
                         <!-- Modal content-->
@@ -184,15 +210,15 @@
                             <div class="modal-body">
                                 <table class="table table-condensed">
                                     <thead>
-                                        <th>Property</th>
-                                        <th>Users</th>
+                                    <th>Property</th>
+                                    <th>Users</th>
                                     </thead>
                                     <tbody data-bind="foreach: viewModel.GroupshiftProperties">
                                         <tr>
                                             <td data-bind="text: Key" class="td-top"></td>
                                             <td>
                                                 <!-- ko foreach: Value -->
-                                                <div data-bind="text: $data"><br/></div>
+                                                <div data-bind="text: $data"><br /></div>
                                                 <!-- /ko -->
                                             </td>
                                         </tr>
@@ -211,7 +237,7 @@
             @*Group Trustworthiness*@
             <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() == 'O'">
                 <a class="phenomenon-link" data-toggle="modal" data-target="#groupTWDialog">Group Trustworthiness</a>
-                <span class="label label-default phenomenon-badge" data-bind="text: viewModel.GroupTrustworthiness().length, css: { 'label-success': viewModel.GroupTrustworthiness().length == 0, 'label-danger': viewModel.GroupTrustworthiness().length != 0 }"></span>
+                <span class="label label-default phenomenon-badge" data-toggle="modal" data-target="#groupTWDialog" data-bind="text: viewModel.GroupTrustworthiness().length, css: { 'label-success': viewModel.GroupTrustworthiness().length == 0, 'label-danger': viewModel.GroupTrustworthiness().length != 0 }"></span>
                 <div class="modal fade" id="groupTWDialog" role="dialog">
                     <div class="modal-dialog">
                         <!-- Modal content-->
@@ -244,7 +270,7 @@
             @*Decision Trustworthiness*@
             <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() == 'O'">
                 <a class="phenomenon-link" data-toggle="modal" data-target="#decisionTWDialog">Decision Trustworthiness</a>
-                <span class="label label-default phenomenon-badge" data-bind="text: viewModel.DecisionTrustworthiness().length, css: { 'label-success': viewModel.DecisionTrustworthiness().length == 0, 'label-danger': viewModel.DecisionTrustworthiness().length != 0 }"></span>
+                <span class="label label-default phenomenon-badge" data-toggle="modal" data-target="#decisionTWDialog" data-bind="text: viewModel.DecisionTrustworthiness().length, css: { 'label-success': viewModel.DecisionTrustworthiness().length == 0, 'label-danger': viewModel.DecisionTrustworthiness().length != 0 }"></span>
                 <div class="modal fade" id="decisionTWDialog" role="dialog">
                     <div class="modal-dialog">
                         <!-- Modal content-->
@@ -273,43 +299,23 @@
                     </div>
                 </div>
             </div>
-
-            @*make groupthink notification only for contributors*@
-            <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() == 'C'">
-                <a class="phenomenon-link" data-toggle="modal" data-target="#makeGTNotifDialog">Send Groupthink notification</a>
-                <div class="modal fade" id="makeGTNotifDialog" role="dialog">
-                    <div class="modal-dialog">
-
-                        <!-- Modal content-->
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Send Groupthink notification to issue owner</h4>
-                            </div>
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <textarea id="groupthinkText" class="form-control textarea-desc" rows="5"></textarea>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button id="groupthinkMake" onclick="onGroupthinkMakeClick()" class="btn btn-success">Send notification</button>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
+        </div>
+        <!-- /ko -->
+        <div class="phenomenon">
+            <div class="row phenomenon-header" id="gaind">
+                <label>Group Activity Indicators</label>
             </div>
-            
+
             @*unread core infos*@
             <div class="row phenomenon-elem">
                 <a class="phenomenon-link" data-toggle="modal" data-target="#myInfosToReadDialog">Unread core Infos</a>
-                <span class="label label-default phenomenon-badge" data-bind="text: viewModel.UnreadCoreInfos, css: { 'label-success': viewModel.UnreadCoreInfos() == 0, 'label-danger': viewModel.UnreadCoreInfos() != 0 }"></span>
+                <span class="label label-default phenomenon-badge" data-toggle="modal" data-target="#myInfosToReadDialog" data-bind="text: viewModel.UnreadCoreInfos, css: { 'label-success': viewModel.UnreadCoreInfos() == 0, 'label-danger': viewModel.UnreadCoreInfos() != 0 }"></span>
             </div>
 
             @*group activity*@
             <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() == 'O'">
                 <a class="phenomenon-link" data-toggle="modal" data-target="#groupActivityDialog" data-bind="text: 'Group Activity'"></a>
-                <span class="label label-default phenomenon-badge" data-bind="text: viewModel.GroupActivityCount"></span>
+                <span class="label label-default phenomenon-badge" data-toggle="modal" data-target="#groupActivityDialog" data-bind="text: viewModel.GroupActivityCount"></span>
                 <div class="modal fade" id="groupActivityDialog" role="dialog">
                     <div class="modal-dialog">
                         <!-- Modal content-->
@@ -344,41 +350,41 @@
             @*Activity Index*@
             @*Best user in changes*@
             <!-- ko if: viewModel.AccessRight() != 'O' && viewModel.Issue.Id() != -1 -->
-                <div class="row phenomenon-elem" data-bind="text: 'Most changes: ' + viewModel.UserWithMostChanges.Key() + ' ' + viewModel.UserWithMostChanges.Value()"></div>
+            <div class="row phenomenon-elem" data-bind="text: 'Most changes: ' + viewModel.UserWithMostChanges.Key() + ' ' + viewModel.UserWithMostChanges.Value()"></div>
             <!-- /ko -->
             <!-- ko if: viewModel.AccessRight() == 'O' && viewModel.Issue.Id() != -1-->
-                <div class="row phenomenon-elem">
-                    <a class="phenomenon-link" data-toggle="modal" data-target="#allChangesDialog" data-bind="text: 'Most changes: ' + viewModel.UserWithMostChanges.Key() + ' ' + viewModel.UserWithMostChanges.Value()"></a>
-                    <div class="modal fade" id="allChangesDialog" role="dialog">
-                        <div class="modal-dialog">
-                            <!-- Modal content-->
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">Change Activity of Users</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <table class="table">
-                                        <thead>
-                                            <th>User</th>
-                                            <th>Changes</th>
-                                        </thead>
-                                        <tbody data-bind="foreach: viewModel.AllUserChangeCounts">
-                                            <tr>
-                                                <td data-bind="text: Key.Name"></td>
-                                                <td data-bind="text: Value"></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="modal-footer">
-
-                                </div>
+            <div class="row phenomenon-elem">
+                <a class="phenomenon-link" data-toggle="modal" data-target="#allChangesDialog" data-bind="text: 'Most changes: ' + viewModel.UserWithMostChanges.Key() + ' ' + viewModel.UserWithMostChanges.Value()"></a>
+                <div class="modal fade" id="allChangesDialog" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Change Activity of Users</h4>
                             </div>
+                            <div class="modal-body">
+                                <table class="table">
+                                    <thead>
+                                    <th>User</th>
+                                    <th>Changes</th>
+                                    </thead>
+                                    <tbody data-bind="foreach: viewModel.AllUserChangeCounts">
+                                        <tr>
+                                            <td data-bind="text: Key.Name"></td>
+                                            <td data-bind="text: Value"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
 
+                            </div>
                         </div>
+
                     </div>
                 </div>
+            </div>
             <!-- /ko -->
             @*Me in Changes*@
             <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() != 'V' && viewModel.Issue.Id() != -1">
@@ -394,17 +400,17 @@
                             <div class="modal-body">
                                 <table class="table">
                                     <thead>
-                                        <th>change date</th>
-                                        <th>Action</th>
+                                    <th>change date</th>
+                                    <th>Action</th>
                                     </thead>
                                     <tbody data-bind="foreach: viewModel.UserChanges">
-                                        <td data-bind="text: moment(ChangeDate()).format('DD.MM.YY HH:mm:ss')"></td>
-                                        <td data-bind="text: Action"></td>
+                                    <td data-bind="text: moment(ChangeDate()).format('DD.MM.YY HH:mm:ss')"></td>
+                                    <td data-bind="text: Action"></td>
                                     </tbody>
                                 </table>
                             </div>
                             <div class="modal-footer">
-                                
+
                             </div>
                         </div>
                     </div>
@@ -424,8 +430,8 @@
                             <div class="modal-body">
                                 <table class="table">
                                     <thead>
-                                        <th>Information type</th>
-                                        <th>Unseen items</th>
+                                    <th>Information type</th>
+                                    <th>Unseen items</th>
                                     </thead>
                                     <tbody data-bind="foreach: viewModel.UnreadInformation">
                                         <tr>
@@ -443,53 +449,94 @@
                     </div>
                 </div>
             </div>
-
-        </div> <!-- phenomenon end-->
-        
-        <!-- last changes -->
-        <div class="lastchange" data-bind="if: viewModel.Issue.Id() > 0">
-            <a class="md-link" data-toggle="modal" data-target="#lastChangesDialog" data-bind="text: viewModel.LastChange.Name() + ' ' + moment(viewModel.LastChange.ChangeDate()).format('DD.MM.YY HH:mm') + ': ' + viewModel.LastChange.Action()"></a>
-            <div class="modal fade" id="lastChangesDialog" role="dialog">
-                <div class="modal-dialog">
-                    <!-- Modal content-->
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Last 100 Changes</h4>
-                        </div>
-                        <div class="modal-body">
-                            <table class="table">
-                                <thead>
+            
+            <!-- last changes -->
+            <div class="row phenomenon-elem" data-bind="if: viewModel.Issue.Id() > 0">
+                <a class="md-link" data-toggle="modal" data-target="#lastChangesDialog" data-bind="text: viewModel.LastChange.Name() + ' ' + moment(viewModel.LastChange.ChangeDate()).format('DD.MM.YY HH:mm') + ': ' + viewModel.LastChange.Action()"></a>
+                <div class="modal fade" id="lastChangesDialog" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Last 100 Changes</h4>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table">
+                                    <thead>
                                     <th>User</th>
                                     <th>Date</th>
                                     <th>Action</th>
-                                </thead>
-                                <tbody data-bind="foreach: viewModel.Last100Changes">
-                                    <tr>
-                                        <td data-bind="text: Name"></td>
-                                        <td data-bind="text: moment(ChangeDate()).format('DD.MM.YY HH:mm')"></td>
-                                        <td data-bind="text: Action"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="modal-footer">
+                                    </thead>
+                                    <tbody data-bind="foreach: viewModel.Last100Changes">
+                                        <tr>
+                                            <td data-bind="text: Name"></td>
+                                            <td data-bind="text: moment(ChangeDate()).format('DD.MM.YY HH:mm')"></td>
+                                            <td data-bind="text: Action"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
 
+                            </div>
                         </div>
+
                     </div>
-
                 </div>
             </div>
-        </div>
+        </div> <!-- phenomenon end-->
+
+        <!-- ko if: viewModel.AccessRight() == 'C' && viewModel.Issue.Status() != 'CLOSED' -->
+        <div class="phenomenon">
+            <div class="row phenomenon-header" id="groupaction">
+                <label>Group Action</label>
+            </div>
+
+            @*make groupthink notification only for contributors*@
+            <div class="row phenomenon-elem" data-bind="if: viewModel.AccessRight() == 'C'">
+                <a class="phenomenon-link" data-toggle="modal" data-target="#makeGTNotifDialog">Send Groupthink notification</a>
+                <div class="modal fade" id="makeGTNotifDialog" role="dialog">
+                    <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Send Groupthink notification to issue owner</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <textarea id="groupthinkText" class="form-control textarea-desc" rows="5"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button id="groupthinkMake" onclick="onGroupthinkMakeClick()" class="btn btn-success">Send notification</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+         </div>
+        <!-- /ko -->
 
         <div>
             <label for="tokenfield">Issue Tags</label>
-            <input type="text" class="form-control" id="tokenfield" data-bind="enable: viewModel.AccessRight() != 'V'" />
+            <div data-bind="if: viewModel.AccessRight() != 'V' && viewModel.Issue.Status() != 'CLOSED'">
+                <input type="text" class="form-control" id="tokenfield" />
+            </div>
+            <div data-bind="if: viewModel.AccessRight() == 'V' || viewModel.Issue.Status() == 'CLOSED'">
+                <!-- ko foreach: viewModel.Issue.Tags-->
+                <a data-bind="text: Name" class="tag"></a>
+                <!-- /ko -->
+            </div>
         </div>
 
+        @*accessrights*@
         <div class="accessrights-div">
             <h4>Access Rights</h4>
-            <p data-bind="visible: viewModelJs.AccessRight == 'O'">
+            <p data-bind="visible: viewModelJs.AccessRight == 'O' && viewModel.Issue.Status() != 'CLOSED'">
                 <select class="selectpicker" data-live-search="true" id="selectUser" data-width="auto" data-bind="options: viewModel.AllUsers, optionsText: 'Name', optionsValue: 'Id', visible: viewModel.AccessRight() == 'O'"></select>
                 <select class="selectpicker" id="selectRight" data-width="auto">
                     <option>Contributor</option>
@@ -549,7 +596,7 @@
                                 <span class="tooltiptext" data-bind="text: SelfAssessmentDescr"></span>
                             </div>
                         </td>
-                        <td><a class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeRight, visible: viewModelJs.AccessRight == 'O' && UserId() != viewModel.UserId()">Remove</a></td>
+                        <td><a class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeRight, visible: viewModelJs.AccessRight == 'O' && UserId() != viewModel.UserId() && viewModel.Issue.Status() != 'CLOSED'">Remove</a></td>
                     </tr>
                 </tbody>
             </table>
@@ -560,9 +607,10 @@
 
 <div class="row">
     <button id="save" type="button" class="btn btn-primary" onclick="javascript: onSaveClick()" data-bind="visible: viewModelJs.AccessRight == 'O' || viewModelJs.AccessRight == 'C' && viewModel.Issue.Status() != 'FINISHED' , enable: viewModel.titleEmpty">Save</button>
-    <button id="nextstage" type="button" class="btn btn-primary" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.AccessRight() == 'O' && viewModel.Issue.Status() != 'FINISHED', enable: viewModelJs.Issue.Id != -1">Next Stage</button>
+    <button id="nextstage" type="button" class="btn btn-primary" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.AccessRight() == 'O' && viewModel.Issue.Status() != 'FINISHED' && viewModel.Issue.Status() != 'CLOSED', enable: viewModelJs.Issue.Id != -1">Next Stage</button>
     <button id="showCommentsBtn" class="btn btn-primary btn-md accordion-toggle" data-toggle="collapse" data-target=".comment" data-bind="enable: viewModelJs.Issue.Id != -1" onclick="onShowCommentsBtnClick('Issue')">Show comments</button>
     <button id="delete" type="button" class="btn btn-danger" onclick="javascript: onDeleteClick()" data-bind="visible: viewModelJs.AccessRight == 'O', enable: viewModelJs.Issue.Id != -1">Delete</button>
+    <button id="closebtn" type="button" class="btn btn-primary" onclick="javascript: onNextStageClick()" data-bind="text: viewModel.CloseBtnText, visible: viewModel.AccessRight() == 'O' && (viewModel.Issue.Status() == 'FINISHED' || viewModel.Issue.Status() == 'CLOSED'), enable: viewModelJs.Issue.Id != -1"></button>
 </div>
 
 <h4 class="comment collapse in" data-bind="text: 'Comments: ' + viewModel.Comments().length"></h4> 
@@ -592,7 +640,7 @@
 </div>
 <div class="row collapse comment">
     <div class="form-inline">
-        <button class="btn btn-primary" id="addCommentBtn" onClick="onAddCommentClick()">Add</button>
+        <button class="btn btn-primary" id="addCommentBtn" onClick="onAddCommentClick()" data-bind="visible: viewModel.Issue.Status() != 'CLOSED'">Add</button>
         <button id="hideCommentsBtn" class="btn btn-primary btn-md accordion-toggle" data-toggle="collapse" data-target=".comment">Hide comments</button>
         <div class="checkbox">
             <label id="anonymCommentLabel">
@@ -707,11 +755,44 @@
 
     //phenomenon dashboard VM end
 
+    //render status
+    if (viewModelJs.Issue.Status == 'CREATING')
+        viewModel.Issue.StatusRd = ko.observable('Define')
+    else if (viewModelJs.Issue.Status == 'BRAINSTORMING1' ||  viewModelJs.Issue.Status == 'BRAINSTORMING2')
+        viewModel.Issue.StatusRd = ko.observable('Prepare')
+    else if (viewModelJs.Issue.Status == 'EVALUATING')
+        viewModel.Issue.StatusRd = ko.observable('Evaluate')
+    else if (viewModelJs.Issue.Status == 'DECIDING')
+        viewModel.Issue.StatusRd = ko.observable('Decide')
+    else if (viewModelJs.Issue.Status == 'FINISHED')
+        viewModel.Issue.StatusRd = ko.observable('Decided')
+    else if (viewModelJs.Issue.Status == 'CLOSED')
+        viewModel.Issue.StatusRd = ko.observable('Closed')
+    
+    //close button text
+    viewModel.CloseBtnText = ko.computed(function() {
+        if (viewModel.Issue.Status() == 'FINISHED')
+            return 'Close Issue'
+        else if (viewModel.Issue.Status() == 'CLOSED')
+            return 'Open Issue'
+        else
+            return ''
+    })
+
+    //methodology text
+    viewModel.Methodology = ko.computed(function() {
+        if (viewModel.Issue.Setting() == 'A')
+            return 'Setting A'
+        else if (viewModel.Issue.Setting() == 'B')
+            return 'Settin B (AHP)'
+    })
+
     ko.applyBindings(viewModel);
 
 
     renderMenues()
     makePermissions()
+
 
     //event when delete accessright is pressed
     //remove right

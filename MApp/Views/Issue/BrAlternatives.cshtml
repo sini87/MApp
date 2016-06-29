@@ -18,7 +18,7 @@
         </thead>
         <tbody data-bind="foreach: viewModel.Alternatives">
             <tr>
-                @if (Model.AccessRight != "V")
+                @if (Model.AccessRight != "V" && Model.Issue.Status != "CLOSED")
                 {
                     <td><input data-bind="textInput: Name" class="form-control textbox-name" /></td>
                 }
@@ -27,7 +27,7 @@
                     <td data-bind="text: Name"></td>
                 }
                 <td>
-                    @if (Model.AccessRight != "V")
+                    @if (Model.AccessRight != "V" && Model.Issue.Status != "CLOSED")
                     {
                         <textarea data-bind="textInput: Description" class="form-control textarea-desc"></textarea>
                     }
@@ -83,7 +83,7 @@
                     </div>
 
                 </td>
-                <td align="center" class="commenttable-btncol">
+                <td align="center" class="commenttable-btncol" data-bind="if: viewModel.Issue.Status() != 'CLOSED'">
                     <div data-bind="if: viewModel.AccessRight() != 'V' && viewModel.Issue.Status() != 'FINISHED' && viewModel.Issue.Status() != 'DECIDING' && viewModel.Issue.Status() != 'EVALUATING'">
                         <a class="btn btn-danger btn-xs hyperlink-btn" href="#" data-bind="click: $parent.removeAlternative">Remove</a>
                     </div>
@@ -101,7 +101,7 @@
     <button id="addNewAlternative" class="btn btn-primary btn-md" onclick="onAddNewAlternativeClick()" data-bind="visible: viewModel.Issue.Status() =='BRAINSTORMING1' || viewModel.Issue.Status() =='BRAINSTORMING2'">Add new Alternative</button>
     <button id="save" class="btn btn-primary btn-md" onclick="onSaveClick()" data-bind="visible: viewModel.Issue.Status() =='BRAINSTORMING1' || viewModel.Issue.Status() =='BRAINSTORMING2'">Save</button>
 }
-@if (Model.AccessRight == "O")
+@if (Model.AccessRight == "O" && Model.Issue.Status != "CLOSED")
 {
     <button id="nextstage" type="button" class="btn btn-primary" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.Issue.Status() != 'FINISHED' && viewModel.Issue.Status() != 'DECIDING' && viewModel.Issue.Status() != 'EVALUATING'">Next Stage</button>
 }

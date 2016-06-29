@@ -83,7 +83,7 @@
                     </div>
                     
                 </td>
-                <td align="center" class="commenttable-btncol">
+                <td align="center" class="commenttable-btncol" data-bind="if: viewModel.Issue.Status() != 'CLOSED'">
                     <button class="btn btn-danger btn-xs" href="#" data-bind="click: $parent.removeCriterion, visible: viewModel.AccessRight() != 'V', visible: viewModel.Issue.Status() =='BRAINSTORMING1'">Remove</button>
                     <div data-bind="if: Id() > 0">
                         <button class="btn btn-primary btn-xs" data-toggle="modal" data-bind="attr: { 'data-target': '#commentModal' + Id() }">Add new comment</button>

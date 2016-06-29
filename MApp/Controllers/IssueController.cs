@@ -190,10 +190,20 @@ namespace MApp.Web.Controllers
                 context.Clients.All.nextStage(issueId, "DECIDING", userId);
                 return RedirectToAction("Decision", "Issue", new { issueId = issueId });
             }
-            else
+            else if (st == "DECIDING")
             {
                 context.Clients.All.nextStage(issueId, "FINISHED", userId);
                 return RedirectToAction("Index", "Issue");
+            }
+            else if (st == "FINISHED")
+            {
+                context.Clients.All.nextStage(issueId, "CLOSED", userId);
+                return RedirectToAction("Index", "Issue");
+            }
+            else
+            {
+                context.Clients.All.nextStage(issueId, "FINISHED", userId);
+                return RedirectToAction("Creating", "Issue", new { issueId = issueId });
             }
 
         }

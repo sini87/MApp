@@ -98,7 +98,7 @@ namespace MApp.Middleware
             List<UserShortModel> userList = ic.GetAllUsers();
             UserShortModel usm;
 
-            if (uim.Issue.Status == "FINISHED")
+            if (uim.Issue.Status == "FINISHED" || uim.Issue.Status == "CLOSED")
             {
                 uim.Rating = ReviewOp.GetReviewRating(uim.Issue.Id);
                 uim.Reviews = rm.ToModelList(ReviewOp.GetIssueReviews(uim.Issue.Id), rm);

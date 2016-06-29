@@ -26,26 +26,29 @@
             <td><a data-bind="text: Issue.Title, attr: { href: '/Issue/Creating?issueId=' + Issue.Id() }"></a></td>
             <td class="td-center-top">
                 <!-- ko if: Issue.Status() == 'CREATING' -->
-                    <a data-bind="attr: { href: '/Issue/Creating?issueId=' + Issue.Id() }">Creating</a> 
+                    <a data-bind="attr: { href: '/Issue/Creating?issueId=' + Issue.Id() }">Define</a> 
                 <!-- /ko -->
                 <!-- ko if: Issue.Status() == 'BRAINSTORMING1' -->
-                    <p>Brainstorming</p>
+                    <p>Prepare</p>
                     <a data-bind="attr: { href: '/Issue/BrCriteria?issueId=' + Issue.Id() }">Criteria</a>
                     <a data-bind="attr: { href: '/Issue/BrAlternatives?issueId=' + Issue.Id() }">Alternatives</a>
                 <!-- /ko -->
                 <!-- ko if: Issue.Status() == 'BRAINSTORMING2' -->
-                <p>Brainstorming</p>
-                    <a data-bind="attr: { href: '/Issue/CriteriaRating?issueId=' + Issue.Id() }">Criteria Weighting</a>
-                    <a data-bind="attr: { href: '/Issue/BrAlternatives?issueId=' + Issue.Id() }">Alternatives</a>
+                <p>Evaluate/Prepare</p>
+                    <a data-bind="attr: { href: '/Issue/CriteriaRating?issueId=' + Issue.Id() }">Evaluate Criteria</a>
+                    <a data-bind="attr: { href: '/Issue/BrAlternatives?issueId=' + Issue.Id() }">Prepare Alternatives</a>
                 <!-- /ko -->
                 <!-- ko if: Issue.Status() == 'EVALUATING' -->
-                    <a data-bind="attr: { href: '/Issue/Evaluation?issueId=' + Issue.Id() }">Evaluating</a>
+                    <a data-bind="attr: { href: '/Issue/Evaluation?issueId=' + Issue.Id() }">Evaluate Alternatives</a>
                 <!-- /ko -->
                 <!-- ko if: Issue.Status() == 'DECIDING' -->
-                    <a data-bind="attr: { href: '/Issue/Decision?issueId=' + Issue.Id() }">Deciding</a>
+                    <a data-bind="attr: { href: '/Issue/Decision?issueId=' + Issue.Id() }">Decide</a>
                 <!-- /ko -->
                 <!-- ko if: Issue.Status() == 'FINISHED' -->
-                    <a data-bind="attr: { href: '/Issue/Decision?issueId=' + Issue.Id() }">Finished</a>
+                    <a data-bind="attr: { href: '/Issue/Decision?issueId=' + Issue.Id() }">Decided</a>
+                <!-- /ko -->
+                <!-- ko if: Issue.Status() == 'CLOSED' -->
+                    <a data-bind="attr: { href: '/Issue/Creating?issueId=' + Issue.Id() }">Closed</a>
                 <!-- /ko -->
             </td>
             <td class="td-center-top">
@@ -69,15 +72,15 @@
                     <!-- /ko -->
                 </div>
             </td>
-            <!-- ko if: Issue.Status() != 'FINISHED' -->
+            <!-- ko if: Issue.Status() != 'CLOSED' && Issue.Status() != 'FINISHED' -->
                 <td data-bind="foreach: Issue.Tags">
                     <a data-bind="text: Name" class="tag"></a>
                 </td>
             <!-- /ko -->
-            <!-- ko if: Issue.Status() == 'FINISHED' -->
+            <!-- ko if: Issue.Status() == 'CLOSED' || Issue.Status() == 'FINISHED' -->
                 <td>
                     <span class="rateit" data-bind="attr: { 'data-rateit-value': Rating, 'data-target': '#ratingModal' + Issue.Id(), id: 'issueRating-rateit' + Issue.Id() }" data-toggle="modal" data-rateit-ispreset="true" data-rateit-readonly="true"></span>
-
+                    
                     <div class="modal fade" data-bind="attr: { id: 'ratingModal' + Issue.Id()}" role="dialog">
                         <div class="modal-dialog modal-lg">
                             <!-- Modal content-->
@@ -87,7 +90,7 @@
                                     <label class="modal-title h4md" data-bind="text: 'Rate ' + Issue.Title()"></label>
                                 </div>
                                 <div class="modal-body">
-                                    <table class="mdrating-table">
+                                    <table class="mdrating-table" data-bind="if: Issue.Status() == 'FINISHED'">
                                         <tr class="form-group">
                                             <td class="mdrating-table-td">
                                                 <label data-bind="attr: { for: 'rateit' + Issue.Id() }">Rating</label>
@@ -122,7 +125,7 @@
                                             <tr>
                                                 <td data-bind="text: UserName"></td>
                                                 <td>
-                                                    <span class="rateit" data-bind="attr: { 'data-rateit-value': Rating }" data-rateit-ispreset="true" data-rateit-readonly="true"></span>
+                                                    <span class="rateit" data-bind="attr: { 'data-rateit-value': Rating, id: 'rateit' + $parent.Issue.Id() + '-' + UserId() }" data-rateit-ispreset="true" data-rateit-readonly="true"></span>
                                                 </td>
                                                 <td data-bind="text: Explanation"></td>
                                             </tr>
@@ -130,7 +133,7 @@
                                     </table>
                                 </div>
                                 <div class="modal-footer">
-                                    <div class="form-inline">
+                                    <div class="form-inline" data-bind="if: Issue.Status() == 'FINISHED'">
                                         <button class="btn btn-primary" data-bind="attr: { Id: 'rateIssue' + Issue.Id(), onClick: 'onRateSaveClick(' + Issue.Id() + ')'}">Save</button>
                                     </div>
                                 </div>
@@ -195,7 +198,7 @@
         element.parentNode.removeChild(element);
         element = document.getElementById("creating-menu");
         element.parentNode.removeChild(element);
-        element = document.getElementById("evaluating-menu");
+        element = document.getElementById("evaldr-menu");
         element.parentNode.removeChild(element);
 
         //SignalR
@@ -318,11 +321,14 @@
                                 reviews()[j].Rating(reviewModel.Rating)
                                 reviews()[j].Explanation(reviewModel.Explanation)
                                 updated = true;
+                                $('#rateit' + reviewModel.IssueId + '-' + reviewModel.UserId).rateit('value',reviewModel.Rating)
                             }
                         }
                         if (!updated){
                             reviews.push(ko.mapping.fromJS(reviewModel))
+                            $('.rateit').rateit();
                         }
+
 
                         $.notify({
                             icon: 'glyphicon glyphicon-info-sign',
@@ -393,6 +399,7 @@
                                 var status =  dat.Issue.Status.toLowerCase();
                                 nText = dat.Issue.Title + ' moved to ' + status.charAt(0).toUpperCase() + status.slice(1);
                                 nTitle = 'Issue put to next stage!'
+                                $('.rateit').rateit();
                             }else{
                                 nText = dat.Issue.Title + ' was refreshed'
                                 nTitle = 'Issue refreshed!'

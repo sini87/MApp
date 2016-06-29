@@ -28,7 +28,7 @@
 <!-- ko if: viewModel.Issue.Status() == 'DECIDING' -->
 <h2 data-bind="text: viewModel.Issue.Title() + ' - Deciding'"></h2>
 <!-- /ko -->
-<!-- ko if: viewModel.Issue.Status() == 'FINISHED' -->
+<!-- ko if: viewModel.Issue.Status() == 'FINISHED' || viewModel.Issue.Status() == 'CLOSED' -->
 <h2 data-bind="text: viewModel.Issue.Title() + ' - Final Decision'"></h2>
 <!-- /ko -->
 <div class="some">
@@ -63,7 +63,7 @@
 
 
 
-@if (Model.AccessRight == "O")
+@if (Model.AccessRight == "O" && Model.Issue.Status != "CLOSED")
 {
 
 
@@ -95,7 +95,7 @@ else
     <!-- ko if: viewModel.Issue.Status() == 'DECIDING' -->
         <h3>Issue owner has made no decision yet</h3>
     <!-- /ko -->
-    <!-- ko if: viewModel.Issue.Status() == 'FINISHED' -->
+    <!-- ko if: viewModel.Issue.Status() == 'FINISHED' || viewModel.Issue.Status() == 'CLOSED' -->
         <h3 data-bind="text: 'Decision Made: ' + viewModel.decisionName()"></h3>
         <h4>Explanation:</h4>
         <br />
@@ -140,7 +140,7 @@ else
     var viewModel = ko.mapping.fromJS(viewModelJs);
 
     //for owner init CKEDITOR
-    if (viewModel.AccessRight() == 'O'){
+    if (viewModel.AccessRight() == 'O' && viewModel.Issue.Status() != 'CLOSED'){
         CKEDITOR.replace('explanationText',
         {
             customConfig: '/ckeditor/config.js'
@@ -173,7 +173,7 @@ else
     });
 
     viewModel.decisionName = ko.computed(function(){
-        if (viewModel.Issue.Status() == 'FINISHED'){
+        if (viewModel.Issue.Status() == 'FINISHED' || viewModel.Issue.Status() == 'CLOSED'){
             for (var i = 0; i < viewModel.Alternatives().length; i++){
                 if (viewModel.Decision.AlternativeId() == viewModel.Alternatives()[i].Id()){
                     return viewModel.Alternatives()[i].Name()

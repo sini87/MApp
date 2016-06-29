@@ -393,6 +393,7 @@ textarea {
     border-color: #CCCCCC;
     border-style: solid;
     border-width: 1px;
+    margin-bottom: 4px;
 }
 
 .phenomenon-badge-header {
@@ -402,7 +403,7 @@ textarea {
 }
 
 .phenomenon-header{
-    font-size: 16px;
+    font-size: 14px;
     padding-left: 25px;
     font-family: Verdana;
 }
@@ -411,6 +412,16 @@ textarea {
    display:block;
    float:right;
    margin:5px 25px 0 2px;
+}
+
+#gpind label,
+#gaind label,
+#groupaction label{
+    margin-bottom: 0px;
+}
+
+.phenomenon-badge:hover{
+    cursor: pointer !important;
 }
 
 .phenomenon-badge-backGreen{
@@ -662,4 +673,17 @@ textarea {
 .mdrating-table-td{
     padding: 8px;
     vertical-align: top;
+}
+
+.radiodisabled {
+    pointer-events: none !important;
+    opacity: 0.6;
+}
+
+.page-header {
+    margin: 10px 0px 5px !important;
+}
+
+.rateit:hover {
+    cursor: pointer;
 }

@@ -72,7 +72,7 @@ else
         <!-- Wrapper for slides -->
         <div class="carousel-inner">
             <div class="item active carouselitem">
-                <h3 class="carousel-first" data-bind="text: 'You have to make ' + viewModel.PairwiseRatings().length + ' comparisons'"></h3>
+                <h3 class="carousel-first" data-bind="text: viewModel.Issue.Status() == 'EVALUATING' ? 'You have to make ' + viewModel.PairwiseRatings().length + ' comparisons' : viewModel.PairwiseRatings().length + ' comparisons'"></h3>
             </div>
 
             <!-- ko foreach: viewModel.PairwiseRatings-->
@@ -115,7 +115,7 @@ else
                     }
 @if (Model.AccessRight == "O")
 {
-    <button id="nextstage" type="button" class="btn btn-primary" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.Issue.Status() != 'FINISHED' && viewModel.Issue.Status() != 'DECIDING'">Next Stage</button>
+    <button id="nextstage" type="button" class="btn btn-primary" onclick="javascript: onNextStageClick()" data-bind="visible: viewModel.Issue.Status() != 'FINISHED' && viewModel.Issue.Status() != 'DECIDING' && viewModel.Issue.Status() != 'CLOSED' && viewModel.Issue.Status() != 'FINISHED'">Next Stage</button>
 }
 
 <!-- ko if: viewModel.RatedUsers().length > 0 && viewModel.Issue.AnonymousPosting() == false -->

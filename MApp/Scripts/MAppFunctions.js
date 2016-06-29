@@ -2,8 +2,9 @@
     var issueId = viewModelJs.Issue.Id;
     var issue = viewModelJs.Issue
     doLinks(issue);
-
-    if (viewModel.Issue.Status() == "FINISHED") {
+    if (viewModel.Issue.Status() == "CLOSED") {
+        status = 7
+    }else if (viewModel.Issue.Status() == "FINISHED") {
         status = 6
     }else if (viewModel.Issue.Status() == "DECIDING") {
         status = 5
@@ -17,7 +18,7 @@
         status = 1
     }
 
-    if (status == 5 || status == 6) {
+    if (status == 5 || status == 6 || status == 7) {
         var menuElem = document.getElementById("finished-menu")
         menuElem.className = "enabled"
         document.getElementById("anchor-finished").addEventListener('click', function (e) {
@@ -25,7 +26,7 @@
         })
 
         document.getElementById('anchor-criteriafinding').innerText = 'Criteria'
-        document.getElementById('anchor-evaluating').innerText = 'Evaluation'
+        document.getElementById('anchor-evaluating').innerText = 'Alternatives'
     }
     if (status < 5) {
         document.getElementById('anchor-criteriafinding').innerText = 'Criteria'
@@ -54,6 +55,18 @@
         if ($("#anchor-criteriarating").hasClass('disabled')) {
             $("#anchor-criteriarating").removeClass('disabled')
         }
+
+        menuElem = document.getElementById("evaldr-menu")
+        if (!$("#anchor-evaluatingdr").hasClass('enabled')) {
+            !$("#anchor-evaluatingdr").addClass('enabled')
+        }
+        if ($("#anchor-evaluatingdr").hasClass('disabled')) {
+            $("#anchor-evaluatingdr").removeClass('disabled')
+        }
+        if (menuElem.className == "disabled") {
+            menuElem.className = "enabled";
+        }
+
         document.getElementById("anchor-criteriarating").addEventListener('click', function (e) {
             window.location.href = "/Issue/CriteriaRating?issueId=" + issueId
         })
@@ -67,7 +80,7 @@
         menuElem.className = "enabled"
         menuElem = document.getElementById("criteriafinding-menu")
         menuElem.className = "enabled"
-        document.getElementById('anchor-criteriafinding').innerText = 'Criteria Finding'
+        document.getElementById('anchor-criteriafinding').innerText = 'Criteria'
 
         menuElem = document.getElementById("brainstorming-menu")
         if (!$("#anchor-brainstorming").hasClass('enabled')) {
@@ -79,6 +92,10 @@
         if (menuElem.className == "disabled") {
             menuElem.className = "enabled";
         }
+
+        menuElem = document.getElementById("evaldr-menu")
+        menuElem.className = "disabled"
+        $("#anchor-evaluatingdr").addClass('disabled')
     }
     if (status < 2) {
         var menuElem = document.getElementById("alternatives-menu")
@@ -102,7 +119,7 @@ function doLinks(issue) {
     var menuElem = document.getElementById("creating-menu")
     for (i = 0; i < menuElem.childNodes.length; i++) {
         if (menuElem.childNodes[i].nodeName == "A") {
-            menuElem.childNodes[i].innerHTML = 'Issue';
+            menuElem.childNodes[i].innerHTML = 'Define';
             menuElem.childNodes[i].href = "/Issue/Creating?issueId=" + issueId;
             break;
         }
@@ -112,8 +129,8 @@ function doLinks(issue) {
     for (i = 0; i < menuElem.childNodes.length; i++) {
         if (menuElem.childNodes[i].nodeName == "A") {
             menuElem.childNodes[i].href = "/Issue/Decision?issueId=" + issueId;
-            if (issue.Status == "FINISHED")
-                menuElem.childNodes[i].innerHTML = 'Finished';
+            if (issue.Status == "FINISHED" || issue.Status == "CLOSED")
+                menuElem.childNodes[i].innerHTML = 'Decide';
             break;
         }
     }

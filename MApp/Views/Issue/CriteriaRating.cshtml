@@ -26,7 +26,7 @@
             <tbody data-bind="foreach: viewModel.UserWeights">
                 <tr>
                     <td><label data-bind="text: Name" /></td>
-                    <td><input data-bind="textInput: Weight, valueUpdate:'afterkeydown', attr: {id: 'CriterionWeight' + CriterionId}" type="number" min="0" max="100" class="form-control number-in-table" /></td>
+                    <td><input data-bind="textInput: Weight, valueUpdate:'afterkeydown', attr: {id: 'CriterionWeight' + CriterionId, disabled: viewModel.Issue.Status() != 'BRAINSTORMING2'}" type="number" min="0" max="100" class="form-control number-in-table" /></td>
                 </tr>
             </tbody>
             <tr>
@@ -62,7 +62,7 @@ else if (Model.Issue.Setting == "B")
         <!-- Wrapper for slides -->
         <div class="carousel-inner">
             <div class="item active carouselitem">
-                <h3 class="carousel-first" data-bind="text: 'You have to make ' + viewModel.PCCriteria().length + ' comparisons'"></h3>
+                <h3 class="carousel-first" data-bind="text: viewModel.Issue.Status() == 'BRAINSTORMING2' ? 'You have to make ' + viewModel.PCCriteria().length + ' comparisons' : viewModel.PCCriteria().length + ' comparisons'"></h3>
             </div>
 
             <!-- ko foreach: viewModel.PCCriteria-->
@@ -99,12 +99,12 @@ else
 @if (Model.Issue.Setting == "A")
 {
     <button id="save" class="btn btn-primary btn-md" onclick="onSaveClick()" data-bind="enable: viewModel.PercentSum() == 100, visible: viewModelJs.AccessRight != 'V' && viewModel.Issue.Status() == 'BRAINSTORMING2'">Save</button>
-    <button id="next" class="btn btn-primary btn-md" onclick="onNextStageClick()" data-bind="enable: viewModel.PercentSum() == 100, visible: viewModelJs.AccessRight == 'O' && viewModel.Issue.Status() != 'DECIDING' && viewModel.Issue.Status() != 'FINISHED'">Next Stage</button>
+    <button id="next" class="btn btn-primary btn-md" onclick="onNextStageClick()" data-bind="enable: viewModel.PercentSum() == 100, visible: viewModelJs.AccessRight == 'O' && viewModel.Issue.Status() != 'DECIDING' && viewModel.Issue.Status() != 'FINISHED' && viewModel.Issue.Status() != 'CLOSED'">Next Stage</button>
 }
 else if (Model.Issue.Setting == "B")
 {
     <button id="save" class="btn btn-primary btn-md" onclick="onSaveAHPClick()" data-bind="enable: slideViews() >= viewModel.PCCriteria().length, visible: viewModelJs.AccessRight != 'V' && viewModel.Issue.Status() == 'BRAINSTORMING2'">Save</button>
-    <button id="next" class="btn btn-primary btn-md" onclick="onNextStageClick()" data-bind="enable: slideViews() >= viewModel.PCCriteria().length, visible: viewModelJs.AccessRight == 'O' && viewModel.Issue.Status() != 'DECIDING' && viewModel.Issue.Status() != 'FINISHED'">Next Stage</button>
+    <button id="next" class="btn btn-primary btn-md" onclick="onNextStageClick()" data-bind="enable: slideViews() >= viewModel.PCCriteria().length, visible: viewModelJs.AccessRight == 'O' && viewModel.Issue.Status() != 'DECIDING' && viewModel.Issue.Status() != 'FINISHED' && viewModel.Issue.Status() != 'CLOSED'">Next Stage</button>
 }
 
 <!-- ko if: viewModel.VotedUsers().length == 0-->

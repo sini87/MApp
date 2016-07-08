@@ -1,12 +1,16 @@
 ﻿@using PerpetuumSoft.Knockout
 @model MApp.Web.ViewModel.BrAlternativesVM
 @{
-    ViewBag.Title = Model.Issue.Title + " - Alternatives Brainstorming";
+    ViewBag.Title = Model.Issue.Title + " - Define Alternatives";
     var ko = Html.CreateKnockoutContext();
 }
 <script src="~/ckeditor/ckeditor.js"></script>
 
-<h2><span data-bind="text: viewModel.Issue.Title"></span> - Alternatives Brainstorming</h2>
+<div>
+    <h3><span data-bind="text: viewModel.Issue.Title"></span></h3>
+    <p class="site-subheader">Define Alternatives</p>
+    <hr class="myhr" />
+</div>
 
 
     <table id="alternativesTable" class="table table-condensed table-nonfluid commenttable">

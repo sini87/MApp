@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace MApp.Middleware
 {
+    /// <summary>
+    /// middleware class for define issue view (Creating.cshtml)
+    /// </summary>
     public class IssueCreating
     {
         public List<UserShortModel> userList;
@@ -17,6 +20,11 @@ namespace MApp.Middleware
 
         }
 
+        /// <summary>
+        /// retuns issueModel by issue id
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <returns>IssueModel</returns>
         public IssueModel GetIssue(int issueId)
         {
             IssueModel im = new IssueModel();
@@ -46,18 +54,32 @@ namespace MApp.Middleware
             return im;
         }
 
+        /// <summary>
+        /// returns list of issue tags
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <returns>List of issue tags</returns>
         public List<TagModel> GetIssueTags(int issueId)
         {
             TagModel tm = new TagModel();
             return tm.ToModelList(TagOp.GetIssueTags(issueId),tm);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>all available tags</returns>
         public List<TagModel> GetAllTags()
         {
             TagModel tm = new TagModel();
             return tm.ToModelList(TagOp.GetAllTags(), tm);
         }
 
+        /// <summary>
+        /// returns list of all issues with short information (issue title and issue id)
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns>list of all issues</returns>
         public List<IssueShort> GetUserIssuesShort(int userId)
         {
             List<IssueShort> list = new List<IssueShort>();
@@ -68,6 +90,15 @@ namespace MApp.Middleware
             return list;
         }
 
+        /// <summary>
+        /// saves issue to DA-layer
+        /// preperations are don here
+        /// </summary>
+        /// <param name="issueModel"></param>
+        /// <param name="userId">user who is performing operation (owner)</param>
+        /// <param name="selfAssessmentValue">self assessment value of issue creator</param>
+        /// <param name="selfAssessmentDescr">self assessment description of isssue creator</param>
+        /// <returns></returns>
         public int SaveIssue(IssueModel issueModel, int userId, double selfAssessmentValue, string selfAssessmentDescr)
         {
             Issue issue = issueModel.ToEntity();
@@ -95,6 +126,13 @@ namespace MApp.Middleware
             }
         }
 
+        /// <summary>
+        /// updates tags of an issue
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="addedTags">list of new tags which were added to issue (if tag id == 0 then its a not existing tag which will be created)</param>
+        /// <param name="deletedTags">list of tags which have to be removed from issue</param>
+        /// <param name="userId">user who is performing this operation</param>
         public void UpdateIsseuTags(int issueId, List<TagModel> addedTags, List<TagModel> deletedTags, int userId)
         {
             TagModel tm = new TagModel();
@@ -164,6 +202,12 @@ namespace MApp.Middleware
             return list;
         }
 
+        /// <summary>
+        /// returns self assessment changes for issue
+        /// </summary>
+        /// <param name="userId">user who is performing operation</param>
+        /// <param name="issueId">issue id</param>
+        /// <returns>list of self assessment history entries</returns>
         private List<SelfAssessmentHEntry> GetSelfAssessmentHistoryForAr(int userId, int issueId)
         {
             List<SelfAssessmentHEntry> list = new List<SelfAssessmentHEntry>();
@@ -174,6 +218,12 @@ namespace MApp.Middleware
             return list;
         }
 
+        /// <summary>
+        /// gets access right for iser of issue
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user id</param>
+        /// <returns>AccessRightModel</returns>
         public AccessRightModel GetAccessRight(int issueId, int userId)
         {
             AccessRightModel arm = new AccessRightModel();
@@ -438,27 +488,56 @@ namespace MApp.Middleware
             return ChangesOp.GetUserChangesCount(issueId, userId);
         }
 
+        /// <summary>
+        /// gets all available information count of issue for user
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user id</param>
+        /// <returns>count of information</returns>
         public int GetInfoCountForUser(int issueId, int userId)
         {
             return InformationReadOp.GetInfosCount(issueId, userId);
         }
 
+        /// <summary>
+        /// returns count of read informaton of an user
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user id</param>
+        /// <returns>count of read informaton of an user</returns>
         public int GetReadInfoCountForUser(int issueId, int userId)
         {
             return InformationReadOp.GetReadInfosCount(issueId, userId);
         }
 
+        /// <summary>
+        /// gets unread information for an user
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user id</param>
+        /// <returns>list of key value pairs (key>: information type, value: unread count)</returns>
         public List<KeyValuePair<string,int>> GetUnreadInformation(int issueId, int userId)
         {
             return InformationReadOp.GetUnreadInfos(issueId, userId);
         }
 
+        /// <summary>
+        /// gets a list of user changes
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user id</param>
+        /// <returns>list of user changes</returns>
         public List<UserChangeModel> GetUserChanges(int issueId, int userId)
         {
             UserChangeModel ucm = new UserChangeModel();
             return ucm.ToModelList(ChangesOp.GetUserChanges(issueId, userId), ucm);
         }
 
+        /// <summary>
+        /// gets last change made to issue
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <returns>last change of issue</returns>
         public UserChangeModel GetLastChange(int issueId)
         {
             UserChangeModel ucm = new UserChangeModel();
@@ -471,6 +550,11 @@ namespace MApp.Middleware
             return ucm;
         }
 
+        /// <summary>
+        /// gets last 100 changes made to issue
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <returns>list of last 100 changes made to issue</returns>
         public List<UserChangeModel> GetLast100Changes(int issueId)
         {
             List<UserChangeModel> changesList;
@@ -489,16 +573,31 @@ namespace MApp.Middleware
             return changesList;
         }
 
+        /// <summary>
+        /// gets list of users with the count of changes made to issue
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <returns>list of key value pairs (key: user name, value: count of changes made to issue)</returns>
         public List<KeyValuePair<string,int>> GetGroupActivity(int issueId)
         {
             return ChangesOp.GetGroupActivity(issueId);
         }
 
+        /// <summary>
+        /// returns group turstworthiness
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <returns>list of user names</returns>
         public List<string>GetGroupTrustworthiness(int issueId)
         {
             return InformationReadOp.GetGroupTrustworthiness(issueId);
         }
 
+        /// <summary>
+        /// returns decision trustworthiness
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <returns>list of user names</returns>
         public List<string>GetDecisionTrustworthiness(int issueId)
         {
             return InformationReadOp.GetDecisionTrustwortiness(issueId);

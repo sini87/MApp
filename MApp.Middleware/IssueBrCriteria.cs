@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace MApp.Middleware
 {
     /// <summary>
-    /// Middleware class for BrCriteria view
+    /// Middleware class for define criteria view (BrCriteria.cshtml)
     /// </summary>
     public class IssueBrCriteria
     {
@@ -50,6 +50,12 @@ namespace MApp.Middleware
             CriterionOp.AddCriterions(addedList,userId);
         }
         
+        /// <summary>
+        /// gets criteria comments
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId">user who is performing operation</param>
+        /// <returns>list of criteria comments</returns>
         private List<CommentModel> GetComments(int issueId, int userId)
         {
             CommentModel cm = new CommentModel();

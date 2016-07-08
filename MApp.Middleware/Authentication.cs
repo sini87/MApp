@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace MApp.Middleware
 {
+    /// <summary>
+    /// middleware class for authentication controller
+    /// </summary>
     public class Authentication
     {
         public Authentication()
@@ -16,6 +19,11 @@ namespace MApp.Middleware
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userId">user id</param>
+        /// <returns>user profile model</returns>
         public ProfileModel GetUserProfileModel(int userId)
         {
             ProfileModel model = UserModel.DbEntityToProfilModel(UserOp.GetUser(userId));
@@ -25,6 +33,11 @@ namespace MApp.Middleware
             return model;
         }
 
+        /// <summary>
+        /// updates user profile
+        /// </summary>
+        /// <param name="profileModel">updated user prifile</param>
+        /// <returns>updated profile model</returns>
         public ProfileModel UpdateProfile(ProfileModel profileModel)
         {
             UserOp.UpdateUser(profileModel.GetUserEntity());
@@ -36,6 +49,12 @@ namespace MApp.Middleware
             return profileModel;
         }
 
+        /// <summary>
+        /// performs login
+        /// </summary>
+        /// <param name="email">user e-mail adress</param>
+        /// <param name="password">user password</param>
+        /// <returns>is login is successful then usermodel is returned else null</returns>
         public UserModel Login(string email, string password)
         {
             User user = UserOp.Login(email, password);

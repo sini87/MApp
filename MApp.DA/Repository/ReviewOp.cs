@@ -6,8 +6,16 @@ using System.Threading.Tasks;
 
 namespace MApp.DA.Repository
 {
+    /// <summary>
+    /// makes all operations on table review
+    /// </summary>
     public class ReviewOp
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <returns>review rating for an issue</returns>
         public static double GetReviewRating(int issueId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
@@ -22,6 +30,11 @@ namespace MApp.DA.Repository
             return rating;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <returns>list of user reviews for issue</returns>
         public static List<Review> GetIssueReviews(int issueId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
@@ -33,6 +46,10 @@ namespace MApp.DA.Repository
             return list;
         }
 
+        /// <summary>
+        /// saves user review for issue
+        /// </summary>
+        /// <param name="review"></param>
         public static void SaveIssueReview(Review review)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();

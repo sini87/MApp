@@ -8,8 +8,17 @@ using System.Threading.Tasks;
 
 namespace MApp.DA
 {
+    /// <summary>
+    /// used for decrypting string
+    /// http://kristianguevara.net/creating-your-asp-net-mvc-5-application-from-scratch-for-beginners-using-entity-framework-6-and-identity-with-crud-functionalities/
+    /// </summary>
     public class CustomDecrypt
     {
+        /// <summary>
+        /// decrypts a string
+        /// </summary>
+        /// <param name="cipherText">encrypted string</param>
+        /// <returns>decrypted string</returns>
         public static string Decrypt(string cipherText)
         {
             string EncryptionKey = "OJ1KBFZI56PO8NQ";

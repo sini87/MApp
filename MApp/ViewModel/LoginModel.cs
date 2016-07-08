@@ -7,6 +7,9 @@ using System.Web.Mvc;
 
 namespace MApp.Web.Models
 {
+    /// <summary>
+    /// login model used in login view
+    /// </summary>
     public class LoginModel
     {
         [Required]

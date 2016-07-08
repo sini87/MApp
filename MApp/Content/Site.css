@@ -687,3 +687,13 @@ textarea {
 .rateit:hover {
     cursor: pointer;
 }
+
+.myhr {
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+
+.site-subheader {
+    font-size: 16px;
+    font-weight: bold;
+}

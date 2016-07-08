@@ -11,15 +11,27 @@ using System.Web.Mvc;
 
 namespace MApp.Web.Controllers
 {
+    /// <summary>
+    /// MVC Controller class for login, logout and register new User
+    /// </summary>
     [AllowAnonymous]
     public class AuthController : Controller
     {
+        /// <summary>
+        /// returns login view (Auth/index.cshtml)
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public ActionResult Login()
         {
             return View();
         }
 
+        /// <summary>
+        /// Action with post request to perform login
+        /// </summary>
+        /// <param name="model">Login model with eMail & password</param>
+        /// <returns>if login successful then user will be redirected to issues ovewview, else returning to login view with LoginModel error </returns>
         [HttpPost]
         public ActionResult Login(LoginModel model)
         {
@@ -50,6 +62,10 @@ namespace MApp.Web.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// action to logout user
+        /// </summary>
+        /// <returns>redirection to Login view</returns>
         public ActionResult Logout()
         {
             var ctx = Request.GetOwinContext();
@@ -59,12 +75,21 @@ namespace MApp.Web.Controllers
             return RedirectToAction("Login", "Auth");
         }
 
+        /// <summary>
+        /// Action to Registration view
+        /// </summary>
+        /// <returns>registration view</returns>
         [HttpGet]
         public ActionResult Registration()
         {
             return View();
         }
 
+        /// <summary>
+        /// mvc post request to register User
+        /// </summary>
+        /// <param name="model">user model with required fields</param>
+        /// <returns>if registration is successfull user will be logged in an redirected to issues overview else return will be registration view with model errors</returns>
         [HttpPost]
         public ActionResult Registration(UserModel model)
         {

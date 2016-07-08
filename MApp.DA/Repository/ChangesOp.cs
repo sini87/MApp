@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace MApp.DA.Repository
 {
+    /// <summary>
+    /// class where all operation to changes view are made
+    /// </summary>
     public class ChangesOp
     {
         /// <summary>
@@ -94,6 +97,12 @@ namespace MApp.DA.Repository
             return cnt;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user id</param>
+        /// <returns>list of changes made from user for issue</returns>
         public static List<Changes_View> GetUserChanges(int issueId, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
@@ -119,6 +128,11 @@ namespace MApp.DA.Repository
             return list;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <returns>last change made to issue</returns>
         public static Changes_View LastChange(int issueId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();

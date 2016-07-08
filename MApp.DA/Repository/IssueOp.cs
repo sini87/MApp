@@ -76,7 +76,7 @@ namespace MApp.DA.Repository
         /// </summary>
         /// <param name="issue"></param>
         /// <param name="userId">user who is performing this operation</param>
-        /// <returns></returns>
+        /// <returns>true if update made</returns>
         public static int UpdateIssue(Issue issue, int userId)
         {
             Issue updateIssue;
@@ -188,7 +188,7 @@ namespace MApp.DA.Repository
         /// </summary>
         /// <param name="issue"></param>
         /// <param name="userId">user who is performing operation</param>
-        /// <returns></returns>
+        /// <returns>id of inserted issue</returns>
         public static int InsertIssue(Issue issue, int userId, double selfAssessmentValue, string selfAssessmentDescription)
         {
             int issueId = -1;
@@ -277,7 +277,7 @@ namespace MApp.DA.Repository
         /// <summary>
         /// returns root issues
         /// </summary>
-        /// <returns></returns>
+        /// <returns>root issue of an child issue</returns>
         public static List<Issue> RootIssues(int? issueId, ApplicationDBEntities ctx)
         {
             List<Issue> parentList = new List<Issue>();

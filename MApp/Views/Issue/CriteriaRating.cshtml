@@ -9,8 +9,10 @@
 <link href="~/Content/ion.rangeSlider.css" type="text/css" rel="stylesheet" />
 <link href="~/Content/ion.rangeSlider.skinNice.css" type="text/css" rel="stylesheet" />
 
-<div class="page-header">
-    <h3>Criteria Weighting</h3>
+<div>
+    <h3><span data-bind="text: viewModel.Issue.Title"></span></h3>
+    <p class="site-subheader">Weight Criteria</p>
+    <hr class="myhr" />
 </div>
 
 @if (Model.AccessRight != "V" && Model.Issue.Setting == "A")

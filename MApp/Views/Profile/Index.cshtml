@@ -1,7 +1,7 @@
 ﻿@using PerpetuumSoft.Knockout
 @model MApp.Middleware.Models.ProfileModel
 @{
-    ViewBag.Title = "Userprofile - " + ViewData["Name"];
+    ViewBag.Title = ViewData["Name"] + " - Userprofile";
     var ko = Html.CreateKnockoutContext();
 }
 <body>
@@ -47,6 +47,10 @@
     element = document.getElementById("creating-menu");
     element.parentNode.removeChild(element);
     element = document.getElementById("evaluating-menu");
+    element.parentNode.removeChild(element);
+    element = document.getElementById("criteriarating-menu");
+    element.parentNode.removeChild(element);
+    element = document.getElementById("evaldr-menu");
     element.parentNode.removeChild(element);
 
     function onSaveClick() {

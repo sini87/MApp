@@ -16,8 +16,15 @@ using System.Web.Mvc;
 
 namespace MApp.Web.Controllers
 {
+    /// <summary>
+    /// MVC Controller Class for issue view/actions
+    /// </summary>
     public class IssueController : Controller
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>returns UserId from claims identity </returns>
         private int GetUserIdFromClaim()
         {
             var claimsIdentity = User.Identity as ClaimsIdentity;
@@ -25,6 +32,10 @@ namespace MApp.Web.Controllers
             return userId;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>returns user name form claims identity</returns>
         private string GetUserNameFromClaim()
         {
             var claimsIdentity = User.Identity as ClaimsIdentity;
@@ -32,7 +43,10 @@ namespace MApp.Web.Controllers
             return username;
         }
 
-        // GET: Issue
+        /// <summary>
+        /// MVC get Action for Issue Index
+        /// </summary>
+        /// <returns>Issue Index (issues overview) view</returns>
         public ActionResult Index()
         {
             int userId = GetUserIdFromClaim();
@@ -41,7 +55,11 @@ namespace MApp.Web.Controllers
             return View(kvp);
         }
 
-
+        /// <summary>
+        /// MVC get action for define issue view (Creating.cshtml)
+        /// </summary>
+        /// <param name="issueId">usually issue id of issue to be shown, but if issue id equals -1 then view for new issue is prepared</param>
+        /// <returns>define issue vies (Creating.cshtml)</returns>
         public ActionResult Creating(int issueId)
         {
             CreatingVM vm = new CreatingVM();
@@ -54,6 +72,7 @@ namespace MApp.Web.Controllers
             vm.AllUsers = ic.GetAllUsers();
             vm.UserId = userId;
 
+            //existing issue
             if (issueId != -1)
             {
                 vm.Issue = ic.GetIssue(issueId);
@@ -65,20 +84,20 @@ namespace MApp.Web.Controllers
                 vm.Comments = ic.GetIssueComments(issueId, userId);
                 vm.GroupthinkNotifications = ic.GetGroupthinkNotifications(issueId, userId);
                 vm.GroupshiftProperties = ic.GetGropshiftProperties(issueId);
-                if (ic.MarkAsRead(issueId, userId))
+                if (ic.MarkAsRead(issueId, userId)) //try to makr issue as read for user
                 {
                     var ctx2 = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
                     ctx2.Clients.All.updateActivity(issueId, userId);
                 }
                 vm.UserWithMostChanges = ic.UserWithMostChanges(issueId);
-                if (vm.AccessRight == "O")
+                if (vm.AccessRight == "O") // specific inits for issue owner
                 {
                     vm.AllUserChangeCounts = ic.GetAllChangeCountsByUser(issueId);
                     vm.GroupActivity = ic.GetGroupActivity(issueId);
                     vm.GroupTrustworthiness = ic.GetGroupTrustworthiness(issueId);
                     vm.DecisionTrustworthiness = ic.GetDecisionTrustworthiness(issueId);
                 }
-                else
+                else // inits for other users
                 {
                     vm.AllUserChangeCounts = new List<KeyValuePair<UserShortModel, int>>();
                     vm.GroupActivity = new List<KeyValuePair<string, int>>();
@@ -93,7 +112,7 @@ namespace MApp.Web.Controllers
                 vm.LastChange = ic.GetLastChange(issueId);
                 vm.Last100Changes = ic.GetLast100Changes(issueId);
             }
-            else
+            else // new issue
             {
                 vm.Issue = new IssueModel();
                 vm.Issue.Status = "CREATING";
@@ -130,6 +149,12 @@ namespace MApp.Web.Controllers
             return View(vm);
         }
 
+        /// <summary>
+        /// MVC post action for define issue view (Creating.cshtml)
+        /// creates new issue or saves changes for issue
+        /// </summary>
+        /// <param name="creatingVM">view model of define issue view (Crating view)</param>
+        /// <returns>define issue view (Creating.cshml) with the made changes</returns>
         [HttpPost]
         public ActionResult Creating([FromJson] CreatingVM creatingVM)
         {
@@ -154,6 +179,12 @@ namespace MApp.Web.Controllers
             return RedirectToAction("Creating", "Issue", new { issueId = creatingVM.Issue.Id });
         }
 
+        /// <summary>
+        /// MVC Post Action to delet a issue
+        /// User will be to redirected to issues ovewview
+        /// </summary>
+        /// <param name="issueId">Issue Id of the deleteing issue</param>
+        /// <returns>issues overview redirection view</returns>
         [HttpPost]
         public ActionResult DeleteIssue(int issueId)
         {
@@ -162,6 +193,12 @@ namespace MApp.Web.Controllers
             return RedirectToAction("Index", "Issue");
         }
 
+        /// <summary>
+        /// MVC post method to put issue to next stage
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="status">current issue status</param>
+        /// <returns>regarding next status view</returns>
         [HttpPost]
         public ActionResult NextStage(int issueId, string status)
         {
@@ -208,6 +245,11 @@ namespace MApp.Web.Controllers
 
         }
 
+        /// <summary>
+        /// MVC get method for prepare criteria view (BrCriteria.cshtml)
+        /// </summary>
+        /// <param name="issueId">Issue Id</param>
+        /// <returns>prepare criteria view (BrCriteria.cshtml)</returns>
         [HttpGet]
         public ActionResult BrCriteria(int issueId)
         {
@@ -231,6 +273,13 @@ namespace MApp.Web.Controllers
             return View(viewModel);
         }
 
+        /// <summary>
+        /// MVC post method for prepare criteria view
+        /// saves the changes made to issue criteria, 
+        /// this includes adding new criteria, deleting criteria and updating criteria
+        /// </summary>
+        /// <param name="brCriteriaVM">viewModel whith regarding criteria informations</param>
+        /// <returns>updated prepare criteria view (BrCriteria.cshtml)</returns>
         [HttpPost]
         public ActionResult BrCriteria([FromJson]BrCriteriaVM brCriteriaVM)
         {
@@ -252,6 +301,11 @@ namespace MApp.Web.Controllers
             return View(brCriteriaVM);
         }
 
+        /// <summary>
+        /// MVC get method for prepare alternatives view (BrAlternatives.cshtml)
+        /// </summary>
+        /// <param name="issueId">Issue Id</param>
+        /// <returns>prepare alternatives view (BrAlternatives.cshtml)</returns>
         [HttpGet]
         public ActionResult BrAlternatives(int issueId)
         {
@@ -275,6 +329,13 @@ namespace MApp.Web.Controllers
             return View(vm);
         }
 
+        /// <summary>
+        /// MVC post method for prepare alternatives view
+        /// saves the changes made to issue alternatives 
+        /// this includes adding new alternatives, deleting alternatives and updating alternatives
+        /// </summary>
+        /// <param name="brAlternativesVM">viewModel whith regarding alternatives informations</param>
+        /// <returns>updated prepare alternatives view (BrAlternatives.cshtml)</returns>
         [HttpPost]
         public ActionResult BrAlternatives([FromJson] BrAlternativesVM brAlternativesVM)
         {
@@ -297,6 +358,11 @@ namespace MApp.Web.Controllers
             return View(brAlternativesVM);
         }
 
+        /// <summary>
+        /// MVC get method for criteria weighting view (CriteriaRating.cshtml)
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <returns>criteria weighting view (CriteraRating.cshtml)</returns>
         public ActionResult CriteriaRating(int issueId)
         {
             CriteriaWeightsVM vm = new CriteriaWeightsVM();
@@ -331,6 +397,12 @@ namespace MApp.Web.Controllers
             return View(vm);
         }
 
+        /// <summary>
+        /// MVC post method for criteria weighting view (CriteriaRating.cshtml)
+        /// criteria weighting will be saved 
+        /// </summary>
+        /// <param name="criteriaWeightsVM">viewModel whith regarding criteria weight informations</param>
+        /// <returns>updated criteria weight view (CriteriaRating.cshtml)</returns>
         [HttpPost]
         public ActionResult CriteriaRating([FromJson] CriteriaWeightsVM criteriaWeightsVM)
         {
@@ -352,6 +424,11 @@ namespace MApp.Web.Controllers
             return View(criteriaWeightsVM);
         }
 
+        /// <summary>
+        /// MVC get method for alternatives evaluation (Evaulation.cshtml)
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <returns>alternatives evaluation view (Evaulation.cshtml)</returns>
         public ActionResult Evaluation(int issueId)
         {
             IssueCreating ic = new IssueCreating();
@@ -383,6 +460,12 @@ namespace MApp.Web.Controllers
             return View(evm);
         }
 
+        /// <summary>
+        /// MVC post method for alternatives evaluation view (Evaluation.cshtml)
+        /// alternatives evaluation will be saved 
+        /// </summary>
+        /// <param name="evaluationVM">viewModel whith regarding alternatives evaluation informations</param>
+        /// <returns>updated alternatives evaluation view (Evaluation.cshtml)</returns>
         [HttpPost]
         public ActionResult Evaluation([FromJson] EvaluationVM evaluationVM)
         {
@@ -406,6 +489,11 @@ namespace MApp.Web.Controllers
             return View(evaluationVM);
         }
 
+        /// <summary>
+        /// MVC get method for decide view (Decision.cshtml)
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <returns>decide view (Decision.cshtml)</returns>
         public ActionResult Decision(int issueId)
         {
             DecisionVM dvm = new DecisionVM();
@@ -428,6 +516,11 @@ namespace MApp.Web.Controllers
             return View(dvm);
         }
 
+        /// <summary>
+        /// MVC post method to save a decision
+        /// </summary>
+        /// <param name="dmvm">view model with all the information</param>
+        /// <returns>updated decide view</returns>
         [HttpPost]
         public ActionResult Decision(DecisionModelVM dmvm)
         {
@@ -459,7 +552,12 @@ namespace MApp.Web.Controllers
             return RedirectToAction("Decision", "Issue", new { issueId = decisionModel.IssueId });
         }
 
-        public ActionResult UpdateDecision( DecisionModelVM dmvm)
+        /// <summary>
+        /// MVC post method for update decision
+        /// </summary>
+        /// <param name="dmvm">Decision view model with regarding information</param>
+        /// <returns>updated decision view</returns>
+        public ActionResult UpdateDecision(DecisionModelVM dmvm)
         {
             IssueDecision id = new IssueDecision();
             DecisionModel decisionModel = new DecisionModel();
@@ -482,6 +580,11 @@ namespace MApp.Web.Controllers
             return RedirectToAction("Decision", "Issue", new { issueId = decisionModel.IssueId });
         }
 
+        /// <summary>
+        /// MVC post action method for adding a new comment
+        /// </summary>
+        /// <param name="commentModel">comment model</param>
+        /// <returns>HTTP response message</returns>
         [HttpPost]
         public HttpResponseMessage AddComment(CommentModel commentModel)
         {
@@ -506,6 +609,11 @@ namespace MApp.Web.Controllers
             return new HttpResponseMessage();
         }
 
+        /// <summary>
+        /// http post method for sending a group think notification
+        /// </summary>
+        /// <param name="notificationModel">notification model</param>
+        /// <returns>http response message</returns>
         [HttpPost]
         public HttpResponseMessage AddNotification(NotificationModel notificationModel)
         {
@@ -519,6 +627,11 @@ namespace MApp.Web.Controllers
             return new HttpResponseMessage();
         }
 
+        /// <summary>
+        /// http post method for marking a group think notification as read
+        /// </summary>
+        /// <param name="notificationId">notification id</param>
+        /// <returns>http response message</returns>
         [HttpPost]
         public HttpResponseMessage MarkNotificationAsRead(int notificationId)
         {
@@ -528,10 +641,10 @@ namespace MApp.Web.Controllers
         }
 
         /// <summary>
-        /// 
+        /// http post method for adding a user to issue
         /// </summary>
-        /// <param name="accessRight"></param>
-        /// <returns></returns>
+        /// <param name="accessRight">access right model information</param>
+        /// <returns>http response message with http status code OK if user was added, else status code internal server error</returns>
         [HttpPost]
         public HttpResponseMessage AddAccessRight(AccessRightModel accessRight)
         {
@@ -553,10 +666,10 @@ namespace MApp.Web.Controllers
         }
 
         /// <summary>
-        /// 
+        /// http post method to remove user from issue
         /// </summary>
-        /// <param name="accessRight"></param>
-        /// <returns></returns>
+        /// <param name="accessRight">access right model</param>
+        /// <returns>http response message with http status code OK if user was removed, else status code internal server error</returns>
         [HttpPost]
         public HttpResponseMessage RemoveAccessRight(AccessRightModel accessRight)
         {
@@ -576,6 +689,12 @@ namespace MApp.Web.Controllers
             return msg;
         }
 
+        /// <summary>
+        /// http post method to get groupshift properties
+        /// should be called form view when user is added or removed from issue
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <returns>jsonresult list of groupshift properties</returns>
         [HttpPost]
         public JsonResult GetGroupshiftProperties(int issueId)
         {
@@ -587,6 +706,12 @@ namespace MApp.Web.Controllers
             return result;
         }
 
+        /// <summary>
+        /// http post method for marking comments as read
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="type">string and possible options are: Issue, Alternative, Criterion</param>
+        /// <returns>Http response message</returns>
         public HttpResponseMessage MarkCommentsAsRead(int issueId, string type)
         {
             HttpResponseMessage msg = new HttpResponseMessage();
@@ -627,6 +752,13 @@ namespace MApp.Web.Controllers
             return result;
         }
 
+        /// <summary>
+        /// gets selfassessment for issue
+        /// should be called when some user of an issue changes his self assessment
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user id who is performig this operation</param>
+        /// <returns>issue access rights as json result</returns>
         [HttpPost]
         public JsonResult SelfAssessmentRefreshed(int issueId, int userId)
         {
@@ -638,6 +770,13 @@ namespace MApp.Web.Controllers
             return result;
         }
 
+        /// <summary>
+        /// returns activity information  
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult RefreshActivityIndex(int issueId, int userId, string right)
         {
@@ -675,10 +814,10 @@ namespace MApp.Web.Controllers
         }
 
         /// <summary>
-        /// should be called from All issues page when notification comes in that an issue is updated
+        /// should be called from all issues page when notification comes in that an issue is updated
         /// </summary>
-        /// <param name="issueId"></param>
-        /// <param name="userId"></param>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user (id) who is performing this operation</param>
         [HttpPost]
         public JsonResult RefreshUserIssue(int issueId, int userId)
         {
@@ -721,6 +860,13 @@ namespace MApp.Web.Controllers
             }
         }
 
+        /// <summary>
+        /// http post method
+        /// saves alternative evaluation for AHP setting
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="list">list of comparison (PairwiseComparisonRatingModel - list)</param>
+        /// <returns></returns>
         [HttpPost]
         public string SaveAlternativeRatingAHP(int issueId, List<PairwiseComparisonRatingModel> list)
         {
@@ -743,12 +889,13 @@ namespace MApp.Web.Controllers
         }
 
         /// <summary>
+        /// http post method
         /// should be used if somebody adds new core information (Alternative, Criterion)
         /// and some other user have currently focused the regarding page
         /// also he sees this new information instantly 
         /// this new information should be makrked as read
         /// </summary>
-        /// <param name="issueId"></param>
+        /// <param name="issueId">issue id</param>
         /// <param name="type">type coudl be "Criterion" or "Alternative"</param>
         /// <returns></returns>
         [HttpPost]
@@ -771,6 +918,7 @@ namespace MApp.Web.Controllers
         }
 
         /// <summary>
+        /// http post method
         /// should be used if somebody adds a new comment (for Issue, Alternative, Criterion)
         /// and some other user have currently focused the regarding page and expanded comments
         /// also he sees this new comment instantly 
@@ -803,6 +951,11 @@ namespace MApp.Web.Controllers
             return msg;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reviewModel"></param>
+        /// <returns></returns>
         public HttpResponseMessage SaveIssueReview(ReviewModel reviewModel)
         {
             IssueOverview io = new IssueOverview();

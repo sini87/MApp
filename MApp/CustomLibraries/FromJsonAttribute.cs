@@ -8,6 +8,8 @@ using System.Web.Script.Serialization;
 namespace MApp.Web.CustomLibraries
 {
     /// <summary>
+    /// this CustomModelBinderAttribute class is used to bind the posted knockout-json from the view
+    /// to the regarding object
     /// http://www.c-sharpcorner.com/UploadFile/5ff76e/posting-data-to-mvc-action-using-knockoutjs/
     /// </summary>
     public class FromJsonAttribute : CustomModelBinderAttribute

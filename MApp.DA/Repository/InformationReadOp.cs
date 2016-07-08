@@ -7,8 +7,17 @@ using System.Threading.Tasks;
 
 namespace MApp.DA.Repository
 {
+    /// <summary>
+    /// handles all db opearations to table InformationRead
+    /// </summary>
     public class InformationReadOp
     {
+        /// <summary>
+        /// marks issue as read for user
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user id</param>
+        /// <returns>true if successfull</returns>
         public static bool MarkIssue(int issueId, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
@@ -66,6 +75,12 @@ namespace MApp.DA.Repository
             return marked;
         }
 
+        /// <summary>
+        /// marks alternatives as rad for user
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user id</param>
+        /// <returns>true if successful</returns>
         public static bool MarkAlternatives(int issueId, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
@@ -113,6 +128,12 @@ namespace MApp.DA.Repository
             return marked;
         }
 
+        /// <summary>
+        /// marks criteria as read
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user id</param>
+        /// <returns>if successful true</returns>
         public static bool MarkCritera(int issueId, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
@@ -179,6 +200,11 @@ namespace MApp.DA.Repository
             return marked;
         }
 
+        /// <summary>
+        /// marks issue comments as read
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user id</param>
         public static void MarkIssueComments(int issueId, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
@@ -196,6 +222,11 @@ namespace MApp.DA.Repository
             ctx.Dispose();
         }
 
+        /// <summary>
+        /// marks alternatives comments for user as read
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user id</param>
         public static void MarkAlternativeComments(int issueId, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
@@ -329,6 +360,12 @@ namespace MApp.DA.Repository
             return where;
         }
 
+        /// <summary>
+        /// gets a list of unread infos of issue for user
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user id</param>
+        /// <returns>list of key value pairs where key string is the information name and value is the count of unread information</returns>
         public static List<KeyValuePair<string, int>> GetUnreadInfos(int issueId, int userId)
         {
             List<KeyValuePair<string, int>> list = new List<KeyValuePair<string, int>>();
@@ -437,6 +474,11 @@ namespace MApp.DA.Repository
             return list;
         }
 
+        /// <summary>
+        /// gets decision trustworthiness
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <returns>list of users names</returns>
         public static List<string> GetDecisionTrustwortiness(int issueId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();

@@ -6,6 +6,9 @@ using System.Web;
 
 namespace MApp.Web.ViewModel
 {
+    /// <summary>
+    /// view model for decide view (Decision.cshtml)
+    /// </summary>
     public class DecisionVM
     {
         public IssueModel Issue { get; set; } 

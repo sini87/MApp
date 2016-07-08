@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace MApp.Middleware
 {
+    /// <summary>
+    /// middleware class for criteria weighting
+    /// </summary>
     public class IssueCriterionWeight
     {
         /// <summary>
@@ -40,6 +43,12 @@ namespace MApp.Middleware
             return list.OrderBy(x => x.CriterionId).ToList();
         }
 
+        /// <summary>
+        /// saves criterion weight for an user
+        /// </summary>
+        /// <param name="criteriaWeights">list of criterion weights</param>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user id</param>
         public void SaveCriterionWeights(List<CriterionWeightModel> criteriaWeights, int issueId, int userId)
         {
             CriterionWeightModel cwm = new CriterionWeightModel();
@@ -47,6 +56,12 @@ namespace MApp.Middleware
             CriterionWeightOp.SaveCriterionWeights(entityList, issueId, userId);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user id who is performing operation</param>
+        /// <returns>array of lists containging user criteria weights</returns>
         public List<CriterionWeightModel>[] GetIssueWeights(int issueId, int userId)
         {
             CriterionWeightModel cwm = new CriterionWeightModel();
@@ -73,6 +88,10 @@ namespace MApp.Middleware
             return arrayList;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>string array of slider values for pairwise comparison</returns>
         public string[] GetSliderValues()
         {
             Dictionary<double, string> values = PairwiseComparisonOp.Values;
@@ -86,6 +105,13 @@ namespace MApp.Middleware
             return array;
         }
 
+        /// <summary>
+        /// if user has not compared this method calculates the needed comparisons and returns it
+        /// else it will return a list of already compared criterias
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
+        /// <returns>list of criteria pairwise comparison</returns>
         public List<PairwiseComparisonCriterionModel> GetPCCriteria (int issueId, int userId)
         {
             List<Criterion> cList = CriterionOp.GetIssueCriterions(issueId, userId);

@@ -2,14 +2,7 @@
 @model MApp.Web.ViewModel.DecisionVM
 @{
     var ko = Html.CreateKnockoutContext();
-    if (Model.Issue.Status == "DECIDING")
-    {
-        ViewBag.Title = Model.Issue.Title + " - Decision Making";
-    }
-    else
-    {
-        ViewBag.Title = Model.Issue.Title + " - Final Decision";
-    }
+    ViewBag.Title = Model.Issue.Title + " - Decide";
 
     bool visible, enabled;
     if (Model.AccessRight == "O")
@@ -25,12 +18,11 @@
 <script src="~/ckeditor/ckeditor.js"></script>
 <script src="~/Scripts/numeral.js"></script>
 
-<!-- ko if: viewModel.Issue.Status() == 'DECIDING' -->
-<h2 data-bind="text: viewModel.Issue.Title() + ' - Deciding'"></h2>
-<!-- /ko -->
-<!-- ko if: viewModel.Issue.Status() == 'FINISHED' || viewModel.Issue.Status() == 'CLOSED' -->
-<h2 data-bind="text: viewModel.Issue.Title() + ' - Final Decision'"></h2>
-<!-- /ko -->
+<div>
+    <h3><span data-bind="text: viewModel.Issue.Title"></span></h3>
+    <p class="site-subheader">Decide</p>
+    <hr class="myhr" />
+</div>
 <div class="some">
     <h3>Voting Results</h3>
     <table class="table table-nonfluid restable">

@@ -2,12 +2,14 @@
 @model MApp.Web.ViewModel.CreatingVM
 @{
     var ko = Html.CreateKnockoutContext();
-    ViewBag.Title = "Issue - " + @Model.Issue.Title;
+    ViewBag.Title = @Model.Issue.Title + " - Define";
 }
 <script src="~/ckeditor/ckeditor.js"></script>
 
-<div class="page-header">
+<div>
     <h3 data-bind="text: viewModel.Issue.Title"></h3>
+    <p class="site-subheader">Define</p>
+    <hr class="myhr" />
 </div>
 
 <div class="container">
@@ -63,8 +65,8 @@
                 <label>Methodology</label>
             </div>
             <div class="form-inline" >
-                <label class="radio-inline" data-bind="css: { radiodisabled: viewModel.Issue.Status != 'CREATING' && viewModel.Issue.Status != 'BRAINSTORMING1'}"><input type="radio" name="settingGroup" value="A" data-bind="checked: viewModel.Issue.Setting"/>Setting A</label>
-                <label class="radio-inline" data-bind="css: { radiodisabled: viewModel.Issue.Status != 'CREATING' && viewModel.Issue.Status != 'BRAINSTORMING1'}"><input type="radio" name="settingGroup" value="B" data-bind="checked: viewModel.Issue.Setting" />Setting B (AHP)</label>
+                <label class="radio-inline" data-bind="css: { radiodisabled: viewModel.Issue.Status() != 'CREATING' && viewModel.Issue.Status() != 'BRAINSTORMING1'}"><input type="radio" name="settingGroup" value="A" data-bind="checked: viewModel.Issue.Setting"/>Setting A</label>
+                <label class="radio-inline" data-bind="css: { radiodisabled: viewModel.Issue.Status() != 'CREATING' && viewModel.Issue.Status() != 'BRAINSTORMING1'}"><input type="radio" name="settingGroup" value="B" data-bind="checked: viewModel.Issue.Setting" />Setting B (AHP)</label>
             </div>
         </div>
         <div class="row">

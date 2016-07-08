@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace MApp.DA.Repository
 {
+    /// <summary>
+    /// in this class are all opeartions made to table Decision
+    /// </summary>
     public class DecisionOp
     {
         /// <summary>

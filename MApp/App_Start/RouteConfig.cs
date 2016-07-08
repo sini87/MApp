@@ -7,6 +7,9 @@ using System.Web.Routing;
 
 namespace MApp.Web.App_Start
 {
+    /// <summary>
+    /// this class sets up the routing configuration
+    /// </summary>
     public class RouteConfig
     {
         public static void RegisterRoutes(RouteCollection routes)

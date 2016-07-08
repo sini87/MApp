@@ -10,8 +10,15 @@ using System.Threading.Tasks;
 
 namespace MApp.DA.Repository
 {
+    /// <summary>
+    /// makes all operations on two pairwise comparison tables
+    /// logic for AHP
+    /// </summary>
     public class PairwiseComparisonOp
     {
+        /// <summary>
+        /// this are the values for the slider
+        /// </summary>
         public static Dictionary<double,string> Values = new Dictionary<double, string> {
             { 9, "Extremely more important" },
             { 8, "Far more important to extremely more important" },
@@ -36,7 +43,7 @@ namespace MApp.DA.Repository
         /// </summary>
         /// <param name="issueId"></param>
         /// <param name="userId"></param>
-        /// <returns></returns>
+        /// <returns>list of pairwise criteria comparisons for user</returns>
         public static List<PairwiseComparisonCC> GetWeightComparison(int issueId, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
@@ -46,6 +53,12 @@ namespace MApp.DA.Repository
             ctx.Dispose();
             return list;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user id</param>
+        /// <returns>list of pairwise alternative comparisons</returns>
 
         public static List<PairwiseComparisonAC> GetAlternativeComparison(int issueId, int userId)
         {
@@ -58,11 +71,11 @@ namespace MApp.DA.Repository
         }
 
         /// <summary>
-        /// returns true if consistency check OK and save performed
-        /// if consistency check faild returns false
+        /// tries to save criteria weight comparisons
         /// </summary>
-        /// <param name="list"></param>
-        /// <returns></returns>
+        /// <param name="list">list of comparisons to be saved</param>
+        /// <returns>returns true if consistency check OK and save is performed 
+        /// if consistency check faild returns false</returns>
         public static List<CriterionWeight> SaveWeightComparison(List<PairwiseComparisonCC> list)
         {
             List<CriterionWeight> criteriaWeights = new List<CriterionWeight>();
@@ -140,6 +153,13 @@ namespace MApp.DA.Repository
             return criteriaWeights;
         }
 
+        /// <summary>
+        /// tries to save alternative comparisons
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
+        /// <param name="compList"></param>
+        /// <returns>if save was successfull and consistence check ok, else returns error message with detail consistency problem</returns>
         public static string SaveAlternativeComparison(int issueId, int userId, List<PairwiseComparisonAC> compList)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();

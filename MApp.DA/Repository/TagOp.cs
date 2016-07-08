@@ -46,6 +46,12 @@ namespace MApp.DA.Repository
             return list;
         }
 
+        /// <summary>
+        /// adds tags to issue
+        /// </summary>
+        /// <param name="tagList">list of tags (if tag id is -1 then new tag will be created)</param>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user who is performing operation</param>
         public static void AddTagsToIssue(List<Tag> tagList, int issueId, int userId)
         {
             string sql;
@@ -98,8 +104,8 @@ namespace MApp.DA.Repository
         /// <summary>
         /// removes a list of tags from an issue
         /// </summary>
-        /// <param name="tagList"></param>
-        /// <param name="issueId"></param>
+        /// <param name="tagList">list of tags</param>
+        /// <param name="issueId">issue</param>
         public static void RemoveTagsFromIssue(List<Tag> tagList, int issueId, int userId)
         {
             TagIssue help;

@@ -10,10 +10,17 @@ using System.Web.Routing;
 namespace MApp.Web.CustomLibraries
 {
     /// <summary>
+    /// This controller assures that the language is always english
     /// http://stackoverflow.com/questions/8226514/best-place-to-set-currentculture-for-multilingual-asp-net-mvc-web-applications
     /// </summary>
     public class CultureAwareControllerActivator : IControllerActivator
     {
+        /// <summary>
+        /// initialization of the controller
+        /// </summary>
+        /// <param name="requestContext"></param>
+        /// <param name="controllerType"></param>
+        /// <returns></returns>
         public IController Create(RequestContext requestContext, Type controllerType)
         {
             //Get the {language} parameter in the RouteData

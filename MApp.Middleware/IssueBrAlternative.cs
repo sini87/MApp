@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace MApp.Middleware
 {
     /// <summary>
-    /// performs operations on AlternativeModel
+    /// middleware class for define alternatives view (BrAlternatives.cshtml)
     /// </summary>
     public class IssueBrAlternative
     {

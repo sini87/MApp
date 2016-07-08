@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace MApp.DA
 {
+    /// <summary>
+    /// singleton class for managing db connection
+    /// </summary>
     public class DbConnection
     {
         private static DbConnection instance;

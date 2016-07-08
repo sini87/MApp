@@ -1,7 +1,7 @@
 ﻿@using PerpetuumSoft.Knockout
 @model KeyValuePair<int, List<MApp.Middleware.Models.UserIssueModel>>
 @{
-    ViewBag.Title = "Issue Overvies";
+    ViewBag.Title = "Issues Overview";
     var ko = Html.CreateKnockoutContext();
 }
 <script src="~/Scripts/rateit.js/jquery.rateit.js" type="text/javascript"></script>
@@ -30,13 +30,13 @@
                 <!-- /ko -->
                 <!-- ko if: Issue.Status() == 'BRAINSTORMING1' -->
                     <p>Prepare</p>
-                    <a data-bind="attr: { href: '/Issue/BrCriteria?issueId=' + Issue.Id() }">Criteria</a>
-                    <a data-bind="attr: { href: '/Issue/BrAlternatives?issueId=' + Issue.Id() }">Alternatives</a>
+                    <a data-bind="attr: { href: '/Issue/BrCriteria?issueId=' + Issue.Id() }">Define Criteria</a>
+                    <a data-bind="attr: { href: '/Issue/BrAlternatives?issueId=' + Issue.Id() }">Define Alternatives</a>
                 <!-- /ko -->
                 <!-- ko if: Issue.Status() == 'BRAINSTORMING2' -->
-                <p>Evaluate/Prepare</p>
+                <p>Prepare/Evaluate</p>
                     <a data-bind="attr: { href: '/Issue/CriteriaRating?issueId=' + Issue.Id() }">Evaluate Criteria</a>
-                    <a data-bind="attr: { href: '/Issue/BrAlternatives?issueId=' + Issue.Id() }">Prepare Alternatives</a>
+                    <a data-bind="attr: { href: '/Issue/BrAlternatives?issueId=' + Issue.Id() }">Define Alternatives</a>
                 <!-- /ko -->
                 <!-- ko if: Issue.Status() == 'EVALUATING' -->
                     <a data-bind="attr: { href: '/Issue/Evaluation?issueId=' + Issue.Id() }">Evaluate Alternatives</a>

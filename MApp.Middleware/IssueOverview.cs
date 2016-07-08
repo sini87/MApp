@@ -8,8 +8,16 @@ using System.Threading.Tasks;
 
 namespace MApp.Middleware
 {
+    /// <summary>
+    /// middleware class for issues overview
+    /// </summary>
     public class IssueOverview
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userId">user id</param>
+        /// <returns>list of all issues which the user can access</returns>
         public List<IssueModel> GetUserIssues(int userId)
         {
             IssueModel im = new IssueModel();
@@ -33,6 +41,11 @@ namespace MApp.Middleware
             return hlist;
         }
 
+        /// <summary>
+        /// returns list of issues which the user has access to
+        /// </summary>
+        /// <param name="userId">user id</param>
+        /// <returns>list of user issue model</returns>
         public List<UserIssueModel> GetUIM (int userId)
         {
             List<IssueModel> list = GetUserIssues(userId);
@@ -50,6 +63,12 @@ namespace MApp.Middleware
             return uimList;
         }
 
+        /// <summary>
+        /// converts inssue model to user issue model
+        /// </summary>
+        /// <param name="im">issue model</param>
+        /// <param name="userId">user who is performing operation</param>
+        /// <returns>user issue model</returns>
         private UserIssueModel GetUserIssueModelFromIssueModel(IssueModel im, int userId)
         {
             UserIssueModel uim = new UserIssueModel();
@@ -116,6 +135,12 @@ namespace MApp.Middleware
             return uim;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user who is performing operation</param>
+        /// <returns>user issue model by issue id</returns>
         public UserIssueModel GetUserIssueModel(int issueId, int userId)
         {
             IssueModel im = new IssueModel();
@@ -156,6 +181,10 @@ namespace MApp.Middleware
 
         }
 
+        /// <summary>
+        /// saves an issue review
+        /// </summary>
+        /// <param name="reviewModel">issue review</param>
         public void SaveIssueReview(ReviewModel reviewModel)
         {
             ReviewOp.SaveIssueReview(reviewModel.ToEntity(reviewModel));

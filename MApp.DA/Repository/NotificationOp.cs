@@ -9,8 +9,17 @@ using System.Threading.Tasks;
 
 namespace MApp.DA.Repository
 {
+    /// <summary>
+    /// makes all opearations on table Notification
+    /// </summary>
     public class NotificationOp
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user who is performing operations</param>
+        /// <returns>list of groupthink notifications</returns>
         public static List<Notification> GetGroupthinkNotifications(int issueId, int userId)
         {
             List<Notification> list;
@@ -22,6 +31,11 @@ namespace MApp.DA.Repository
             return list;
         }
 
+        /// <summary>
+        /// adds new notificatio
+        /// </summary>
+        /// <param name="notification">new notification</param>
+        /// <returns>id of inserted notification</returns>
         public static int AddNotification(Notification notification)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();

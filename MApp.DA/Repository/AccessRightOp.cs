@@ -34,6 +34,12 @@ namespace MApp.DA.Repository
             return list;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user id</param>
+        /// <returns>access right for issue and user</returns>
         public static AccessRight GetAccessRight(int issueId, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
@@ -134,8 +140,8 @@ namespace MApp.DA.Repository
         /// <summary>
         /// grants view access to all parent issues
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="issueId"></param>
+        /// <param name="userId">user id</param>
+        /// <param name="issueId">issue id</param>
         private static void GrantAccess(int userId, int issueId, ApplicationDBEntities ctx)
         {
             List<Issue> parentList = IssueOp.RootIssues(issueId, ctx);
@@ -169,8 +175,8 @@ namespace MApp.DA.Repository
         /// <summary>
         /// gets the accessright for user of an issue
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="issueId"></param>
+        /// <param name="userId">user id</param>
+        /// <param name="issueId">issue id</param>
         /// <returns></returns>
         public static AccessRight AccessRightOfUserForIssue(int userId, int issueId)
         {
@@ -183,8 +189,8 @@ namespace MApp.DA.Repository
         /// <summary>
         /// updates slefassesment of an User
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="description"></param>
+        /// <param name="value">self assessment value</param>
+        /// <param name="description">self assessment description</param>
         public static void UpdateSelfAssesment(double value, string description, int issueId, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
@@ -220,6 +226,12 @@ namespace MApp.DA.Repository
             ctx.Dispose();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userId">user id</param>
+        /// <param name="issueId">issue id</param>
+        /// <returns>list of access right changes for user and issue</returns>
         public static List<HAccessRight> GetAccessRightsHistorical(int userId, int issueId)
         {
             List<HAccessRight> list;
@@ -230,6 +242,12 @@ namespace MApp.DA.Repository
             return list;
         }
 
+        /// <summary>
+        /// adds user to issue
+        /// </summary>
+        /// <param name="accessRight">access right</param>
+        /// <param name="userId">user who is adding oder user</param>
+        /// <returns>true if successful</returns>
         public static bool AddAccessRight(AccessRight accessRight, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
@@ -272,6 +290,12 @@ namespace MApp.DA.Repository
             return true;
         }
 
+        /// <summary>
+        /// removes user from issue
+        /// </summary>
+        /// <param name="accessRight">access right to be removed</param>
+        /// <param name="userId">user who is delteing access right</param>
+        /// <returns>bool if successful</returns>
         public static bool RemoveAccessRight(AccessRight accessRight, int userId)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();

@@ -7,8 +7,15 @@ using System.Threading.Tasks;
 
 namespace MApp.DA.Repository
 {
+    /// <summary>
+    /// class where all opeartions to comment table are made
+    /// </summary>
     public class CommentOp
     {
+        /// <summary>
+        /// adds a new comment
+        /// </summary>
+        /// <param name="comment"></param>
         public static void AddComment(Comment comment)
         {
             ApplicationDBEntities ctx = new ApplicationDBEntities();
@@ -21,6 +28,12 @@ namespace MApp.DA.Repository
             ctx.Dispose();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user who is performing operation</param>
+        /// <returns>list of alternatives comments</returns>
         public static List<Comment> GetAlternativeComments(int issueId, int userId)
         {
             string sql;
@@ -39,6 +52,10 @@ namespace MApp.DA.Repository
             return list;
         }
 
+        /// <summary>
+        /// deletes a list of alternative comments
+        /// </summary>
+        /// <param name="alternativeIds">list of alternative ids</param>
         public static void DeleteAlternativeComments(List<int> alternativeIds)
         {
             string alt = "";
@@ -75,6 +92,12 @@ namespace MApp.DA.Repository
             ctx.Dispose();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user who is performing operation</param>
+        /// <returns>list of criteria comments</returns>
         public static List<Comment> GetCriterionComments(int issueId, int userId)
         {
             string sql;
@@ -93,6 +116,10 @@ namespace MApp.DA.Repository
             return list;
         }
 
+        /// <summary>
+        /// deletes criteria comments
+        /// </summary>
+        /// <param name="criterionIds">list of criterion ids</param>
         public static void DeleteCriterionComments(List<int> criterionIds)
         {
             string criterions = "";
@@ -129,6 +156,13 @@ namespace MApp.DA.Repository
             ctx.Dispose();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user who is performing operation</param>
+        /// <param name="type">comment type (eg: Issue)</param>
+        /// <returns>list of comments</returns>
         public static List<Comment> GetTypeComments(int issueId, int userId, string type)
         {
             string sql;

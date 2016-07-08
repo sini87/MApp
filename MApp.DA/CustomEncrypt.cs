@@ -8,8 +8,17 @@ using System.Threading.Tasks;
 
 namespace MApp.DA
 {
+    /// <summary>
+    /// used for encrypting string
+    /// http://kristianguevara.net/creating-your-asp-net-mvc-5-application-from-scratch-for-beginners-using-entity-framework-6-and-identity-with-crud-functionalities/
+    /// </summary>
     public class CustomEnrypt
     {
+        /// <summary>
+        /// encryptes string
+        /// </summary>
+        /// <param name="clearText"></param>
+        /// <returns>encrypted string</returns>
         public static string Encrypt(string clearText)
         {
             string EncryptionKey = "OJ1KBFZI56PO8NQ";

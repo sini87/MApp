@@ -2,7 +2,7 @@
 @using PerpetuumSoft.Knockout
 @model MApp.Web.ViewModel.EvaluationVM
 @{
-    ViewBag.Title = Model.Issue.Title + " - Alternatives Evaluation";
+    ViewBag.Title = Model.Issue.Title + " - Evaluate Alternatives";
     var ko = Html.CreateKnockoutContext();
 }
 <script src="~/Scripts/ion.rangeSlider.min.js"></script>
@@ -10,7 +10,11 @@
 <link href="~/Content/ion.rangeSlider.css" type="text/css" rel="stylesheet" />
 <link href="~/Content/ion.rangeSlider.skinNice.css" type="text/css" rel="stylesheet" />
 
-<h2>@Model.Issue.Title - Alternative Evaluation</h2>
+<div>
+    <h3>@Model.Issue.Title</h3>
+    <p class="site-subheader">Evaluate Alternatives</p>
+    <hr class="myhr" />
+</div>
 
 @if (Model.AccessRight != "V" && Model.Issue.Setting == "A")
 {

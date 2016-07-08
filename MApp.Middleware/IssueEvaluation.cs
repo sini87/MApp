@@ -9,8 +9,17 @@ using System.Threading.Tasks;
 
 namespace MApp.Middleware
 {
+    /// <summary>
+    /// middleware class for alternative evaluation
+    /// </summary>
     public class IssueEvaluation
     {
+        /// <summary>
+        /// returns user ratings
+        /// </summary>
+        /// <param name="issueId"></param>
+        /// <param name="userId"></param>
+        /// <returns>array of lists of userRatings, one array stands for one alternative</returns>
         public List<RatingModel>[] GetIssueUserRatings(int issueId, int userId)
         {
             List<RatingModel>[] retArr;
@@ -43,6 +52,12 @@ namespace MApp.Middleware
             return retArr;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user who is performing operation</param>
+        /// <returns>alternative ratings/evaluations of all other users</returns>
         public List<RatingModel> GetAllIssueRatings (int issueId, int userId)
         {
             List<RatingModel> userRatings;
@@ -51,6 +66,12 @@ namespace MApp.Middleware
             return userRatings;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user who is performing this operation</param>
+        /// <returns>list of alternatives</returns>
         public List<AlternativeModel> GetIssueAlternatives(int issueId, int userId)
         {
             AlternativeModel am = new AlternativeModel();
@@ -58,6 +79,12 @@ namespace MApp.Middleware
             return list;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user who is performing operation</param>
+        /// <returns>list of criteria</returns>
         public List<CriterionModel> GetIssueCrtieria(int issueId, int userId)
         {
             CriterionModel cm = new CriterionModel();
@@ -65,6 +92,10 @@ namespace MApp.Middleware
             return list;
         }
 
+        /// <summary>
+        /// saves ratings
+        /// </summary>
+        /// <param name="ratings">array of lists where an list represents an alternative rating</param>
         public void SaveUserRatings(List<RatingModel>[] ratings)
         {
             List<RatingModel> ratList = new List<RatingModel>();
@@ -82,6 +113,12 @@ namespace MApp.Middleware
             RatingOp.SaveUserRatings(entityList);
         }
 
+        /// <summary>
+        /// returns list of users who have already rated
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user id who is performing operation</param>
+        /// <returns>list of users</returns>
         public List<UserShortModel> GetRatedUsersForIssue(int issueId, int userId)
         {
             List<int> userIds = RatingOp.GetAlreadyRatedUsers(issueId, userId);
@@ -95,6 +132,14 @@ namespace MApp.Middleware
             return ratedUsers;
         }
 
+        /// <summary>
+        /// returns list of pairwise comparisons
+        /// if user has not made any comparisons yet then this method will construct empty comparisons
+        /// else return is the comparisons made
+        /// </summary>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user who is perfomring operation</param>
+        /// <returns>list of pairwise comparisons</returns>
         public List<PairwiseComparisonRatingModel> GetPairwiseAlternativeRatings(int issueId, int userId)
         {
             PairwiseComparisonRatingModel pcacm = new PairwiseComparisonRatingModel();
@@ -139,6 +184,13 @@ namespace MApp.Middleware
             }
         }
 
+        /// <summary>
+        /// saves ratings for setting AHP
+        /// </summary>
+        /// <param name="list">list of user pairweise ratings</param>
+        /// <param name="issueId">issue id</param>
+        /// <param name="userId">user who is performing operation</param>
+        /// <returns>returns success if save was corrent, else detaild consistency error message for user</returns>
         public string SaveAHPAlternativeEvaluation(List<PairwiseComparisonRatingModel> list, int issueId, int userId)
         {
             PairwiseComparisonRatingModel pcrm = new PairwiseComparisonRatingModel();

@@ -14,7 +14,10 @@ namespace MApp.Web.Controllers
 {
     public class ProfileController : Controller
     {
-        // GET: Profile
+        /// <summary>
+        /// MVC get method for profile view
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Index()
         {
             var claimsIdentity = User.Identity as ClaimsIdentity;
@@ -24,6 +27,11 @@ namespace MApp.Web.Controllers
             return View(auth.GetUserProfileModel(userId));
         }
 
+        /// <summary>
+        /// MVC post method for updating profile information
+        /// </summary>
+        /// <param name="profileModel">user profile model</param>
+        /// <returns>profile view with refreshed information</returns>
         [HttpPost]
         public ActionResult Index([FromJson] ProfileModel profileModel)
         {

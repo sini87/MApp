@@ -27,9 +27,9 @@ namespace MApp.Web.Hubs
         /// </summary>
         /// <param name="alternatives">list of alternatives</param>
         /// <param name="user">user (as UserShortModel) who is performing this operation</param>
-        public void UpdateAlternatives(AlternativeModel alternatives, UserShortModel user)
+        public void UpdateAlternatives(AlternativeModel alternatives, UserShortModel user, int issueId)
         {
-            Clients.All.updateAlternatives(alternatives, user);
+            Clients.All.updateAlternatives(alternatives, user, issueId);
         }
     }
 }

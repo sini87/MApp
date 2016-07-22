@@ -27,9 +27,9 @@ namespace MApp.Web.Hubs
         /// </summary>
         /// <param name="criteria">list of criteria </param>
         /// <param name="user">user who is perform</param>
-        public void UpdateCriteria(CriterionModel criteria, UserShortModel user)
+        public void UpdateCriteria(CriterionModel criteria, UserShortModel user, int issueId)
         {
-            Clients.All.updateCriteria(criteria, user);
+            Clients.All.updateCriteria(criteria, user, issueId);
         }
     }
 }

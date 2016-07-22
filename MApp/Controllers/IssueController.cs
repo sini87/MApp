@@ -289,7 +289,7 @@ namespace MApp.Web.Controllers
 
             UserShortModel user = new UserShortModel(brCriteriaVM.UserId, GetUserNameFromClaim());
             var context = GlobalHost.ConnectionManager.GetHubContext<CriterionHub>();
-            context.Clients.All.updateCriteria(brCriteriaVM.IssueCriteria, user);
+            context.Clients.All.updateCriteria(brCriteriaVM.IssueCriteria, user, brCriteriaVM.Issue.Id);
             if (brCriteriaVM.DeletedCriteria != null && brCriteriaVM.DeletedCriteria.Count > 0)
             {
                 context.Clients.All.deleteCriteria(brCriteriaVM.DeletedCriteria, user);
@@ -346,7 +346,7 @@ namespace MApp.Web.Controllers
 
             UserShortModel user = new UserShortModel(brAlternativesVM.UserId, GetUserNameFromClaim());
             var context = GlobalHost.ConnectionManager.GetHubContext<AlternativeHub>();
-            context.Clients.All.updateAlternatives(brAlternativesVM.Alternatives, user);
+            context.Clients.All.updateAlternatives(brAlternativesVM.Alternatives, user, brAlternativesVM.Issue.Id);
             if (brAlternativesVM.DeletedAlternatives != null && brAlternativesVM.DeletedAlternatives.Count > 0)
             {
                 context.Clients.All.deleteAlternatives(brAlternativesVM.DeletedAlternatives, user);

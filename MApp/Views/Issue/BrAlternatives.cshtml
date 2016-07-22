@@ -338,8 +338,8 @@
         }
 
         //SignalR new alternatives added
-        alternativeHub.client.updateAlternatives = function (alternatives, user) {
-            if (viewModel.UserId() != user.Id) {
+        alternativeHub.client.updateAlternatives = function (alternatives, user, issueId) {
+            if (viewModel.UserId() != user.Id && viewModel.Issue.Id() == issueId) {
                 for (var i = 0; i < alternatives.length; i++) {
                     var uAlt = alternatives[i]
                     var result = $.grep(viewModel.Alternatives(), function (e) { return e.Id() == uAlt.Id; });

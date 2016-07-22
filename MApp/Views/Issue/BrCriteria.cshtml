@@ -334,8 +334,8 @@
         }
 
         //notification criteria updated
-        criterionHub.client.updateCriteria = function (criteria, user) {
-            if (viewModel.UserId() != user.Id) {
+        criterionHub.client.updateCriteria = function (criteria, user, issueId) {
+            if (viewModel.UserId() != user.Id && issueId == viewModel.Issue.Id()) {
                 for (var i = 0; i < criteria.length; i++) {
                     var uCrit = criteria[i]
                     var result = $.grep(viewModel.IssueCriteria(), function (e) { return e.Id() == uCrit.Id; });

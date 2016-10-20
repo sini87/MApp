@@ -155,6 +155,7 @@ namespace MApp.Middleware
                     model.CriterionName = cList.Find(x => x.Id == model.CriterionId).Name;
                     model.LeftAltName = aList.Find(x => x.Id == model.LeftAltId).Name;
                     model.RightAltName = aList.Find(x => x.Id == model.RightAltId).Name;
+                    model.Value = model.Value.Replace("important", "preferred");
                 }
                 return modelList;
             }else // else construct the comparisons
@@ -173,7 +174,7 @@ namespace MApp.Middleware
                             pcacm.LeftAltName = aList[i].Name;
                             pcacm.RightAltId = aList[j].Id;
                             pcacm.RightAltName = aList[j].Name;
-                            pcacm.Value = "Equally important";
+                            pcacm.Value = "Equally preferred";
                             pcacm.UserId = userId;
                             modelList.Add(pcacm);
                         }
@@ -196,6 +197,23 @@ namespace MApp.Middleware
             PairwiseComparisonRatingModel pcrm = new PairwiseComparisonRatingModel();
             List<PairwiseComparisonAC> entityList = pcrm.ToEntityList(list);
             return PairwiseComparisonOp.SaveAlternativeComparison(issueId, userId, entityList);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>string array of slider values for pairwise comparison</returns>
+        public string[] GetSliderValues()
+        {
+            Dictionary<double, string> values = PairwiseComparisonOp.Values;
+            string[] array = new string[values.Count];
+            int i = 0;
+            foreach (var val in values)
+            {
+                array[i] = val.Value.Replace("important","preferred");
+                i++;
+            }
+            return array;
         }
     }
 }

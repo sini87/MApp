@@ -453,7 +453,7 @@ namespace MApp.Web.Controllers
             if (evm.Issue.Setting == "B")
             {
                 IssueCriterionWeight icw = new IssueCriterionWeight();
-                evm.SliderValues = icw.GetSliderValues();
+                evm.SliderValues = ie.GetSliderValues();
                 evm.PairwiseRatings = ie.GetPairwiseAlternativeRatings(issueId, userId);
             }
 

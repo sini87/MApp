@@ -62,7 +62,7 @@
     </form>
     <button id="save" onclick="onClickSave()" class="btn btn-primary btn-md" data-bind="visible: viewModel.Issue.Status() == 'EVALUATING', enable: viewModel.valid" >save</button>
 }
-else
+else if (Model.AccessRight != "V")
 {
     <div id="myCarousel" class="carousel slide" data-ride="carousel" data-wrap="false" data-interval="false">
         <!-- Indicators -->

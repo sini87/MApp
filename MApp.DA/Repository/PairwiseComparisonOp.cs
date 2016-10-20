@@ -20,7 +20,7 @@ namespace MApp.DA.Repository
         /// this are the values for the slider
         /// </summary>
         public static Dictionary<double,string> Values = new Dictionary<double, string> {
-            { 9, "Extremely more important" },
+            { 9, "Significantly more important" },
             { 8, "Far more important to extremely more important" },
             { 7, "Far more important" },
             { 6, "Much to far more important" },
@@ -36,7 +36,7 @@ namespace MApp.DA.Repository
             { 1.0 / 6.0, "Way to far less important" },
             { 1.0 / 7.0, "Far less important" },
             { 1.0 / 8.0, "Far less important to extremely less important" },
-            { 1.0 / 9.0, "Extremely less important" } };
+            { 1.0 / 9.0, "Significantly less important" } };
 
         /// <summary>
         /// returns list of weight pairwise comparisons
